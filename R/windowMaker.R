@@ -1,6 +1,6 @@
 #' Sliding and tiled window ranges
 #'
-#' @description makes and tiled windows from data frame
+#' @description makes sliding and tiled windows from data frame
 #'
 #' @details Authours: Chris Ward & Alastair Luddington
 #' generates tiled (no step size) and sliding (step size) ranges for analysis with other functions.
@@ -26,10 +26,10 @@
 #' stepSize <- 0
 #'
 #' # make contig metadata across all contigs in VCF header
-#' contigMD <- seqVCF_Header(vcf_path)$contig
+#' #contigMD <- seqVCF_Header(vcf_path)$contig
 #'
 #' # subset by desired contigs
-#' contigMD <- contigMD[contigMD$ID %in% c("chr1", "chr2"),]
+#' #contigMD <- contigMD[contigMD$ID %in% c("chr1", "chr2"),]
 #'
 #'
 #' @export
@@ -42,7 +42,7 @@ windowMaker <- function(contigMD, windowSize, stepSize = 0){
   if(any(!colnames(contigMD) %in% c("ID", "length"))) stop("contigMD must be a data.frame or data.frame like object")
   if(!windowSize >= stepSize) stop("windowSize must be greater than or equal to stepSize")
   if(!is.numeric(windowSize) | !is.numeric(stepSize)) stop("windowSize and stepSize must be numerics")
-  stopifnot(windowSize < 0 | stepSize <= 0 )
+  stopifnot(windowSize > 0 | stepSize >= 0 )
 
   # set step size for tiled
   if(stepSize == 0) stepSize <- windowSize
@@ -76,4 +76,4 @@ windowMaker <- function(contigMD, windowSize, stepSize = 0){
 
 }
 
-t <- windowMaker(contigMD, windowSize)
+t <- windowMaker(contigMD, windowSize, stepSize)

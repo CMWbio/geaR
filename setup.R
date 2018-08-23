@@ -18,20 +18,11 @@ seqVCF2GDS(vcf.fn = "~/Desktop/Tree-TipR/PlutellaSNP.vcf.gz",
 
 ## Parameters
 windowSize <- 100000
-step <- 100000
+stepSize <- 100000
 minSites <- 1000
-
-
-
-
-
-
 
 #open GDS
 gds <- seqOpen(GDS)
-
-
-
 
 genotypes <-  seqGetData(gdsfile = gds, var.name = "genotype")
 
