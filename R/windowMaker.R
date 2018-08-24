@@ -2,7 +2,7 @@
 #'
 #' @description makes sliding and tiled windows from data frame
 #'
-#' @details Authours: Chris Ward & Alastair Luddington
+#' @details Authours: Chris Ward & Alastair Ludington
 #' generates tiled (no step size) and sliding (step size) ranges for analysis with other functions.
 #'
 #'
@@ -35,7 +35,7 @@
 #' @export
 #' @rdname windowMaker
 
-windowMaker <- function(contigMD, windowSize, stepSize = 0){
+windowMaker <- function(contigMD, windowSize, stepSize = 0, nCores = 1){
 
   # checks
   if(!is.data.frame(contigMD)) stop("contigMD must be a data.frame or data.frame like object")
@@ -55,25 +55,24 @@ windowMaker <- function(contigMD, windowSize, stepSize = 0){
 
 
   ## List of windows
-  windowList <- lapply(seq(nrow(contigMD)), function(x){
+  windowList <- mclapply(seq(nrow(contigMD)), mc.cores = nCores, function(x){
 
     ## Subsetting GRange object by chromosome
     con <- contigRange[x]
 
     ## Splitting into windows
-    G_range <- GenomicRanges::slidingWindows(x = con, width = windowSize, step = step)
+    G_range <- GenomicRanges::slidingWindows(x = con, width = windowSize, step = stepSize)
     G_range <- unlist(G_range) ## Need to unlist the slidingWindow object
 
     ## Turning window-GRanges into GRangesList
-    G_range <- as(G_range,"GRangesList")
-    G_range
 
   })
 
-  ## Returning list object
-  names(windowList) <- contigMD[["ID"]]
+  ## this is slow
+  windowList <- do.call("c",windowList)
+  windowList <- as(windowList,"GRangesList")
   return(windowList)
 
 }
 
-t <- windowMaker(contigMD, windowSize, stepSize)
+
