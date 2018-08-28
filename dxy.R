@@ -26,7 +26,7 @@ pops <- data.frame(samples = seqGetData(genofile, "sample.id"),
 
 ## Parameters
 windowSize <- 100000
-step <- 100000
+step <- 0
 minSites <- 1000
 
 ###################################################################################################

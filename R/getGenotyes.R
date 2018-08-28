@@ -28,14 +28,15 @@
 #' @rdname getGenotypes
 
 
-getGenotypes <- function(GDS, locus, minSites = 0.5, nucleotide = FALSE){
+getGenotypes <- function(GDS, locus, minSites = 0.5, nucleotide = FALSE, ploidy = 2, pops){
 
   stopifnot(minSites < 1 & minSites > 0)
 
   minSites <- minSites * width(locus)
-
+  samples <- pops$Sample
   ## Subsetting GDS file
   seqSetFilter(object = GDS, locus) ## Setting filter (i.e. window to get variants from)
+  seqSetFilter(object = GDS, sample.id = samples) ## Setting filter (i.e. window to get variants from)
 
   # read in genotypes and alleles
   genoArr <- seqGetData(gdsfile = GDS, var.name = "genotype")
@@ -62,14 +63,13 @@ getGenotypes <- function(GDS, locus, minSites = 0.5, nucleotide = FALSE){
     winID <- paste0(chr, ":", start, "..", end)
 
     ## Getting sample and variant IDs for col/row nameing
-    samples <- seqGetData(gdsfile = GDS, var.name = "sample.id")
     position <- seqGetData(gdsfile = GDS, var.name = "position")
 
 
     #Do I want to have a matrix of leave as an array?
     # get ploidy
-    ploidy <- dim(genoArr)[1]
-    ## Duplicating row-names (duce for splitting into haplotypes)
+    # ploidy <- dim(genoArr)[1]
+    # ## Duplicating row-names (duce for splitting into haplotypes)
     #samples <- paste(rep(samples, each = ploidy), c(1:ploidy), sep = "/")
 
 
