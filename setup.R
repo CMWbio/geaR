@@ -38,9 +38,9 @@ loci <- windowMaker(contigMD, windowSize, nCores = 5)
 
 ## test speed
 
-system.time(getDiversityStats(GDS, loci[1:1000], minSites = 0.0005, nCores = 5, pops = pops, ploidy = 2))
-##    user  system elapsed
-##  84.710   1.967  20.163
-
+system.time(getDiversityStats(GDS, loci[1:100], minSites = 0.0005, nCores = 5, pops = pops, ploidy = 2))
+# user  system elapsed
+# 0.084   0.031   6.691
+test <- getDiversityStats(GDS, loci[1:100], minSites = 0.0005, nCores = 5, pops = pops, ploidy = 2)
 
 system.time(getDiversityStats(GDS, loci[1:100], minSites = 0.0005, nCores = 5, pops = pops2, ploidy = 2))

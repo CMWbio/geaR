@@ -13,6 +13,7 @@
 #' @param stats \code{character}. Vector containing all diversity stats to calculate. default \code{c("all")}
 #'
 #'
+#'
 #' @return A \code{data_frame} of selected Diversity statistics
 #'
 #'
@@ -34,9 +35,9 @@ getDiversityStats <- function(GDS, loci, minSites = 0.5, nCores = 1, pops = NULL
   popList <- split(pops, pops$Population)
 
   nam <- names(popList)
-  pairs <- outer(nam, nam, paste)
+  pairs <- outer(nam, nam, paste, sep = "///")
   pairs <- lapply(pairs, function(z){
-    pair <- unlist(strsplit(z, split = " "))
+    pair <- unlist(strsplit(z, split = "///"))
     if(pair[1] == pair[2]) pair <- NULL
     pair <- sort(pair)
     return(pair)
@@ -52,24 +53,22 @@ getDiversityStats <- function(GDS, loci, minSites = 0.5, nCores = 1, pops = NULL
 
     genoMat <- getGenotypes(GDS = GDS, locus = locus, minSites = minSites, nucleotide = FALSE, ploidy = ploidy, pops = pops)
 
-    distMat <- genoDist(genoMat)
+    distMat <- genoDist(genoMat, countN = countN)
 
     seqname <- locus@seqnames@values
     start <- locus@ranges@start
     end <- start + locus@ranges@width
     windowMid <- (start + end) /2
     snpMid <- floor(mean(as.numeric(rownames(genoMat)), na.rm = TRUE))
-
-    dxy <-  neisDxy(distMat, popList, pairs, ploidy = 2)
-
     nSites <- ifelse(length(genoMat), nrow(genoMat), 0)
 
+    dxy <-  neisDxy(distMat, popList, pairs, ploidy = 2)
+    pi <- neisPi(distMat, popList, ploidy = 2)
+    da <- neisDa(dxy, pi)
 
 
 
-
-
-    bind_cols(data_frame(SeqName = seqname, Start = start, End = end, windowMid, snpMid, nSites), dxy)
+    bind_cols(data_frame(SeqName = seqname, Start = start, End = end, windowMid, snpMid, nSites), pi, dxy, da)
 
   })
 
