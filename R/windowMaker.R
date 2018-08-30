@@ -64,13 +64,14 @@ windowMaker <- function(contigMD, windowSize, stepSize = 0, nCores = 1){
     G_range <- GenomicRanges::slidingWindows(x = con, width = windowSize, step = stepSize)
     G_range <- unlist(G_range) ## Need to unlist the slidingWindow object
 
-    ## Turning window-GRanges into GRangesList
-
+    as.data.frame(G_range)
   })
 
+  windows <- bind_rows(windowList)
+  windows <- windows[windows["width"] == windowSize,]
+  windows <- makeGRangesFromDataFrame(windows)
   ## this is slow
-  windowList <- do.call("c",windowList)
-  windowList <- as(windowList,"GRangesList")
+  windowList <- as(windows,"GRangesList")
   return(windowList)
 
 }

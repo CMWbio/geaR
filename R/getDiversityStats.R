@@ -53,7 +53,7 @@ getDiversityStats <- function(GDS, loci, minSites = 0.5, nCores = 1, pops = NULL
 
     genoMat <- getGenotypes(GDS = GDS, locus = locus, minSites = minSites, nucleotide = FALSE, ploidy = ploidy, pops = pops)
 
-    distMat <- genoDist(genoMat, countN = countN)
+    distMat <- genoDist(genoMat)
 
     seqname <- locus@seqnames@values
     start <- locus@ranges@start
