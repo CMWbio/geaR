@@ -40,10 +40,10 @@ getGenotypes <- function(GDS, locus, minSites = 0.5, nucleotide = FALSE, ploidy 
 
   # read in genotypes and alleles
   genoArr <- seqGetData(gdsfile = GDS, var.name = "genotype")
-  alleleArr <- seqGetData(gdsfile = GDS, var.name = "allele")
+
 
   ## Number of variants in window
-  varNumber <- length(alleleArr)
+  varNumber <- dim(genoArr)[3]
 
 
   ## Filtering empty arrays/arrays with too few variants
@@ -75,6 +75,7 @@ getGenotypes <- function(GDS, locus, minSites = 0.5, nucleotide = FALSE, ploidy 
 
     if(nucleotide){
       # convert to nuceotides
+      alleleArr <- seqGetData(gdsfile = GDS, var.name = "allele")
       genoList <- lapply(1:varNumber, function(x){
 
         # get position and replace NA with N

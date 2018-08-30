@@ -48,7 +48,7 @@ getDiversityStats <- function(GDS, loci, minSites = 0.5, nCores = 1, pops = NULL
 
   stopifnot(minSites < 1 & minSites > 0)
   ## Iterating through the window list by scaffold
-  div <- pbmclapply(seq(length(loci)), mc.cores = 5, function(locusN){
+  div <- pbmclapply(seq(length(loci)), mc.cores = nCores, function(locusN){
     locus <- loci[[locusN]]
 
     genoMat <- getGenotypes(GDS = GDS, locus = locus, minSites = minSites, nucleotide = FALSE, ploidy = ploidy, pops = pops)
