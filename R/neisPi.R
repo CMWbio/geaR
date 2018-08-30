@@ -2,7 +2,7 @@ neisPi <- function(dist, popList, ploidy = 2){
 
   pi <- lapply(popList, function(x){
     #make population matrix
-    popD <- distMat[as.vector(outer(x$Sample, 1:ploidy, paste, sep = "/")),
+    popD <- dist[as.vector(outer(x$Sample, 1:ploidy, paste, sep = "/")),
                     as.vector(outer(x$Sample, 1:ploidy, paste, sep = "/"))]
     n <- ncol(popD)
     # get nucleotide diversity
