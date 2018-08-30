@@ -11,7 +11,7 @@
 #' @param nCores \code{numeric} number of cores to run in parallel
 #' @param pops \code{data_frame} containing Sample ID and poplations. Default is to treat individuals as populations \code{c("none")}
 #' @param stats \code{character}. Vector containing all diversity stats to calculate. default \code{c("all")}
-#'
+#' @param ploidy \code{numeric} number of alleles
 #'
 #'
 #' @return A \code{data_frame} of selected Diversity statistics

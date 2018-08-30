@@ -1,4 +1,19 @@
-neisPi <- function(dist, popList, ploidy = 2){
+#' Calculates Nei's nucleotide diversity (pi)
+#'
+#' @description Calculates Nei (1987) pi from hamming distance
+#'
+#' @details Authours: Chris Ward
+#' calculates within population nucleotide diversity
+#'
+#' @param distMat hamming distance matrix calculated using the hidden function \code{genoDist}
+#' @param popList List of populations made from \code{pops} dataframe provided by users
+#' @param ploidy \code{numeric} number of chromosomes
+#'
+#'
+#' @return A \code{dataframe} mean nucleotide diversity within each populaiton
+
+
+neisPi <- function(distMat, popList, ploidy = 2){
 
   pi <- lapply(popList, function(x){
     #make population matrix

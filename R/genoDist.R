@@ -1,3 +1,17 @@
+#' Calculates teh hamming distance between alleles
+#'
+#' @description Used in the calculation of diversity statistics
+#'
+#' @details Authours: Chris Ward
+#' Calculates the hamming distance using matrix multiplication
+#'
+#'
+#' @param genoMat A \code{matrix} containing alleles for each individual
+#'
+#' @return A \code{matrix} of hamming distance between individuals
+#'
+#'
+
 genoDist <- function(genoMat){
 
   geno <- union(genoMat, genoMat)

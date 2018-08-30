@@ -1,3 +1,16 @@
+#' Calculates Nei's ancestral/net genetic distance
+#'
+#' @description Calculates Nei (1987) da from dxy and pi
+#'
+#' @details Authours: Chris Ward
+#' calculates net genetic distance between two populations
+#'
+#' @param dxy calculated by \code{neisDxy}
+#' @param pi calculated by \code{neispi}
+#'
+#'
+#' @return A \code{dataframe} net genetic distance between two populaitons
+
 neisDa <- function(dxy, pi){
 
   da <- lapply(seq(from = 1, to = length(dxy), by = 2), function(x){

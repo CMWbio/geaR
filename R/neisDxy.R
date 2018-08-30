@@ -1,3 +1,20 @@
+#' Calculates Nei's Dxy
+#'
+#' @description Calculates Nei (1987) Dxy from hamming distance
+#'
+#' @details Authours: Chris Ward
+#' calculates mean absolute genetic distance between two populations
+#'
+#'
+#' @param distMat hamming distance matrix calculated using the hidden function \code{genoDist}
+#' @param popList List of populations made from \code{pops} dataframe provided by users
+#' @param pairs list of populaiton pairs generated in \code{getDiversityStats}
+#' @param ploidy \code{numeric} number of chromosomes
+#'
+#'
+#' @return A \code{dataframe} mean absolute genetic distance between samples
+
+
 neisDxy <- function(distMat, popList, pairs, ploidy) {
   if(length(distMat)){
     dxy <- lapply(pairs, function(f){

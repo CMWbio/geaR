@@ -4,7 +4,7 @@
 \alias{windowMaker}
 \title{Sliding and tiled window ranges}
 \usage{
-windowMaker(contigMD, windowSize, stepSize = 0)
+windowMaker(contigMD, windowSize, stepSize = 0, nCores = 1)
 }
 \arguments{
 \item{contigMD}{data frame with contig metadata. Contains two columns: \code{ID} with scaffold names, \code{length} with scaffold length}
@@ -20,7 +20,7 @@ A \code{list} of \code{GRanges}
 makes sliding and tiled windows from data frame
 }
 \details{
-Authours: Chris Ward & Alastair Luddington
+Authours: Chris Ward & Alastair Ludington
 generates tiled (no step size) and sliding (step size) ranges for analysis with other functions.
 }
 \examples{

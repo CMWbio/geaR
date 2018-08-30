@@ -4,26 +4,27 @@
 \alias{getGenotypes}
 \title{Import genotypes from GDS}
 \usage{
-getGenotypes(GDS, locus, minSites = 0.5, nCores = 1, nuc = FALSE)
+getGenotypes(GDS, locus, minSites = 0.5, nucleotide = FALSE,
+  ploidy = 2, pops)
 }
 \arguments{
 \item{GDS}{\code{GDS} object with variant data to import genotypes from}
 
+\item{locus}{\code{GRanges} Locus to import genotypes for}
+
 \item{minSites}{\code{numeric} minimum number of sites as a proportion of loci length}
 
-\item{loci}{Loci to import genotypes for}
-
-\item{ncores}{\code{numeric} number of cores to run in parallel}
+\item{nucleotide}{\code{logical} Import RAW genotypes or nucleotides}
 }
 \value{
-A \code{list} of \code{GRanges}
+A \code{matrix} of genotypes
 }
 \description{
-Imports genotypes across loci into matrix
+Imports genotypes across a locus into matrix
 }
 \details{
-Authours: Chris Ward & Alastair Luddington
-generates tiled (no step size) and sliding (step size) ranges for analysis with other functions.
+Authours: Chris Ward & Alastair Ludington
+Uses a GRanges locus to import genotypes, either nucleotide or RAW, from a GDS file
 }
 \examples{
 
