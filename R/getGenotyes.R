@@ -35,8 +35,9 @@ getGenotypes <- function(GDS, locus, minSites = 0.5, nucleotide = FALSE, ploidy 
   minSites <- minSites * width(locus)
   samples <- pops$Sample
   ## Subsetting GDS file
-  seqSetFilter(object = GDS, locus) ## Setting filter (i.e. window to get variants from)
-  seqSetFilter(object = GDS, sample.id = samples) ## Setting filter (i.e. window to get variants from)
+  seqSetFilter(object = GDS, sample.id = samples)
+  seqSetFilter(object = GDS, variant.sel = locus)
+   ## Setting filter (i.e. window to get variants from)
 
   # read in genotypes and alleles
   genoArr <- seqGetData(gdsfile = GDS, var.name = "genotype")

@@ -12,6 +12,7 @@
 #' @param pops \code{data_frame} containing Sample ID and poplations. Default is to treat individuals as populations \code{c("none")}
 #' @param stats \code{character}. Vector containing all diversity stats to calculate. default \code{c("all")}
 #' @param ploidy \code{numeric} number of alleles
+#' @param pairwiseDeletion \code{numeric} nshould Ns be removed from pairwise comparisons
 #'
 #'
 #' @return A \code{data_frame} of selected Diversity statistics
@@ -36,7 +37,7 @@ getDiversityStats <- function(GDS, loci, minSites = 0.5, nCores = 1, pops = NULL
 
   nam <- names(popList)
   pairs <- outer(nam, nam, paste, sep = "///")
-  pairs <- lapply(pairs, function(z){
+  pairs <- lapply(pairs,function(z){
     pair <- unlist(strsplit(z, split = "///"))
     if(pair[1] == pair[2]) pair <- NULL
     pair <- sort(pair)
@@ -72,8 +73,7 @@ getDiversityStats <- function(GDS, loci, minSites = 0.5, nCores = 1, pops = NULL
 
   })
 
-  div <- bind_rows(div)
+  bind_rows(div)
 
-  return(div)
 }
 

@@ -4,10 +4,12 @@
 \alias{genoDist}
 \title{Calculates teh hamming distance between alleles}
 \usage{
-genoDist(genoMat)
+genoDist(genoMat, pairwiseDeletion)
 }
 \arguments{
 \item{genoMat}{A \code{matrix} containing alleles for each individual}
+
+\item{pairwiseDeletion}{\code{logical}}
 }
 \value{
 A \code{matrix} of hamming distance between individuals

@@ -5,7 +5,7 @@
 \title{Calculate diversity statistics}
 \usage{
 getDiversityStats(GDS, loci, minSites = 0.5, nCores = 1, pops = NULL,
-  stats = "all", ploidy = 2)
+  stats = "all", ploidy = 2, pairwiseDeletion)
 }
 \arguments{
 \item{GDS}{\code{GDS} object with variant data to import genotypes from.}
@@ -21,6 +21,8 @@ getDiversityStats(GDS, loci, minSites = 0.5, nCores = 1, pops = NULL,
 \item{stats}{\code{character}. Vector containing all diversity stats to calculate. default \code{c("all")}}
 
 \item{ploidy}{\code{numeric} number of alleles}
+
+\item{pairwiseDeletion}{\code{numeric} nshould Ns be removed from pairwise comparisons}
 }
 \value{
 A \code{data_frame} of selected Diversity statistics
