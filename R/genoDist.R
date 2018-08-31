@@ -25,7 +25,6 @@ genoDist <- function(genoMat, pairwiseDeletion){
 
   dif <- nrow(genoMat) - sim
 
-  distMat <- dif / nrow(genoMat)
 
 
 
@@ -56,8 +55,7 @@ genoDist <- function(genoMat, pairwiseDeletion){
   # distMat <- dif / sitesEff
 
   }else{
-
-
+  distMat <- dif / nrow(genoMat)
 
     }
 

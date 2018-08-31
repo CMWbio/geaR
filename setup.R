@@ -40,8 +40,9 @@ system.time(windowMaker(contigMD, windowSize, nCores = 5))
 ## test speed
 
 system.time(getDiversityStats(GDS, loci[1:100], minSites = 0.0005, nCores = 5, pops = pops, ploidy = 2))
+# 170MB data
 # user  system elapsed
-# 0.084   0.031   6.691
+# 0.086   0.062  25.106
 test <- getDiversityStats(GDS, loci[1:1000], minSites = 0.0005, nCores = 5, pops = pops, ploidy = 2)
 
 # Test counting N
