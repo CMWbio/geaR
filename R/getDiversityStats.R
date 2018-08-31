@@ -25,7 +25,7 @@
 #' @rdname getDiversityStats
 
 
-getDiversityStats <- function(GDS, loci, minSites = 0.5, nCores = 1, pops = NULL, stats = "all", ploidy = 2){
+getDiversityStats <- function(GDS, loci, minSites = 0.5, nCores = 1, pops = NULL, stats = "all", ploidy = 2, pairwiseDeletion){
   #browser()
   if(length(pops) == 0){
     samples <- seqGetData(gdsfile = GDS, var.name = "sample.id")
@@ -53,7 +53,7 @@ getDiversityStats <- function(GDS, loci, minSites = 0.5, nCores = 1, pops = NULL
 
     genoMat <- getGenotypes(GDS = GDS, locus = locus, minSites = minSites, nucleotide = FALSE, ploidy = ploidy, pops = pops)
 
-    distMat <- genoDist(genoMat)
+    distMat <- genoDist(genoMat, pairwiseDeletion)
 
     seqname <- locus@seqnames@values
     start <- locus@ranges@start
