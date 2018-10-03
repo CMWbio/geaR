@@ -13,6 +13,8 @@
 #'
 #'
 #' @return A \code{dataframe} mean absolute genetic distance between samples
+#'
+#' @rdname neisDxy
 
 
 neisDxy <- function(distMat, popList, pairs, ploidy) {

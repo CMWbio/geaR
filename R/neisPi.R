@@ -11,6 +11,8 @@
 #'
 #'
 #' @return A \code{dataframe} mean nucleotide diversity within each populaiton
+#'
+#' @rdname neisPi
 
 
 neisPi <- function(distMat, popList, ploidy = 2){

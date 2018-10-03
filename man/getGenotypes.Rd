@@ -15,6 +15,10 @@ getGenotypes(GDS, locus, minSites = 0.5, nucleotide = FALSE,
 \item{minSites}{\code{numeric} minimum number of sites as a proportion of loci length}
 
 \item{nucleotide}{\code{logical} Import RAW genotypes or nucleotides}
+
+\item{ploidy}{\code{numeric} ploidy of sample}
+
+\item{pops}{\code{data_frame} populaiton dataFrame}
 }
 \value{
 A \code{matrix} of genotypes

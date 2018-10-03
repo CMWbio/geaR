@@ -10,6 +10,9 @@
 #'
 #'
 #' @return A \code{dataframe} net genetic distance between two populaitons
+#'
+#' @rdname neisDa
+
 
 neisDa <- function(dxy, pi){
 
