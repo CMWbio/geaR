@@ -62,17 +62,20 @@ setMethod(f = "getCodonIndex", signature = "DNAStringSet",
               genes <- BSgenome::getSeq(genome, exons)
 
 
-              codList <- pbmclapply(seq(genes), mc.cores = nCores, function(x){
+              codList <- lapply(seq(exons), function(x){
 
                 iGene <- genes[[x]]
                 refAnno <- exons[[x]]
-                catGene <- unlist(iGene)
+
+                if(refAnno@strand@values == "+") catGene <- unlist(iGene)
+                if(refAnno@strand@values == "-") catGene <- unlist(rev(iGene))
+
 
                 if((length(catGene)/3)%%1 == 0 && !grepl("N", as.character(catGene), ignore.case = TRUE)){
 
                   # get codons cahnge to lower case
-                  geneCodons <- tolower(codons(catGene))
-
+                  if(refAnno@strand@values == "+") geneCodons <- tolower(codons(catGene))
+                  if(refAnno@strand@values == "-") geneCodons <- rev(tolower(codons(catGene)))
 
                   # initialize aa sequence
                   aaCodons <-  geneCodons
@@ -86,7 +89,7 @@ setMethod(f = "getCodonIndex", signature = "DNAStringSet",
                   rm(residueRename)
 
 
-                  if(refAnno@strand@values == "+") {
+                  #if(refAnno@strand@values == "+") {
 
                     # get teh exon widths for the gene
                     #exonWidths <- iGene@ranges@width / 3
@@ -116,9 +119,20 @@ setMethod(f = "getCodonIndex", signature = "DNAStringSet",
                     trd <- positions[seq(3, length(positions), 3)]
 
 
-                    data_frame(First = fst, Second = snd, Third = trd, Residue = aaCodons, Codon = geneCodons)
+                    if(refAnno@strand@values == "+") {
+                      codDF <- data_frame(seqnames = refAnno@seqnames@values,start = fst, end = trd,
+                                          strand = refAnno@strand@values, gene = names(exons)[[x]],
+                                          residue = aaCodons, codon = geneCodons, first = fst, second = snd, third = trd)
+                    }
+                    if(refAnno@strand@values == "-") {
+                      codDF <- data_frame(seqnames = refAnno@seqnames@values,start = fst, end = trd,
+                                          strand = refAnno@strand@values, gene = names(exons)[[x]],
+                                          residue = aaCodons, codon = geneCodons, first = trd, second = snd, third = fst)
+                    }
 
-                  }
+                    codGR <- makeGRangesFromDataFrame(codDF, keep.extra.columns = TRUE)
+                  # }
+
 
                 }
 
@@ -130,9 +144,9 @@ setMethod(f = "getCodonIndex", signature = "DNAStringSet",
 
             names(codList) <- names(exons)
             codList <- Filter(Negate(is.null), codList)
+            codList <- GRangesList(codList)
 
 
-            out[["codonPositions"]] <- codList
 
 
             # #calculate RSCU
