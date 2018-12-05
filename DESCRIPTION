@@ -2,11 +2,13 @@ Package: geaR
 Type: Package
 Title: GDS Evolutionary Analysis in R
 Version: 0.1.0
-Author: Christopher Ward (cre,co), Alastair Luddington (co), Simon Baxter (co)
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Author: Christopher Ward (cre,auth), Alastair Luddington (auth), Simon Baxter (auth)
+Maintainer: Christopher Ward <christopher.ward@adelaide.edu.au>
+Description: An R package to carry out evolutionary/population genetics on feature-partitioned genomes using GenomicRanges and the Genomic Data Structure format  
 License: GNU v3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.0
+Depends:
+  SeqArray,
+  GenomicRanges

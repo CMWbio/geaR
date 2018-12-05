@@ -32,4 +32,5 @@ neisDxy <- function(distMat, popList, pairs, ploidy) {
 
     bind_cols(dxy)
   }
+
 }

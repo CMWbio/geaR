@@ -15,8 +15,11 @@
 #'
 #'
 #' @import SeqArray
+#' @importFrom tibble data_frame
 #' @importFrom GenomicRanges makeGRangesFromDataFrame
 #' @importFrom GenomicRanges slidingWindows
+#' @importFrom parallel mclapply
+#' @importFrom dplyr bind_rows
 #'
 #'
 #' @examples

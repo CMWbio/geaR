@@ -7,7 +7,7 @@
 #' @param gffName path to gff to extract features from
 #' @param contigMD data frame with contig metadata. Contains two columns: \code{ID} with scaffold names, \code{length} with scaffold length
 #' @param feature \code{list} or \code{GRangesList}. Loci to import genotypes for. c("gene", "gene:exon", "gene:cds", "pseudogene", "lncRNA", "intergenic")
-#' @param minSites \code{numeric} minimum number of sites as a proportion of loci length. Default 0.5 (ie 50%)
+#' @param minSites \code{numeric} minimum number of sites as a proportion of loci length. Default 0.5 (ie 50 percent)
 #' @param nCores \code{numeric} number of cores to run in parallel
 #' @param longestIsoform \code{logical} only effects feature = "gene:exon". by default select the first entry for each gene. If \code{TRUE} will select the longest isoform for that gene. If there is a biotype field in the GFF it will only deal with those labeled as 'protein coding.' Selecting the longest isoform may cause be problematic if you do not have the biotype.
 #'
@@ -26,7 +26,7 @@ getFeatures <- function(gffName, contigMD, feature = "gene", nCores = 1, longest
 
 
   # read in the gff3
-  allGR <- rtracklayer::import.gff(gffName)
+  allGR <- import.gff(gffName)
 
   # check ig gene is specified in the feature parameter
   if(grepl("gene", feature)){

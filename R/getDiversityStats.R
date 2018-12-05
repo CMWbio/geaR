@@ -7,7 +7,7 @@
 #'
 #' @param GDS \code{GDS} object with variant data to import genotypes from.
 #' @param loci \code{list} or \code{GRangesList}. Loci to import genotypes for.
-#' @param minSites \code{numeric} minimum number of sites as a proportion of loci length. Default 0.5 (ie 50%)
+#' @param minSites \code{numeric} minimum number of sites as a proportion of loci length. Default 0.5 ie 50 percent
 #' @param nCores \code{numeric} number of cores to run in parallel
 #' @param pops \code{data_frame} containing Sample ID and poplations. Default is to treat individuals as populations \code{c("none")}
 #' @param stats \code{character}. Vector containing all diversity stats to calculate. default \code{c("all")}
@@ -17,10 +17,8 @@
 #'
 #' @return A \code{data_frame} of selected Diversity statistics
 #'
-#'
-#' @examples
-#'
-#'
+#' @importFrom dplyr bind_cols
+#' @importFrom dplyr bind_rows
 #'
 #' @export
 #' @rdname getDiversityStats
@@ -28,6 +26,9 @@
 
 getDiversityStats <- function(GDS, loci, minSites = 0.5, nCores = 1, pops = NULL, stats = "all", ploidy = 2, pairwiseDeletion){
   #browser()
+
+
+
   if(length(pops) == 0){
     samples <- seqGetData(gdsfile = GDS, var.name = "sample.id")
     pops <- data_frame(Sample = samples, Population = samples)
@@ -63,17 +64,25 @@ getDiversityStats <- function(GDS, loci, minSites = 0.5, nCores = 1, pops = NULL
     snpMid <- floor(mean(as.numeric(rownames(genoMat)), na.rm = TRUE))
     nSites <- ifelse(length(genoMat), nrow(genoMat), 0)
 
-    dxy <-  neisDxy(distMat, popList, pairs, ploidy = 2)
-    pi <- neisPi(distMat, popList, ploidy = 2)
-    da <- neisDa(dxy, pi)
+    if(length(distMat)){
+      dxy <-  geaR:::neisDxy(distMat, popList, pairs, ploidy = ploidy)
+      pi <- neisPi(distMat, popList, ploidy = ploidy)
+      da <- neisDa(dxy, pi)
+      fst <- weightedFst(distMat, popList, pairs, ploidy = ploidy)
+    } else{
+      dxy <- c()
+      pi <- c()
+      da <- c()
+      fst <- c()
+    }
 
 
 
-    bind_cols(data_frame(SeqName = seqname, Start = start, End = end, windowMid, snpMid, nSites), pi, dxy, da)
+    bind_cols(data_frame(SeqName = seqname, Start = start, End = end, windowMid, snpMid, nSites), pi, dxy, da, fst)
 
   })
 
-  bind_rows(div)
+  dplyr::bind_rows(div)
 
 }
 

@@ -33,7 +33,7 @@ genoDist <- function(genoMat, pairwiseDeletion){
 
 
   # started to think about how to remove Ns, will have to itterate through and pairwise delete
-  # I am not smart enought to figure out a matrix solution
+  # I am not smart enought to figure out a matrix solution (solved)
   if(pairwiseDeletion){
 
   notNmat <- genoMat != "N"

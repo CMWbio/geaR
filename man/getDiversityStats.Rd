@@ -12,7 +12,7 @@ getDiversityStats(GDS, loci, minSites = 0.5, nCores = 1, pops = NULL,
 
 \item{loci}{\code{list} or \code{GRangesList}. Loci to import genotypes for.}
 
-\item{minSites}{\code{numeric} minimum number of sites as a proportion of loci length. Default 0.5 (ie 50%)}
+\item{minSites}{\code{numeric} minimum number of sites as a proportion of loci length. Default 0.5 ie 50 percent}
 
 \item{nCores}{\code{numeric} number of cores to run in parallel}
 
@@ -33,9 +33,4 @@ Imports genotypes and calculates diversity formula
 \details{
 Authour: Chris Ward
 Uses a \code{list} containing \code{GRanges} or a \code{GRangesList} to import genotypes. Diversity statistics are then calculated.
-}
-\examples{
-
-
-
 }

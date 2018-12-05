@@ -14,19 +14,9 @@
 #' @examples
 #'
 #' @export
-#' @rdname getCodonIndex-methods
+#' @rdname getCodonFeatures
 
-
-setGeneric("getCodonIndex", function(genome, exons){standardGeneric("getCodonIndex")})
-
-
-#' @name getCodonIndex
-#' @aliases getCodonIndex,CodonIndex-method
-#' @rdname getCodonIndex-methods
-#' @export
-setMethod(f = "getCodonIndex", signature = "DNAStringSet",
-          function(genome, exons, nCores){
-
+getCodonFeatures <- function(genome, exons, nCores){
             #initialize output
             out <- list(codonPositions = list(), RSCU = list())
 
@@ -59,7 +49,7 @@ setMethod(f = "getCodonIndex", signature = "DNAStringSet",
 
 
             # get the genes from the genome using GRange list
-              genes <- BSgenome::getSeq(genome, exons)
+              genes <- getSeq(genome, exons)
 
 
               codList <- lapply(seq(exons), function(x){
@@ -188,4 +178,4 @@ setMethod(f = "getCodonIndex", signature = "DNAStringSet",
 
             #do.call("new", args)
 
-          })
+          }
