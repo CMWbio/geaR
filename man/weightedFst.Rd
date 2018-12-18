@@ -16,7 +16,7 @@ weightedFst(distMat, popList, pairs, ploidy)
 \item{ploidy}{\code{numeric} number of chromosomes}
 }
 \value{
-A \code{dataframe} Fst betweeb two populations
+A \code{dataframe} Fst between two populations
 }
 \description{
 Fst from hamming distance

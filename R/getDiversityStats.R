@@ -57,15 +57,19 @@ getDiversityStats <- function(GDS, loci, minSites = 0.5, nCores = 1, pops = NULL
 
     distMat <- genoDist(genoMat, pairwiseDeletion)
 
-    seqname <- locus@seqnames@values
+    seqname <- locus@seqnames@values[1]
     start <- locus@ranges@start
     end <- start + locus@ranges@width
+
+    start <- min(start)
+    end <- max(end)
     windowMid <- (start + end) /2
+
     snpMid <- floor(mean(as.numeric(rownames(genoMat)), na.rm = TRUE))
     nSites <- ifelse(length(genoMat), nrow(genoMat), 0)
 
     if(length(distMat)){
-      dxy <-  geaR:::neisDxy(distMat, popList, pairs, ploidy = ploidy)
+      dxy <- neisDxy(distMat, popList, pairs, ploidy = ploidy)
       pi <- neisPi(distMat, popList, ploidy = ploidy)
       da <- neisDa(dxy, pi)
       fst <- weightedFst(distMat, popList, pairs, ploidy = ploidy)
@@ -77,8 +81,12 @@ getDiversityStats <- function(GDS, loci, minSites = 0.5, nCores = 1, pops = NULL
     }
 
 
+    if("gene" %in% colnames(locus@elementMetadata)) {
+      gNames <- paste(unique(locus$gene), collapse = ",")
+      bind_cols(data_frame(SeqName = seqname, Start = start, End = end, Gene = gNames, windowMid, snpMid, nSites), pi, dxy, da, fst)}
+    else bind_cols(data_frame(SeqName = seqname, Start = start, End = end, windowMid, snpMid, nSites), pi, dxy, da, fst)
 
-    bind_cols(data_frame(SeqName = seqname, Start = start, End = end, windowMid, snpMid, nSites), pi, dxy, da, fst)
+
 
   })
 

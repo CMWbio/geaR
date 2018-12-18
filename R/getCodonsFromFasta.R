@@ -25,7 +25,7 @@
 #'
 #'
 #' @export
-#' @rdname getGenotypes
+#' @rdname getCodonsFromFasta
 
 
 

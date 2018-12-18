@@ -34,7 +34,7 @@ genoDist <- function(genoMat, pairwiseDeletion){
 
   # started to think about how to remove Ns, will have to itterate through and pairwise delete
   # I am not smart enought to figure out a matrix solution (solved)
-  if(pairwiseDeletion){
+  if(pairwiseDeletion & any(genoMat == "N")){
 
   notNmat <- genoMat != "N"
   ## get number of non N sites in each pairwise

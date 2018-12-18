@@ -4,18 +4,35 @@
 \alias{getCodonFeatures}
 \title{Index genome according to provided exons}
 \usage{
-getCodonFeatures(genome, exons, nCores)
+getCodonFeatures(genome, exons, nCores, position = "all",
+  fourFoldCodon = NULL)
 }
 \arguments{
-\item{genome}{genome}
+\item{genome}{genome object of \code{DNAStringSet} class}
 
-\item{exons}{GrangeList exons generated using \code{getFeatures} by passing \code{"gene:exons"} to \code{feature}}
+\item{exons}{GrangeList exons generated using \code{getFeatures} by passing \code{"gene:cds"} to \code{feature}}
+
+\item{nCores}{\code{integer} length 1. Number of cores that will be used.}
+
+\item{position}{\code{Character} length 1, options are \code{"all"}, default, or any combination of \code{c("first", "second", "third")}. \cr
+Output will contain only specified codon positions.}
+
+\item{fourFoldCodon}{\code{character} length 1, options are \code{NULL}, \code{"only"} or \code{"remove"}. \cr
+Determines what to do with 4-fold degenerate sites. \cr
+ \cr
+\code{NULL}, the default, will have no effect on the output, \code{"only"} will include only 4 fold degenerate sites in the output, \cr
+\code{"exclude"} will output all sites (unless a position is specified) excluding 4-fold degenerate sites. \cr
+ \cr
+\code{"only"} is incompatable with specifying a position.}
 }
 \value{
-An object of \code{CodonIndex}
+An object of class \code{GRanges} containing codon ranges for positions specified.
 }
 \description{
-Author: Christopher Ward Index genome according to provided exons
+Author: Christopher Ward \cr
+Index genome according to codon positions in coding sequence. \cr
+This can be useful when downstream analysis or output of alignements should only be applied to certain codons. \cr
+For example calculating genetic Tajima's D on only 4-fold sites or outputting fasta files based on codon position.
 }
 \examples{
 

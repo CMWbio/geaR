@@ -8,7 +8,7 @@
 ThreeTipDistance(data, I1, I2, O)
 
 getFeatures(gffName, contigMD, feature = "gene", nCores = 1,
-  longestIsoform = FALSE)
+  longestIsoform = FALSE, which = NULL)
 }
 \arguments{
 \item{gffName}{path to gff to extract features from}
@@ -20,6 +20,8 @@ getFeatures(gffName, contigMD, feature = "gene", nCores = 1,
 \item{nCores}{\code{numeric} number of cores to run in parallel}
 
 \item{longestIsoform}{\code{logical} only effects feature = "gene:exon". by default select the first entry for each gene. If \code{TRUE} will select the longest isoform for that gene. If there is a biotype field in the GFF it will only deal with those labeled as 'protein coding.' Selecting the longest isoform may cause be problematic if you do not have the biotype.}
+
+\item{which}{t}
 
 \item{minSites}{\code{numeric} minimum number of sites as a proportion of loci length. Default 0.5 (ie 50 percent)}
 

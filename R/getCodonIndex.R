@@ -1,14 +1,27 @@
 #' Index genome according to provided exons
 #'
 #'
-#' @description Author: Christopher Ward Index genome according to provided exons
+#' @description Author: Christopher Ward \cr
+#' Index genome according to codon positions in coding sequence. \cr
+#' This can be useful when downstream analysis or output of alignements should only be applied to certain codons. \cr
+#' For example calculating genetic Tajima's D on only 4-fold sites or outputting fasta files based on codon position.
 #'
-#' @param genome genome
-#' @param exons GrangeList exons generated using \code{getFeatures} by passing \code{"gene:exons"} to \code{feature}
+#' @param genome genome object of \code{DNAStringSet} class
+#' @param exons GrangeList exons generated using \code{getFeatures} by passing \code{"gene:cds"} to \code{feature}
+#' @param nCores \code{integer} length 1. Number of cores that will be used.
+#' @param position \code{Character} length 1, options are \code{"all"}, default, or any combination of \code{c("first", "second", "third")}. \cr
+#' Output will contain only specified codon positions.
+#' @param fourFoldCodon \code{character} length 1, options are \code{NULL}, \code{"only"} or \code{"remove"}. \cr
+#' Determines what to do with 4-fold degenerate sites. \cr
+#'  \cr
+#' \code{NULL}, the default, will have no effect on the output, \code{"only"} will include only 4 fold degenerate sites in the output, \cr
+#' \code{"exclude"} will output all sites (unless a position is specified) excluding 4-fold degenerate sites. \cr
+#'  \cr
+#' \code{"only"} is incompatable with specifying a position.
 #'
 #' @importFrom BSgenome getSeq
 #'
-#' @return An object of \code{CodonIndex}
+#' @return An object of class \code{GRanges} containing codon ranges for positions specified.
 #'
 #'
 #' @examples
@@ -16,9 +29,13 @@
 #' @export
 #' @rdname getCodonFeatures
 
-getCodonFeatures <- function(genome, exons, nCores){
+getCodonFeatures <- function(genome, exons, nCores, position = "all",  fourFoldCodon = NULL){
             #initialize output
-            out <- list(codonPositions = list(), RSCU = list())
+
+  if(position == "all") position <- c("first", "second", "third")
+
+
+
 
             # Residue lookup table
             lookUP <- c(Ala = "gc[tcag]",
@@ -48,24 +65,23 @@ getCodonFeatures <- function(genome, exons, nCores){
             )
 
 
+
+
             # get the genes from the genome using GRange list
               genes <- getSeq(genome, exons)
 
 
-              codList <- lapply(seq(exons), function(x){
+              codList <- pbmclapply(seq(exons), mc.cores = nCores, function(x){
 
                 iGene <- genes[[x]]
                 refAnno <- exons[[x]]
 
-                if(refAnno@strand@values == "+") catGene <- unlist(iGene)
-                if(refAnno@strand@values == "-") catGene <- unlist(rev(iGene))
+                catGene <- unlist(iGene)
 
-
-                if((length(catGene)/3)%%1 == 0 && !grepl("N", as.character(catGene), ignore.case = TRUE)){
+                if((length(catGene)/3)%%1 == 0 & !grepl("N", as.character(catGene), ignore.case = TRUE)){
 
                   # get codons cahnge to lower case
-                  if(refAnno@strand@values == "+") geneCodons <- tolower(codons(catGene))
-                  if(refAnno@strand@values == "-") geneCodons <- rev(tolower(codons(catGene)))
+                  geneCodons <- tolower(codons(catGene))
 
                   # initialize aa sequence
                   aaCodons <-  geneCodons
@@ -91,15 +107,19 @@ getCodonFeatures <- function(genome, exons, nCores){
 
                     #lastCodon <- as.integer(lastCodon)
 
-                    positions <- lapply(seq(refAnno), function(y){
+                  positions <- lapply(seq(refAnno), function(y){
 
-                      #get exon
+                    #get exon
                     ex <- refAnno[y]
 
-                    seq(start(ex), end(ex))
+                    ex <- seq(start(ex), end(ex))
+
+                    if(refAnno@strand@values == "-") ex <- rev(ex)
+
+                    ex
 
 
-                    })
+                  })
 
                     positions <- do.call("c", positions)
 
@@ -113,20 +133,55 @@ getCodonFeatures <- function(genome, exons, nCores){
                       codDF <- data_frame(seqnames = refAnno@seqnames@values,start = fst, end = trd,
                                           strand = refAnno@strand@values, gene = names(exons)[[x]],
                                           residue = aaCodons, codon = geneCodons, first = fst, second = snd, third = trd)
+                      codDF <- gather(codDF, "codonPosition", "start", c("first", "second", "third"))
+                      codDF["end"] <- codDF$start
+
+                      codDF <- codDF[order(codDF$start),]
                     }
                     if(refAnno@strand@values == "-") {
-                      codDF <- data_frame(seqnames = refAnno@seqnames@values,start = fst, end = trd,
+                      codDF <- data_frame(seqnames = refAnno@seqnames@values,
                                           strand = refAnno@strand@values, gene = names(exons)[[x]],
-                                          residue = aaCodons, codon = geneCodons, first = trd, second = snd, third = fst)
+                                          residue = rev(aaCodons), codon = rev(geneCodons), first = fst, second = snd, third = trd)
+
+                      codDF <- gather(codDF, "codonPosition", "start", c("first", "second", "third"))
+                      codDF["end"] <- codDF$start
+
+                      codDF <- codDF[order(-codDF$start),]
                     }
 
+
+                    if(fourFoldCodon %in% c("only", "exclude")){
+
+                      fourFold <- c("Ala", "Gly", "Pro", "Thr", "Val", "Arg4", "Leu4", "Ser4")
+                      codDF$rownum <- 1:nrow(codDF)
+                      cod4Fold <- codDF[codDF$residue %in% fourFold,]
+
+
+                    }
+
+                    if(fourFoldCodon == "only"){
+                      position <- "third"
+
+                      codDF <- cod4Fold[colnames(cod4Fold) != "rownum"]
+
+                      }
+
+                    if(fourFoldCodon == "exclude"){
+                      cod4Fold <- cod4Fold[cod4Fold$codonPosition == "third",]
+
+                      codDF <- codDF[!codDF[["rownum"]] %in% cod4Fold[["rownum"]],]
+
+                      codDF <- codDF[colnames(codDF) != "rownum"]
+
+                    }
+
+
+
+
+                    codDF <- codDF[codDF$codonPosition %in% position,]
+
                     codGR <- makeGRangesFromDataFrame(codDF, keep.extra.columns = TRUE)
-                  # }
-
-
-                }
-
-
+                  }
 
 
               })
