@@ -1,0 +1,7 @@
+- Write S4 methods for functions: options allowing for GRange and GRangeList passing 
+- add f- admixture statistics
+- add Tajima's D
+- comment funcitons
+- finish writing documentation
+- do some testing on other species + start gereating figures/benchmark for paper
+- write paper
