@@ -12,6 +12,7 @@
 #' @return A \code{matrix} of hamming distance between individuals
 #'
 #' @rdname genoDist
+#' @export
 
 genoDist <- function(genoMat, pairwiseDeletion){
 

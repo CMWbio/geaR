@@ -30,16 +30,27 @@
 #' @rdname getGenotypes
 
 
-getGenotypes <- function(GDS, locus, minSites = 0.5, nucleotide = FALSE, ploidy = 2, pops){
+getGenotypes <- function(GDS, locus = NULL, minSites = 0.5, nucleotide = FALSE, ploidy = 2, pops = NULL){
 
   stopifnot(minSites < 1 & minSites > 0)
+  minSites <- sum(minSites * width(locus))
 
-  minSites <- minSites * width(locus)
-  samples <- pops$Sample
-  ## Subsetting GDS file
-  seqSetFilter(object = GDS, sample.id = samples)
-  seqSetFilter(object = GDS, variant.sel = locus)
-   ## Setting filter (i.e. window to get variants from)
+
+
+  if(length(pops)){
+    samples <- pops$Sample
+    seqSetFilter(object = GDS, sample.id = samples)
+
+
+  } else samples <- seqGetData(gdsfile = GDS, var.name = "sample.id")
+
+
+  if(length(locus)){
+    seqSetFilter(object = GDS, variant.sel = locus)
+
+
+
+  }
 
   # read in genotypes and alleles
   genoArr <- seqGetData(gdsfile = GDS, var.name = "genotype")
@@ -65,9 +76,6 @@ getGenotypes <- function(GDS, locus, minSites = 0.5, nucleotide = FALSE, ploidy 
     end <- end(locus)
     winID <- paste0(chr, ":", start, "..", end)
 
-    ## Getting sample and variant IDs for col/row nameing
-    position <- seqGetData(gdsfile = GDS, var.name = "position")
-
 
     #Do I want to have a matrix of leave as an array?
     # get ploidy
@@ -87,6 +95,9 @@ getGenotypes <- function(GDS, locus, minSites = 0.5, nucleotide = FALSE, ploidy 
 
         # split allele string into vector
         alleles <- strsplit(alleleArr[x], ",")[[1]]
+        if(sum(nchar(alleles)) != length(alleles)) return(NULL)
+
+
         # get genotype coding
         geno <- 1:length(alleles) -1
 
@@ -115,7 +126,6 @@ getGenotypes <- function(GDS, locus, minSites = 0.5, nucleotide = FALSE, ploidy 
     }
 
     #set variant positional information
-    rownames(genoMat) <- position
     return(genoMat)
   }
 

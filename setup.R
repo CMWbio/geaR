@@ -40,20 +40,20 @@ setwd("/media/chris/Seagate Expansion Drive/whitePupae/")
 df <- readr::read_tsv("GCF_000789215.1_ASM78921v2_genomic.fna.fai", col_names = FALSE)
 
 #get header from VCF will be needed for windows
-contigMD <- tibble::data_frame(ID = df[[1]], length = df[[2]])
+# contigMD <- tibble::data_frame(ID = df[[1]], length = df[[2]])
 
 # latifrons contigs of interest
-contigMD <- dplyr::filter(contigMD, ID %in% c("NW_011876398.1", "NW_011876372.1"))
+contigMD <- dplyr::filter(contigMD, ID %in% c("NW_011876398.1", "NW_011876372.1", "NW_011876235.1"))
 
 # Parametersd
 windowSize <- 100000
 stepSize <- 0
 minSites <- 0.25
 
-loci <- windowMaker(contigMD, windowSize,  nCores = 5)
+loci <- windowMaker(contigMD, windowSize, stepSize = 0, nCores = 5)
 
 which <- GRangesList(GRanges(seqnames = "NW_011876372.1", ranges = IRanges(start = 1, end = 2419413)), GRanges(seqnames = "NW_011876398.1", ranges = IRanges(start = 1, end = 5850278)))
-genes <- geaR::getFeatures(gffName = "references/GCF_000789215.1_ASM78921v2_genomic.gff", feature = "gene:cds", nCores = 7, which = which)
+exons <- geaR::getFeatures(gffName = "references/GCF_000789215.1_ASM78921v2_genomic.gff", includeRange = which, feature = )
 
 
 
@@ -64,7 +64,7 @@ GDS <- seqOpen("Dorsalis/AllSamplesAllSitesDorsalis_filtered.gds", allow.duplica
 samples <- SeqArray::seqGetData(gdsfile = GDS, var.name = "sample.id")
 pops <- tibble::data_frame(Sample = samples[c(1:6)], Population = c("B. dorsalis ", "B. dorsalis ", " B. tryoni ", " B. tryoni ", " hybrid", " hybrid"))
 
-VariantOnlyMandF <- getDiversityStats(GDS, loci, minSites = 0.02, nCores = 4, pops = pops, ploidy = 2, pairwiseDeletion = TRUE)
+VariantOnlyMandF <- getDiversityStats(GDS, loci, minSites = 0.0002, nCores = 4, pops = pops, ploidy = 2, pairwiseDeletion = TRUE)
 
 
 # to set up genome

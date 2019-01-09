@@ -5,19 +5,24 @@
 \title{Index genome according to provided exons}
 \usage{
 getCodonFeatures(genome, exons, nCores, position = "all",
-  fourFoldCodon = NULL)
+  fourFoldCodon = NULL, ...)
 }
 \arguments{
-\item{genome}{genome object of \code{DNAStringSet} class}
+\item{genome}{\code{character} or \code{DNAStringSet} \cr
+Import fasta reference genome from file by passsing a \code{character} or provide a preloaded (using \code{Biostrings::readDNAStringSet()}) \code{DNAStringSet}}
 
-\item{exons}{GrangeList exons generated using \code{getFeatures} by passing \code{"gene:cds"} to \code{feature}}
+\item{exons}{\code{GrangesList} \cr
+Generated using \code{getFeatures()} by passing \code{"gene:cds"} to the  \code{feature} argument.}
 
-\item{nCores}{\code{integer} length 1. Number of cores that will be used.}
+\item{nCores}{\code{numeric}
+Number of cores allcated.}
 
-\item{position}{\code{Character} length 1, options are \code{"all"}, default, or any combination of \code{c("first", "second", "third")}. \cr
+\item{position}{\code{character}
+Options are \code{"all"}, default, or any combination of \code{c("first", "second", "third")}. \cr
 Output will contain only specified codon positions.}
 
-\item{fourFoldCodon}{\code{character} length 1, options are \code{NULL}, \code{"only"} or \code{"remove"}. \cr
+\item{fourFoldCodon}{\code{character}
+ Options are \code{NULL}, \code{"only"} or \code{"remove"}. \cr
 Determines what to do with 4-fold degenerate sites. \cr
  \cr
 \code{NULL}, the default, will have no effect on the output, \code{"only"} will include only 4 fold degenerate sites in the output, \cr
