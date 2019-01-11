@@ -1,4 +1,4 @@
-#' Combines overlaps in ranges
+#' Combines overlaps in features and windows
 #'
 #' @description Combines multiple GRange objects with overlapping ranges.
 #'
@@ -11,6 +11,10 @@
 #' @param window  \code{GRangesList}. Windows to overlap features to
 #' @param feature \code{GRangesList} containing features generated using either \code{getFeatures} or \code{codonRanges}
 #' @param nCores \code{numeric} number of cores to run in parallel
+#' @param overlap \code{character} \cr
+#' Negative or positive overlap
+#' "-" will subtract the feature ranges from the windows \cr
+#' "+" will bin features into window ranges
 #'
 #'
 #' @return A \code{data_frame} of selected Diversity statistics
@@ -22,9 +26,9 @@
 #' @rdname combineRanges
 
 
-combineRanges <- function(window, feature, nCores){
+combineRanges <- function(window, feature, nCores, overlap = "+"){
 
-  data <- mclapply(window, mc.cores = nCores, function(x){
+    data <- mclapply(window, mc.cores = nCores, function(x){
 
     overlapSeqName <- feature@unlistData[as.character(feature@unlistData@seqnames) == as.character(x@seqnames)]
 
@@ -32,8 +36,20 @@ combineRanges <- function(window, feature, nCores){
 
     if(!length(grangeInRange)) grangeInRange <- NA
 
+    if(overlap == "-" & !is.na(grangeInRange)) {
+
+      grangeInRange  <- psetdiff(x, GRangesList(grangeInRange))
+      grangeInRange <- unlist(grangeInRange)
+
+
+    }
+
     grangeInRange
-  })
+
+    })
+
+
+
   data <- data[!is.na(data)]
 
   GRangesList(data)

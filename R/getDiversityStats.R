@@ -2,18 +2,34 @@
 #'
 #' @description Imports genotypes and calculates diversity formula
 #'
-#' @details Authour: Chris Ward
-#' Uses a \code{list} containing \code{GRanges} or a \code{GRangesList} to import genotypes. Diversity statistics are then calculated.
+#' @details Authour: Chris Ward \cr
+#' Calculates Diversity statstics along \code{GRanges} or a \code{GRangesList} to import genotypes
 #'
-#' @param GDS \code{GDS} object with variant data to import genotypes from.
-#' @param loci \code{GRangesList}. Loci to import genotypes for.
-#' @param minSites \code{numeric} minimum number of sites as a proportion of loci length. Default 0.5 ie 50 percent
-#' @param nCores \code{numeric} number of cores to run in parallel
-#' @param pops \code{data_frame} containing Sample ID and poplations. Default is to treat individuals as populations \code{c("none")}
-#' @param stats \code{character}. Vector containing all diversity stats to calculate. default \code{c("all")}
-#' @param ploidy \code{numeric} number of alleles
-#' @param pairwiseDeletion \code{numeric} nshould Ns be removed from pairwise comparisons
 #'
+#' @param GDS \code{character} or \code{SeqVarGDSClass} \cr
+#' File path pointing to \code{GDS} file or \code{SeqVarGDSClass} object imported usign \code{SeqArray::seqOpen()}.
+#' @param loci \code{GRanges} or \code{GRangesList}. \cr
+#' Loci to import genotypes for.
+#' @param minSites \code{numeric} \cr
+#' Minimum number of sites as a proportion of loci length. Default 0.5 i.e. 50 percent
+#' @param nCores \code{numeric} \cr
+#' Number of cores to run in parallel
+#' @param pops \code{data_frame} \cr
+#' Containing Sample ID and poplations. Default is to treat individuals as populations.
+#' @param stats \code{character} \cr
+#' Vector containing all diversity stats to calculate. Default \code{c("all")}. \cr
+#' Currently supports \code{c("pi", "dxy", "da", "dmin", "dmax", "Fst")} \cr
+#' \cr
+#' "pi": Neis nucleotide diversity \cr
+#' "dxy": Neis absolute genetic distance \cr
+#' "da": Nei's ancesteral distance \cr
+#' "dmin": minimum hamming distance between samples \cr
+#' "dmax": maximum hamming distance between samples \cr
+#' "Fst": Nei (1982) \eqn{\gamma}st which estimates Fst
+#' @param ploidy \code{numeric} \cr
+#' Ploidy of samples
+#' @param pairwiseDeletion \code{logical} \cr
+#' If \code{TRUE} missing data will be removed from distance calculations in a paiwise manner.
 #'
 #' @return A \code{data_frame} of selected Diversity statistics
 #'
@@ -30,7 +46,6 @@ setGeneric("getDiversityStats",function(GDS, loci, minSites = 0.5, nCores = 1, p
 })
 
 #' @aliases getDiversityStats,character
-#' @rdname getDiversityStats-methods
 #' @export
 setMethod("getDiversityStats", signature = "character",
           function(GDS, ...){
@@ -39,8 +54,8 @@ setMethod("getDiversityStats", signature = "character",
           })
 
 
+
 #' @aliases getDiversityStats,SeqVarsGDSClass-GRangesList
-#' @rdname getDiversityStats-methods
 #' @export
 setMethod("getDiversityStats", signature(GDS = "SeqVarGDSClass",
                                          loci = "GRangesList"),
@@ -111,7 +126,7 @@ setMethod("getDiversityStats", signature(GDS = "SeqVarGDSClass",
 
                 if("da" %in% stats) da <- neisDa(dxy, pi)
 
-                if("fst" %in% stats) weightedFst(distMat, popList, pairs, ploidy = ploidy)
+                if("Fst" %in% stats) fst <- geaR:::Nei82Fst(distMat, popList, pairs, ploidy = ploidy, weighted = TRUE)
 
               }
 
@@ -123,8 +138,6 @@ setMethod("getDiversityStats", signature(GDS = "SeqVarGDSClass",
                 bind_cols(data_frame(SeqName = seqname, Start = start, End = end, Gene = gNames, windowMid, snpMid, nSites), pi, dxy, da, dmin, dmax, fst)}
               else bind_cols(data_frame(SeqName = seqname, Start = start, End = end, windowMid, snpMid, nSites), pi, dxy, da, dmin, dmax, fst)
 
-
-
             })
 
             dplyr::bind_rows(div)
@@ -133,7 +146,6 @@ setMethod("getDiversityStats", signature(GDS = "SeqVarGDSClass",
 
 
 #' @aliases getDiversityStats,SeqVarsGDSClass-GRanges
-#' @rdname getDiversityStats-methods
 #' @export
 setMethod("getDiversityStats", signature(GDS = "SeqVarGDSClass",
                                          loci = "GRanges"),
@@ -174,6 +186,10 @@ setMethod("getDiversityStats", signature(GDS = "SeqVarGDSClass",
             windowMid <- (start + end) /2
 
 
+            position <- seqGetData(gdsfile = GDS, var.name = "position")
+            snpMid <- floor(median(position))
+            nSites <- length(position)
+
             dxy <- c()
             pi <- c()
             da <- c()
@@ -196,16 +212,8 @@ setMethod("getDiversityStats", signature(GDS = "SeqVarGDSClass",
 
               if("da" %in% stats) da <- neisDa(dxy, pi)
 
-              if("fst" %in% stats) weightedFst(distMat, popList, pairs, ploidy = ploidy)
+              if("fst" %in% stats) fst <- Nei82Fst(distMat, popList, pairs, ploidy = ploidy, weighted = TRUE)
 
-              snpMid <- floor(mean(as.numeric(rownames(genoMat)), na.rm = TRUE))
-              nSites <- nrow(genoMat)
-
-            }
-            else {
-              position <- seqGetData(gdsfile = GDS, var.name = "position")
-              snpMid <- floor(median(position))
-              nSites <- length(position)
             }
 
 
@@ -215,8 +223,6 @@ setMethod("getDiversityStats", signature(GDS = "SeqVarGDSClass",
               gNames <- paste(unique(locus$gene), collapse = ",")
               bind_cols(data_frame(SeqName = seqname, Start = start, End = end, Gene = gNames, windowMid, snpMid, nSites), pi, dxy, da, dmin, dmax, fst)}
             else bind_cols(data_frame(SeqName = seqname, Start = start, End = end, windowMid, snpMid, nSites), pi, dxy, da, dmin, dmax, fst)
-
-
 
           })
 

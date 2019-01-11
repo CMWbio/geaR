@@ -2,14 +2,16 @@
 % Please edit documentation in R/genoDist.R
 \name{genoDist}
 \alias{genoDist}
-\title{Calculates teh hamming distance between alleles}
+\title{Calculates the hamming distance between alleles}
 \usage{
 genoDist(genoMat, pairwiseDeletion)
 }
 \arguments{
-\item{genoMat}{A \code{matrix} containing alleles for each individual}
+\item{genoMat}{A \code{matrix} \cr
+Allele genotypes for each individual}
 
-\item{pairwiseDeletion}{\code{logical}}
+\item{pairwiseDeletion}{\code{logical}
+If \code{TRUE} missing data will be removed from distance calculations in a paiwise manner.}
 }
 \value{
 A \code{matrix} of hamming distance between individuals

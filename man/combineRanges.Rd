@@ -2,9 +2,9 @@
 % Please edit documentation in R/mergeLoci.R
 \name{combineRanges}
 \alias{combineRanges}
-\title{Combines overlaps in ranges}
+\title{Combines overlaps in features and windows}
 \usage{
-combineRanges(window, feature, nCores)
+combineRanges(window, feature, nCores, overlap = "+")
 }
 \arguments{
 \item{window}{\code{GRangesList}. Windows to overlap features to}
@@ -12,6 +12,11 @@ combineRanges(window, feature, nCores)
 \item{feature}{\code{GRangesList} containing features generated using either \code{getFeatures} or \code{codonRanges}}
 
 \item{nCores}{\code{numeric} number of cores to run in parallel}
+
+\item{overlap}{\code{character} \cr
+Negative or positive overlap
+"-" will subtract the feature ranges from the windows \cr
+"+" will bin features into window ranges}
 }
 \value{
 A \code{data_frame} of selected Diversity statistics

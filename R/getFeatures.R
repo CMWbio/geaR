@@ -207,7 +207,7 @@ setMethod("getFeatures", signature = "GRanges",
               hits <- findOverlaps(contigRange, noChr)
               overlapHits <- extractList(noChr, as(hits, "List"))
               #use hits to get intergenic regions
-              intergenic <- psetdiff(contigRange, grl)
+              intergenic <- psetdiff(contigRange, overlapHits)
 
               return(intergenic)
 

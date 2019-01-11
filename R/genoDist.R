@@ -1,4 +1,4 @@
-#' Calculates teh hamming distance between alleles
+#' Calculates the hamming distance between alleles
 #'
 #' @description Used in the calculation of diversity statistics
 #'
@@ -6,8 +6,10 @@
 #' Calculates the hamming distance using matrix multiplication
 #'
 #'
-#' @param genoMat A \code{matrix} containing alleles for each individual
+#' @param genoMat A \code{matrix} \cr
+#' Allele genotypes for each individual
 #' @param pairwiseDeletion  \code{logical}
+#' If \code{TRUE} missing data will be removed from distance calculations in a paiwise manner.
 #'
 #' @return A \code{matrix} of hamming distance between individuals
 #'
@@ -31,10 +33,6 @@ genoDist <- function(genoMat, pairwiseDeletion){
   dif <- S - sim
 
 
-
-
-  # started to think about how to remove Ns, will have to itterate through and pairwise delete
-  # I am not smart enought to figure out a matrix solution (solved)
   if(pairwiseDeletion & any(genoMat == "N")){
 
   notNmat <- genoMat != "N"
@@ -51,14 +49,6 @@ genoDist <- function(genoMat, pairwiseDeletion){
   # differences without Ns
   distMat <- nonNdif / nonNsites
 
-
-  # # get N corrected dif and effective number of sites
-  # dif <- dif - Ntotal
-  # #dif[dif < 0] <- 0
-  #
-  # sitesEff <- nrow(genoMat) - Ntotal
-  #
-  # distMat <- dif / sitesEff
 
   }else{
   distMat <- dif / nrow(genoMat)

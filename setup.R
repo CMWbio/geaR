@@ -40,7 +40,7 @@ setwd("/media/chris/Seagate Expansion Drive/whitePupae/")
 df <- readr::read_tsv("GCF_000789215.1_ASM78921v2_genomic.fna.fai", col_names = FALSE)
 
 #get header from VCF will be needed for windows
-# contigMD <- tibble::data_frame(ID = df[[1]], length = df[[2]])
+contigMD <- tibble::data_frame(ID = df[[1]], length = df[[2]])
 
 # latifrons contigs of interest
 contigMD <- dplyr::filter(contigMD, ID %in% c("NW_011876398.1", "NW_011876372.1", "NW_011876235.1"))
@@ -53,7 +53,7 @@ minSites <- 0.25
 loci <- windowMaker(contigMD, windowSize, stepSize = 0, nCores = 5)
 
 which <- GRangesList(GRanges(seqnames = "NW_011876372.1", ranges = IRanges(start = 1, end = 2419413)), GRanges(seqnames = "NW_011876398.1", ranges = IRanges(start = 1, end = 5850278)))
-exons <- geaR::getFeatures(gffName = "references/GCF_000789215.1_ASM78921v2_genomic.gff", includeRange = which, feature = )
+exons <- geaR::getFeatures(gffName = "references/GCF_000789215.1_ASM78921v2_genomic.gff", includeRange = which)
 
 
 

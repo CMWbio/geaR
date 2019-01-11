@@ -16,7 +16,7 @@
 #'
 #'
 #' @import SeqArray
-#' @importFrom tibble data_frame
+#' @import tibble
 #' @importFrom GenomicRanges makeGRangesFromDataFrame
 #' @importFrom GenomicRanges slidingWindows
 #' @importFrom parallel mclapply
@@ -117,7 +117,7 @@ setMethod("windowMaker", signature = "data.frame",
 
             windowList <- split(windowList, as.factor(windowList))
 
-            return(windowList)
+            GRangesList(windowList)
 
           }
 )
