@@ -20,13 +20,14 @@
 #' @rdname outputLociFasta
 
 
-outputLociFasta <- function(GDS, loci, nCores = 1, ploidy = 2, alleles = "seperate", minSites = 0.1){
+outputLociFasta <- function(GDS, loci, dir, pops, nCores = 1, ploidy = 2, alleles = "seperate", minSites = 0.1){
 
 
   store <- mclapply(loci, mc.cores = nCores, function(locus){
 
-    genoMat <- getGenotypes(GDS = GDS, locus = locus, minSites = minSites, nucleotide = TRUE, ploidy = ploidy)
+    genoMat <- getGenotypes(GDS = GDS, pops = pops, locus = locus, minSites = minSites, nucleotide = TRUE, ploidy = ploidy)
 
+    if(length(genoMat)){
 
     if(alleles == "concensus" & ploidy == 2){
 
@@ -59,12 +60,24 @@ outputLociFasta <- function(GDS, loci, nCores = 1, ploidy = 2, alleles = "sepera
 
     genos <- split(genoMat, rownames(genoMat))
 
-    filename <- paste0(as.character(locus), ".fasta")
+    if("Name" %in% colnames(locus@elementMetadata)){
+
+      filename <- paste0(locus$Name[[1]], ".fasta")
+
+    }
+    else{
+
+      filename <- paste(as.character(locus), collapse = ",")
+      filename <- paste0(filename, ".fasta")
+
+      }
+
 
     genos <- sapply(genos, paste, collapse="")
 
     cat(file = paste0(dir, "/", filename), paste0(">", paste(names(genos), genos, sep = "\n")), sep = "\n")
 
+ }
 
   })
 

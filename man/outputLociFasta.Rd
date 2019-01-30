@@ -4,7 +4,7 @@
 \alias{outputLociFasta}
 \title{Index genome according to provided exons}
 \usage{
-outputLociFasta(GDS, loci, nCores = 1, ploidy = 2,
+outputLociFasta(GDS, loci, dir, pops, nCores = 1, ploidy = 2,
   alleles = "seperate", minSites = 0.1)
 }
 \arguments{

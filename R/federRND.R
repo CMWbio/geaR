@@ -14,10 +14,11 @@
 #'
 #' @return A \code{dataframe} containing relative node depth
 #'
-#' @rdname federRND
+#' @rdname RND
+#' @export
 
 
-federRND <- function(distMat, popList, pairs, ploidy, outgroup, type = "fender") {
+RND <- function(distMat, popList, pairs, ploidy, outgroup, type = "fender") {
   if(length(distMat)){
     RND <- lapply(pairs, function(f){
 

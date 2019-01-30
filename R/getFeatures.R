@@ -35,35 +35,35 @@
 #' @rdname getFeatures-methods
 #' @export
 
-setGeneric("getFeatures", function(gffName, includeRange, contigMD, feature = "gene", nCores = 1, longestIsoform = FALSE, ...){
+setGeneric("getFeatures", function(gffName,  feature = "gene:cds", nCores = 1, longestIsoform = FALSE, includeRange,...){
   standardGeneric("getFeatures")
-  })
+})
 
 
 #' @aliases getFeatures,which-Granges
 #' @export
 setMethod("getFeatures", signature(gffName = "character",
                                    includeRange = "GRanges"),
-          function(gffName, includeRange, ...){
+          function(gffName, feature = "gene:cds", nCores = 1, longestIsoform = FALSE, includeRange, ...){
             G_range <- import.gff(gffName, which = includeRange)
-            getFeatures(gffName = G_range, ...)
+            getFeatures(gffName = G_range, feature, nCores, longestIsoform, ...)
           })
 
 #' @aliases getFeatures,which-GrangesList
 #' @export
 setMethod("getFeatures", signature(gffName = "character",
                                    includeRange = "GRangesList"),
-          function(gffName, includeRange, ...){
+          function(gffName, feature = "gene:cds", nCores = 1, longestIsoform = FALSE, includeRange, ...){
             G_range <- import.gff(gffName, which = includeRange)
-            getFeatures(gffName = G_range, ...)
+            getFeatures(gffName = G_range, feature, nCores, longestIsoform, ...)
           })
 
 #' @aliases getFeatures,which
 #' @export
 setMethod("getFeatures", signature(gffName = "character"),
-          function(gffName, ...){
+          function(gffName, feature = "gene:cds", nCores = 1, longestIsoform = FALSE, ...){
             G_range <- import.gff(gffName)
-            getFeatures(gffName = G_range, ...)
+            getFeatures(gffName = G_range, feature, nCores, longestIsoform, ...)
           })
 
 
@@ -71,7 +71,7 @@ setMethod("getFeatures", signature(gffName = "character"),
 #' @aliases getFeatures,import
 #' @export
 setMethod("getFeatures", signature = "GRanges",
-          function(gffName, contigMD, feature = "gene", nCores = 1,  longestIsoform = FALSE){
+          function(gffName, feature = "gene:cds", nCores = 1, longestIsoform = FALSE, includeRange){
 
             # check ig gene is specified in the feature parameter
             if(grepl("gene", feature)){
@@ -130,17 +130,38 @@ setMethod("getFeatures", signature = "GRanges",
                 # get all exons from all GRanges
                 allCDS <- gffName[gffName$type == "CDS",]
 
-                cdsList <- GRangesList(split(allCDS, allCDS$gene))
+                cdsList <- GRangesList(split(allCDS, unlist(allCDS$Parent)))
+
 
                 # Start making Coding sequences, will select the longest isoform or the first entry for each gene
                 CDS <- GRangesList(mclapply(seq_along(cdsList), mc.cores = nCores, function(x){
 
+
+
                   #get Grange using index position
                   gr <- cdsList[[x]]
-                  # get mRNA using the gene ID field
-                  mRNA <- split(gr, as.character(gr$Parent))
+
+                  noNA <- gffName[!is.na(gffName$ID),]
+                  transcript <- noNA[noNA$ID ==  gr$Parent[[1]],]
+                  gene <- noNA[noNA$ID == transcript$Parent[[1]],]
+
+                  gr$Name <- gene$Name
+
+                  gr
 
 
+                }))
+
+                # get mRNA using the gene ID field
+                CDS <- split(CDS@unlistData, as.character(CDS@unlistData$Name))
+
+
+
+                CDS <- GRangesList(mclapply(seq_along(CDS), mc.cores = nCores, function(y){
+
+                  rec <- CDS[[y]]
+
+                  mRNA <- split(rec, rec$ID)
 
                   #select longest isoform
                   if(longestIsoform){
@@ -165,8 +186,16 @@ setMethod("getFeatures", signature = "GRanges",
 
                 }))
 
+
+
                 #name the GRanges List containing coding sequence
                 CDS <- Filter(length, CDS)
+
+                list_elt_seqnames <- as.character(runValue(seqnames(CDS)))
+                list_elt_seqnames <- factor(list_elt_seqnames, levels=seqlevels(CDS))
+                list_elt_smallest_start <- min(start(CDS))
+                oo <- order(as.integer(list_elt_seqnames), list_elt_smallest_start)
+                CDS <- CDS[oo]
 
                 return(CDS)
               }

@@ -4,19 +4,12 @@
 \alias{getFeatures}
 \title{getFeatures}
 \usage{
-getFeatures(gffName, includeRange, contigMD, feature = "gene",
-  nCores = 1, longestIsoform = FALSE, ...)
+getFeatures(gffName, feature = "gene:cds", nCores = 1,
+  longestIsoform = FALSE, includeRange, ...)
 }
 \arguments{
 \item{gffName}{\code{character} \cr
 Path to gff to extract features from}
-
-\item{includeRange}{\code{GRanges} or \code{GRangesList} \cr
-Target ranges to extract features over.}
-
-\item{contigMD}{\code{data.frame} \cr
-Contig metadata. Contains two columns: \code{ID} with scaffold names, \code{length} with scaffold length. \cr
-Used to select intergenic regions.}
 
 \item{feature}{\code{character}. \cr
 Loci to import genotypes for. c("gene", "gene:exon", "gene:cds", "pseudogene", "lncRNA", "intergenic")}
@@ -30,6 +23,13 @@ By default function will select the first entry for each gene. \cr
 If \code{TRUE} is passed, will select the longest isoform for that gene. \cr
 If there is a \code{"biotype"} field in the GFF it will only deal with those labeled as 'protein coding.' \cr
 Selecting the longest isoform may be problematic if the \code{"biotype"} is missing.}
+
+\item{includeRange}{\code{GRanges} or \code{GRangesList} \cr
+Target ranges to extract features over.}
+
+\item{contigMD}{\code{data.frame} \cr
+Contig metadata. Contains two columns: \code{ID} with scaffold names, \code{length} with scaffold length. \cr
+Used to select intergenic regions.}
 }
 \value{
 A \code{GRangesList} object where each element is a genomic feature

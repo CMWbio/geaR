@@ -18,6 +18,8 @@
 #'
 #'
 #' @import SeqArray
+#' @import tidyr
+#' @import dplyr
 #' @importFrom GenomicRanges end
 #' @importFrom GenomicRanges seqnames
 #' @importFrom GenomicRanges start

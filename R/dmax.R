@@ -15,6 +15,7 @@
 #' @return A \code{dataframe} maximum genetic distance between samples
 #'
 #' @rdname dmax
+#' @export
 
 
 dmax<- function(distMat, popList, pairs, ploidy) {

@@ -36,25 +36,25 @@
 #' @rdname getCodonFeatures-methods
 
 
-setGeneric("getCodonFeatures", function(genome, exons, nCores, position = "all",  fourFoldCodon = NULL, ...){
+setGeneric("getCodonFeatures", function(genome, exons, nCores = 1, position = "all",  fourFoldCodon = "include", ...){
   standardGeneric("getCodonFeatures")
 })
 
 #' @aliases getCodonFeature,character
 #' @export
 setMethod("getCodonFeatures", signature(genome = "character"),
-          function(genome, ...){
+          function(genome, exons, nCores = 1, position = "all",  fourFoldCodon = "include", ...){
 
-            genome <- readDNAStringSet("references/GCF_000789215.1_ASM78921v2_genomic.fna")
+            genome <- readDNAStringSet(genome)
 
-            getCodonFeatures(genome, ...)
+            getCodonFeatures(genome, exons, nCores, position,  fourFoldCodon, ...)
 
           })
 
 #' @aliases getCodonFeature,DNAStringSet
 #' @export
 setMethod("getCodonFeatures", signature = "DNAStringSet",
-          function(genome, exons, nCores, position = "all",  fourFoldCodon = NULL){
+          function(genome, exons, nCores = 1, position = "all",  fourFoldCodon = "include"){
 
             if(position == "all") position <- c("first", "second", "third")
 
@@ -92,7 +92,7 @@ setMethod("getCodonFeatures", signature = "DNAStringSet",
             genes <- BSgenome::getSeq(genome, exons)
 
 
-            codList <- pbmclapply(seq(exons), mc.cores = nCores, function(x){
+            codList <- mclapply(seq(exons), mc.cores = nCores, function(x){
 
               iGene <- genes[[x]]
               refAnno <- exons[[x]]
@@ -151,8 +151,8 @@ setMethod("getCodonFeatures", signature = "DNAStringSet",
 
 
                 if(refAnno@strand@values == "+") {
-                  codDF <- data_frame(seqnames = refAnno@seqnames@values,start = fst, end = trd,
-                                      strand = refAnno@strand@values, gene = names(exons)[[x]],
+                  codDF <- tibble(seqnames = refAnno@seqnames@values,start = fst, end = trd,
+                                      strand = refAnno@strand@values, gene = exons[[x]]$Name[[1]],
                                       residue = aaCodons, codon = geneCodons, first = fst, second = snd, third = trd)
                   codDF <- gather(codDF, "codonPosition", "start", c("first", "second", "third"))
                   codDF["end"] <- codDF$start
@@ -160,8 +160,8 @@ setMethod("getCodonFeatures", signature = "DNAStringSet",
                   codDF <- codDF[order(codDF$start),]
                 }
                 if(refAnno@strand@values == "-") {
-                  codDF <- data_frame(seqnames = refAnno@seqnames@values,
-                                      strand = refAnno@strand@values, gene = names(exons)[[x]],
+                  codDF <- tibble(seqnames = refAnno@seqnames@values,
+                                      strand = refAnno@strand@values, gene = exons[[x]]$Name[[1]],
                                       residue = rev(aaCodons), codon = rev(geneCodons), first = fst, second = snd, third = trd)
 
                   codDF <- gather(codDF, "codonPosition", "start", c("first", "second", "third"))
@@ -207,9 +207,7 @@ setMethod("getCodonFeatures", signature = "DNAStringSet",
 
             })
 
-
-            names(codList) <- names(exons)
             codList <- Filter(Negate(is.null), codList)
-            codList <- GRangesList(codList)
+            GRangesList(codList)
 
           })

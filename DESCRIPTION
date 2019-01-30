@@ -11,4 +11,13 @@ LazyData: true
 RoxygenNote: 6.1.0
 Depends:
   SeqArray,
-  GenomicRanges
+  GenomicRanges,
+  rtracklayer
+Imports:
+  Biostrings,
+  dplyr (>= 0.7.5),
+  parallel,
+  pbmcapply,
+  reshape2,
+  tibble,
+  tidyr

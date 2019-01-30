@@ -16,11 +16,12 @@ Gmin(distMat, popList, pairs, ploidy)
 \item{ploidy}{\code{numeric} number of chromosomes}
 }
 \value{
-A \code{dataframe} containing relative node depth
+A \code{dataframe} containing Gmin
 }
 \description{
 Calculates Gmin from Geneva (2015)
 }
 \details{
-Authours: Chris Ward
+Authours: Chris Ward \cr
+calculates Gmin from ...
 }

@@ -85,7 +85,7 @@ setMethod("getDiversityStats", signature(GDS = "SeqVarGDSClass",
 
             stopifnot(minSites < 1 & minSites > 0)
             ## Iterating through the window list by scaffold
-            div <- pbmclapply(seq(length(loci)), mc.cores = nCores, function(locusN){
+            div <- mclapply(seq(length(loci)), mc.cores = nCores, function(locusN){
               locus <- loci[[locusN]]
 
               genoMat <- getGenotypes(GDS = GDS, locus = locus, minSites = minSites, nucleotide = FALSE, ploidy = ploidy, pops = pops)
@@ -114,7 +114,7 @@ setMethod("getDiversityStats", signature(GDS = "SeqVarGDSClass",
 
               if(length(genoMat)){
 
-                distMat <- geaR::genoDist(genoMat, pairwiseDeletion)
+                distMat <- genoDist(genoMat, pairwiseDeletion)
 
                 if("dxy" %in% stats) dxy <- neisDxy(distMat, popList, pairs, ploidy = ploidy)
 
@@ -126,15 +126,15 @@ setMethod("getDiversityStats", signature(GDS = "SeqVarGDSClass",
 
                 if("da" %in% stats) da <- neisDa(dxy, pi)
 
-                if("Fst" %in% stats) fst <- geaR:::Nei82Fst(distMat, popList, pairs, ploidy = ploidy, weighted = TRUE)
+                if("Fst" %in% stats) fst <- Nei82Fst(distMat, popList, pairs, ploidy = ploidy, weighted = TRUE)
 
               }
 
 
 
 
-              if("gene" %in% colnames(locus@elementMetadata)) {
-                gNames <- paste(unique(locus$gene), collapse = ",")
+              if("Name" %in% colnames(locus@elementMetadata)) {
+                gNames <- paste(unique(locus$Name), collapse = ",")
                 bind_cols(data_frame(SeqName = seqname, Start = start, End = end, Gene = gNames, windowMid, snpMid, nSites), pi, dxy, da, dmin, dmax, fst)}
               else bind_cols(data_frame(SeqName = seqname, Start = start, End = end, windowMid, snpMid, nSites), pi, dxy, da, dmin, dmax, fst)
 
@@ -151,7 +151,7 @@ setMethod("getDiversityStats", signature(GDS = "SeqVarGDSClass",
                                          loci = "GRanges"),
           function(GDS, loci, minSites = 0.5, nCores = 1, pops = NULL, stats = "all", ploidy = 2, pairwiseDeletion){
 
-            if(stats == "all") stats <- c("pi", "dxy", "da", "dmin", "dmax", "Fst")
+            if(stats == "all") stats <- c("pi", "dxy", "da", "dmin", "dmax", "Fst", "RND", "RNDmin", "Gmin")
 
             if(length(pops) == 0){
               samples <- seqGetData(gdsfile = GDS, var.name = "sample.id")
@@ -196,6 +196,9 @@ setMethod("getDiversityStats", signature(GDS = "SeqVarGDSClass",
             dmin <- c()
             dmax <- c()
             fst <- c()
+            RNDmin <- c()
+            RND <- c()
+            Gmin <- c()
 
 
             if(length(genoMat)){
@@ -214,15 +217,21 @@ setMethod("getDiversityStats", signature(GDS = "SeqVarGDSClass",
 
               if("fst" %in% stats) fst <- Nei82Fst(distMat, popList, pairs, ploidy = ploidy, weighted = TRUE)
 
+              if("RNDmin" %in% stats) RNDmin <- RND(distMat, popList, pairs, ploidy, type = "min")
+
+              if("RNDfeder" %in% stats)  RND <- RND(distMat, popList, pairs, ploidy, type = "feder")
+
+              if("Gmin" %in% stats) Gmin <- Gmin(distMat, popList, pairs, ploidy)
+
             }
 
 
 
 
-            if("gene" %in% colnames(locus@elementMetadata)) {
-              gNames <- paste(unique(locus$gene), collapse = ",")
-              bind_cols(data_frame(SeqName = seqname, Start = start, End = end, Gene = gNames, windowMid, snpMid, nSites), pi, dxy, da, dmin, dmax, fst)}
-            else bind_cols(data_frame(SeqName = seqname, Start = start, End = end, windowMid, snpMid, nSites), pi, dxy, da, dmin, dmax, fst)
+            if(length(locus$Name)) {
+              gNames <- paste(unique(locus$Name), collapse = ",")
+              bind_cols(data_frame(SeqName = seqname, Start = start, End = end, Gene = gNames, windowMid, snpMid, nSites), pi, dxy, da, dmin, dmax, fst, RND, RNDmin, Gmin)}
+            else bind_cols(data_frame(SeqName = seqname, Start = start, End = end, windowMid, snpMid, nSites), pi, dxy, da, dmin, dmax, fst, RND, RNDmin, Gmin)
 
           })
 

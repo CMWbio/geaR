@@ -11,10 +11,9 @@
 \alias{windowMaker,GRangesList}
 \title{Sliding or Tiled window maker.}
 \usage{
-windowMaker(x, windowSize, stepSize, ...)
+windowMaker(x, windowSize, stepSize, nCores = 1, ...)
 
-\S4method{windowMaker}{data.frame}(x, windowSize, stepSize = 0,
-  nCores = 1)
+\S4method{windowMaker}{data.frame}(x, windowSize, stepSize, nCores)
 
 \S4method{windowMaker}{GRanges}(x, windowSize, stepSize = 0)
 

@@ -15,6 +15,7 @@
 #' @return A \code{dataframe} mean minimum genetic distance between samples
 #'
 #' @rdname dmin
+#' @export
 
 
 dmin <- function(distMat, popList, pairs, ploidy) {

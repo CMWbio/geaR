@@ -2,7 +2,8 @@
 #'
 #' @description Calculates Gmin from Geneva (2015)
 #'
-#' @details Authours: Chris Ward
+#' @details Authours: Chris Ward \cr
+#' calculates Gmin from ...
 #'
 #'
 #' @param distMat hamming distance matrix calculated using the hidden function \code{genoDist}
@@ -11,9 +12,10 @@
 #' @param ploidy \code{numeric} number of chromosomes
 #'
 #'
-#' @return A \code{dataframe} containing relative node depth
+#' @return A \code{dataframe} containing Gmin
 #'
 #' @rdname Gmin
+#' @export
 
 
 Gmin <- function(distMat, popList, pairs, ploidy) {

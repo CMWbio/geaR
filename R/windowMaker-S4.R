@@ -70,13 +70,13 @@
 #' @export
 #'
 
-setGeneric("windowMaker",function(x, windowSize, stepSize, ...){standardGeneric("windowMaker")})
+setGeneric("windowMaker",function(x, windowSize, stepSize, nCores = 1, ...){standardGeneric("windowMaker")})
 
 #' @aliases windowMaker,data_frame
 #' @rdname windowMaker-methods
 #' @export
 setMethod("windowMaker", signature = "data.frame",
-          function(x, windowSize, stepSize = 0, nCores = 1){
+          function(x, windowSize, stepSize, nCores){
 
             # checks
             if(!is.data.frame(x)) stop("x must be a data.frame or data.frame like object")

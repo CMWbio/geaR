@@ -4,8 +4,8 @@
 \alias{getCodonFeatures}
 \title{Index genome according to provided exons}
 \usage{
-getCodonFeatures(genome, exons, nCores, position = "all",
-  fourFoldCodon = NULL, ...)
+getCodonFeatures(genome, exons, nCores = 1, position = "all",
+  fourFoldCodon = "include", ...)
 }
 \arguments{
 \item{genome}{\code{character} or \code{DNAStringSet} \cr
