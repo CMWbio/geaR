@@ -4,7 +4,7 @@
 #'
 #' @details Authours: Chris Ward
 #'
-#'
+#' @import bootstrap
 #' @param x A \code{matrix} \cr
 #' Allele genotypes for each individual
 #' @param blockSize  \code{logical}

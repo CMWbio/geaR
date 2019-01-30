@@ -26,6 +26,8 @@
 #'
 #' @importFrom BSgenome getSeq
 #' @importFrom Biostrings readDNAStringSet
+#' @importFrom Biostrings codons
+#'
 #'
 #' @return An object of class \code{GRanges} containing codon ranges for positions specified.
 #'

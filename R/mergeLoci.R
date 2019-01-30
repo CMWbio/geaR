@@ -36,7 +36,7 @@ combineRanges <- function(window, feature, nCores, overlap = "+"){
 
     if(!length(grangeInRange)) grangeInRange <- NA
 
-    if(overlap == "-" & !is.na(grangeInRange)) {
+    if(overlap == "-" & any(!is.na(grangeInRange))) {
 
       grangeInRange  <- psetdiff(x, GRangesList(grangeInRange))
       grangeInRange <- unlist(grangeInRange)
