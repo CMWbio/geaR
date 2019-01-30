@@ -1,5 +1,9 @@
-## Usage
+# Installation
 
-1: Make windows if you dont have explicit regions using `windowMaker()`
+```
+install.packages("devtools")
+install.packages("BiocManager")
+BiocManager::install(c("Biostrings", "GenomicRanges", "rtracklayer", "SeqArray", "BSgenome"))
+devtools::install.github("CMWbio/geaR")
 
-2: itterate over windows with `getDiversityStats()`
+```
