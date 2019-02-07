@@ -16,12 +16,12 @@ outDir <- "/media/chris/Seagate Expansion Drive/Divergent_Plutella/cleanedGenome
 VCF <- "~/Desktop/Tree-TipR/"
 GDS <- "~/Desktop/setupGear/Plutella_filtered_noMAF.recode.gds"
   #"~/Desktop/Tree-TipR/PlutellaSNP.GDS"
-df <- readr::read_tsv("/media/chris/Seagate Expansion Drive/whitePupae/GCF_001853355.1_ASM185335v1_genomic.fna.fai", col_names = FALSE)
+df <- readr::read_tsv("/media/chris/Seagate Expansion Drive/whitePupae/GCF_000789215.1_ASM78921v2_genomic.fna.fai", col_names = FALSE)
 #get header from VCF will be needed for windows
 contigMD <- tibble::data_frame(ID = "20", length = 63000000)
 contigMD <- tibble::data_frame(ID = df[[1]], length = df[[2]])
 
-contigMD <- filter(contigMD, ID %in% c("NW_017535808.1", "NW_017536897.1", "NW_017537045.1", "NW_017537168.1", "NW_017537234.1"))
+contigMD <- filter(contigMD, ID %in% c("NW_011876398.1", "NW_017536897.1", "NW_017537045.1", "NW_017537168.1", "NW_017537234.1"))
 
 # converty VCF to GDS
 seqVCF2GDS(vcf.fn = "ALL.chr1.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
@@ -48,8 +48,8 @@ minSites <- 0.25
 
 loci <- windowMaker(contigMD, windowSize, stepSize = 0, nCores = 5)
 
-which <- GRangesList(GRanges(seqnames = "NW_011876372.1", ranges = IRanges(start = 1, end = 2419413)), GRanges(seqnames = "NW_011876398.1", ranges = IRanges(start = 1, end = 5850278)))
-exons <- geaR::getFeatures(gffName = "references/GCF_000789215.1_ASM78921v2_genomic.gff", includeRange = which, feature = )
+which <- GRangesList(GRanges(seqnames = "NW_011876372.1", ranges = IRanges(start = 1, end = 650000)), GRanges(seqnames = "NW_011876398.1", ranges = IRanges(start = 3800000, end = 5850278)))
+exons <- geaR::getFeatures(gffName = "/media/chris/Seagate Expansion Drive/whitePupae/references/GCF_000789215.1_ASM78921v2_genomic.gff", nCores = 4, includeRange = which, feature = "gene:cds")
 
 
 

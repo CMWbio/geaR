@@ -97,7 +97,9 @@ getGenotypes <- function(GDS, locus = NULL, minSites = 0.5, nucleotide = FALSE, 
 
         # split allele string into vector
         alleles <- strsplit(alleleArr[x], ",")[[1]]
-        if(sum(nchar(alleles)) != length(alleles)) return(NULL)
+
+        ## remove alleles of unequal lengths ie insertions or deleletions
+        if(!length(unique(nchar(alleles))) == 1) return(NULL)
 
 
         # get genotype coding
