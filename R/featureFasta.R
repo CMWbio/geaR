@@ -8,6 +8,7 @@
 #'
 #' @param genome genome object of \code{DNAStringSet} class
 #' @param exons GrangeList exons generated using \code{getFeatures} by passing \code{"gene:cds"} to \code{feature}
+#' @param removeIndels removes indels, if false this will mess up the alignemtn in output fasta. concensus will also no longer work.
 #'
 #' @importFrom BSgenome getSeq
 #'
@@ -20,12 +21,12 @@
 #' @rdname outputLociFasta
 
 
-outputLociFasta <- function(GDS, loci, dir, pops, nCores = 1, ploidy = 2, alleles = "seperate", minSites = 0.1){
+outputLociFasta <- function(GDS, loci, dir, pops, nCores = 1, ploidy = 2, alleles = "seperate", minSites = 0.1, removeIndels = TRUE){
 
 
   store <- mclapply(loci, mc.cores = nCores, function(locus){
 
-    genoMat <- getGenotypes(GDS = GDS, pops = pops, locus = locus, minSites = minSites, nucleotide = TRUE, ploidy = ploidy)
+    genoMat <- getGenotypes(GDS = GDS, pops = pops, locus = locus, minSites = minSites, nucleotide = TRUE, ploidy = ploidy, removeIndels = removeIndels)
 
     if(length(genoMat)){
 
@@ -74,8 +75,16 @@ outputLociFasta <- function(GDS, loci, dir, pops, nCores = 1, ploidy = 2, allele
 
 
     genos <- sapply(genos, paste, collapse="")
+    genos <- DNAStringSet(genos)
 
-    cat(file = paste0(dir, "/", filename), paste0(">", paste(names(genos), genos, sep = "\n")), sep = "\n")
+    if(all(locus@strand == "-")) {
+
+      genos <- reverseComplement(genos)
+    }
+
+    writeXStringSet(genos, paste0(dir, "/", filename))
+
+
 
  }
 

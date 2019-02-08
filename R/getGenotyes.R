@@ -12,6 +12,7 @@
 #' @param nucleotide \code{logical} Import RAW genotypes or nucleotides
 #' @param ploidy \code{numeric} ploidy of sample
 #' @param pops \code{data_frame} populaiton dataFrame
+#' @param removeIndels removes indels
 #'
 #'
 #' @return A \code{matrix} of genotypes
@@ -32,7 +33,7 @@
 #' @rdname getGenotypes
 
 
-getGenotypes <- function(GDS, locus = NULL, minSites = 0.5, nucleotide = FALSE, ploidy = 2, pops = NULL){
+getGenotypes <- function(GDS, locus = NULL, minSites = 0.5, nucleotide = FALSE, ploidy = 2, pops = NULL, removeIndels = TRUE){
 
   stopifnot(minSites < 1 & minSites > 0)
   minSites <- sum(minSites * width(locus))
@@ -99,7 +100,7 @@ getGenotypes <- function(GDS, locus = NULL, minSites = 0.5, nucleotide = FALSE, 
         alleles <- strsplit(alleleArr[x], ",")[[1]]
 
         ## remove alleles of unequal lengths ie insertions or deleletions
-        if(!length(unique(nchar(alleles))) == 1) return(NULL)
+        if(removeIndels & !length(unique(nchar(alleles))) == 1) return(NULL)
 
 
         # get genotype coding
