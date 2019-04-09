@@ -58,7 +58,7 @@ windowMaker <- function(x, windowSize, stepSize = 0, nCores = 1){
 
 
     ## List of windows
-    windowList <- mclapply(seq(nrow(x)), mc.cores = nCores, function(y){
+    windowList <- pbmclapply(seq(nrow(x)), mc.cores = nCores, function(y){
 
         ## Subsetting GRange object by chromosome
         con <- contigRange[y]
@@ -80,7 +80,15 @@ windowMaker <- function(x, windowSize, stepSize = 0, nCores = 1){
 
     windowList <- do.call("c", windowList)
 
-    windowList <- split(windowList, as.factor(windowList))
+    # windowList <- split(windowList, as.factor(windowList))
+    #
+
+    windowList <- mclapply(seq(length(windowList)), mc.cores = nCores, function(x){
+
+      windowList[x]
+
+
+    })
 
     GRangesList(windowList)
 

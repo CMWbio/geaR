@@ -11,6 +11,7 @@
 #' @param removeIndels removes indels, if false this will mess up the alignemtn in output fasta. concensus will also no longer work.
 #'
 #' @importFrom BSgenome getSeq
+#' @importFrom BSgenome writeXStringSet
 #'
 #' @return  fasta in specified directory.
 #'
@@ -24,9 +25,11 @@
 outputLociFasta <- function(GDS, loci, dir, pops, nCores = 1, ploidy = 2, alleles = "seperate", minSites = 0.1, removeIndels = TRUE){
 
 
-  store <- mclapply(loci, mc.cores = nCores, function(locus){
+  store <- mclapply(1:length(loci), mc.cores = nCores, function(locus){
 
-    genoMat <- getGenotypes(GDS = GDS, pops = pops, locus = locus, minSites = minSites, nucleotide = TRUE, ploidy = ploidy, removeIndels = removeIndels)
+   locus <- loci[[locus]]
+
+    genoMat <- geaR::getGenotypes(GDS = GDS, pops = pops, locus = locus, minSites = minSites, nucleotide = TRUE, ploidy = ploidy, removeIndels = removeIndels)
 
     if(length(genoMat)){
 
@@ -66,6 +69,13 @@ outputLociFasta <- function(GDS, loci, dir, pops, nCores = 1, ploidy = 2, allele
       filename <- paste0(locus$Name[[1]], ".fasta")
 
     }
+
+    if("Parent" %in% colnames(locus@elementMetadata)){
+
+      filename <- paste0(locus$Parent[[1]], ".fasta")
+
+    }
+
     else{
 
       filename <- paste(as.character(locus), collapse = ",")
@@ -83,8 +93,6 @@ outputLociFasta <- function(GDS, loci, dir, pops, nCores = 1, ploidy = 2, allele
     }
 
     writeXStringSet(genos, paste0(dir, "/", filename))
-
-
 
  }
 

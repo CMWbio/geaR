@@ -5,7 +5,7 @@
 \title{Import genotypes from GDS}
 \usage{
 getGenotypes(GDS, locus = NULL, minSites = 0.5, nucleotide = FALSE,
-  ploidy = 2, pops = NULL)
+  ploidy = 2, pops = NULL, removeIndels = TRUE)
 }
 \arguments{
 \item{GDS}{\code{GDS} object with variant data to import genotypes from}
@@ -19,6 +19,8 @@ getGenotypes(GDS, locus = NULL, minSites = 0.5, nucleotide = FALSE,
 \item{ploidy}{\code{numeric} ploidy of sample}
 
 \item{pops}{\code{data_frame} populaiton dataFrame}
+
+\item{removeIndels}{removes indels}
 }
 \value{
 A \code{matrix} of genotypes

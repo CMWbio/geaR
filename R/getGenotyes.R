@@ -99,8 +99,7 @@ getGenotypes <- function(GDS, locus = NULL, minSites = 0.5, nucleotide = FALSE, 
         # split allele string into vector
         alleles <- strsplit(alleleArr[x], ",")[[1]]
 
-        ## remove alleles of unequal lengths ie insertions or deleletions
-        if(removeIndels & !length(unique(nchar(alleles))) == 1) return(NULL)
+
 
 
         # get genotype coding
@@ -111,6 +110,10 @@ getGenotypes <- function(GDS, locus = NULL, minSites = 0.5, nucleotide = FALSE, 
         mat <- ifelse(is.na(res), mat, res)
         # vectorize to order alleles and name
         mat <- c(mat)
+
+        ## remove alleles of unequal lengths ie insertions or deleletions
+        if(removeIndels & !length(unique(nchar(mat))) == 1) return(NULL)
+
         names(mat) <- paste(rep(samples, each = ploidy), c(1:ploidy), sep = "/")
 
         return(mat)

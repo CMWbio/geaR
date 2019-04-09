@@ -117,7 +117,7 @@ setMethod("windowMaker", signature = "data.frame",
 
             windowList <- split(windowList, as.factor(windowList))
 
-            GRangesList(windowList)
+            # GRangesList(windowList)
 
           }
 )
