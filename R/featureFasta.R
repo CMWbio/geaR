@@ -11,7 +11,7 @@
 #' @param removeIndels removes indels, if false this will mess up the alignemtn in output fasta. concensus will also no longer work.
 #'
 #' @importFrom BSgenome getSeq
-#' @importFrom BSgenome writeXStringSet
+#' @importFrom Biostrings writeXStringSet
 #'
 #' @return  fasta in specified directory.
 #'
