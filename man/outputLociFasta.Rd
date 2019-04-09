@@ -5,7 +5,8 @@
 \title{Index genome according to provided exons}
 \usage{
 outputLociFasta(GDS, loci, dir, pops, nCores = 1, ploidy = 2,
-  alleles = "seperate", minSites = 0.1, removeIndels = TRUE)
+  alleles = "seperate", minSites = 0.1, removeIndels = TRUE,
+  fasta = NULL)
 }
 \arguments{
 \item{removeIndels}{removes indels, if false this will mess up the alignemtn in output fasta. concensus will also no longer work.}

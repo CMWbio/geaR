@@ -88,8 +88,6 @@ setMethod("getCodonFeatures", signature = "DNAStringSet",
             )
 
 
-
-
             # get the genes from the genome using GRange list
             genes <- BSgenome::getSeq(genome, exons)
 

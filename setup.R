@@ -70,5 +70,5 @@ VariantOnlyMandF <- getDiversityStats(GDS, loci, minSites = 0.01, nCores = 4, st
 genome <- Biostrings::readDNAStringSet("references/GCF_000789215.1_ASM78921v2_genomic.fna")
 
 ## need to change names as whole name is imported
-genome@ranges@NAMES <- gsub(" .*$","", genome@ranges@NAMES)
+fasta@ranges@NAMES <- gsub(" .*$","", fasta@ranges@NAMES)
 

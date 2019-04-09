@@ -78,7 +78,7 @@ getGenotypes <- function(GDS, locus = NULL, minSites = 0.5, nucleotide = FALSE, 
     start <- start(locus)
     end <- end(locus)
     winID <- paste0(chr, ":", start, "..", end)
-
+    position <- seqGetData(gdsfile = GDS, var.name = "position")
 
     #Do I want to have a matrix of leave as an array?
     # get ploidy
@@ -99,9 +99,6 @@ getGenotypes <- function(GDS, locus = NULL, minSites = 0.5, nucleotide = FALSE, 
         # split allele string into vector
         alleles <- strsplit(alleleArr[x], ",")[[1]]
 
-
-
-
         # get genotype coding
         geno <- 1:length(alleles) -1
 
@@ -114,7 +111,10 @@ getGenotypes <- function(GDS, locus = NULL, minSites = 0.5, nucleotide = FALSE, 
         ## remove alleles of unequal lengths ie insertions or deleletions
         if(removeIndels & !length(unique(nchar(mat))) == 1) return(NULL)
 
-        names(mat) <- paste(rep(samples, each = ploidy), c(1:ploidy), sep = "/")
+
+        mat <- matrix(mat, nrow = 1)
+        rownames(mat) <- position[x]
+        colnames(mat) <- paste(rep(samples, each = ploidy), c(1:ploidy), sep = "/")
 
         return(mat)
       })
@@ -128,6 +128,7 @@ getGenotypes <- function(GDS, locus = NULL, minSites = 0.5, nucleotide = FALSE, 
       # concatenate array across 3d (Variant) margin, set colnames then replace NA with N
       # replacing with N will convert all ints to chars
       genoMat <- t(apply(genoArr, MARGIN = 3, function(z){c(z)}))
+      rownames(genoMat) <- position
       colnames(genoMat) <- paste(rep(samples, each = ploidy), c(1:ploidy), sep = "/")
       genoMat[is.na(genoMat)] <- "N"
 

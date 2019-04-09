@@ -22,14 +22,14 @@
 #' @rdname outputLociFasta
 
 
-outputLociFasta <- function(GDS, loci, dir, pops, nCores = 1, ploidy = 2, alleles = "seperate", minSites = 0.1, removeIndels = TRUE){
+outputLociFasta <- function(GDS, loci, dir, pops, nCores = 1, ploidy = 2, alleles = "seperate", minSites = 0.1, removeIndels = TRUE, fasta = NULL){
 
 
   store <- mclapply(1:length(loci), mc.cores = nCores, function(locus){
 
    locus <- loci[[locus]]
 
-    genoMat <- geaR::getGenotypes(GDS = GDS, pops = pops, locus = locus, minSites = minSites, nucleotide = TRUE, ploidy = ploidy, removeIndels = removeIndels)
+    genoMat <- getGenotypes(GDS = GDS, pops = pops, locus = locus, minSites = minSites, nucleotide = TRUE, ploidy = ploidy, removeIndels = removeIndels)
 
     if(length(genoMat)){
 
@@ -87,10 +87,18 @@ outputLociFasta <- function(GDS, loci, dir, pops, nCores = 1, ploidy = 2, allele
     genos <- sapply(genos, paste, collapse="")
     genos <- DNAStringSet(genos)
 
+    if(!is.null(fasta)) {
+      ref <- getSeq(fasta, locus)
+      ref <- unlist(ref)
+      genos <- c(DNAStringSet(ref), genos)
+
+    }
+
     if(all(locus@strand == "-")) {
 
       genos <- reverseComplement(genos)
     }
+
 
     writeXStringSet(genos, paste0(dir, "/", filename))
 
