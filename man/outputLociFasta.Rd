@@ -11,6 +11,8 @@ outputLociFasta(GDS, loci, dir, pops, nCores = 1, ploidy = 2,
 \arguments{
 \item{removeIndels}{removes indels, if false this will mess up the alignemtn in output fasta. concensus will also no longer work.}
 
+\item{fasta}{ss}
+
 \item{genome}{genome object of \code{DNAStringSet} class}
 
 \item{exons}{GrangeList exons generated using \code{getFeatures} by passing \code{"gene:cds"} to \code{feature}}

@@ -9,6 +9,7 @@
 #' @param genome genome object of \code{DNAStringSet} class
 #' @param exons GrangeList exons generated using \code{getFeatures} by passing \code{"gene:cds"} to \code{feature}
 #' @param removeIndels removes indels, if false this will mess up the alignemtn in output fasta. concensus will also no longer work.
+#' @param fasta ss
 #'
 #' @importFrom BSgenome getSeq
 #' @importFrom Biostrings writeXStringSet
