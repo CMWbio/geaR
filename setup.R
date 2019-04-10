@@ -54,7 +54,6 @@ exons <- geaR::getFeatures(gffName = "/media/chris/Seagate Expansion Drive/white
 
 
 
-
 GDS <- seqOpen("ALL.chr1.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.gds", allow.duplicate = TRUE)
 
 samples <- SeqArray::seqGetData(gdsfile = GDS, var.name = "sample.id")
@@ -67,7 +66,7 @@ VariantOnlyMandF <- getDiversityStats(GDS, loci, minSites = 0.01, nCores = 4, st
 
 
 # to set up genome
-genome <- Biostrings::readDNAStringSet("references/GCF_000789215.1_ASM78921v2_genomic.fna")
+fasta <- Biostrings::readDNAStringSet("references/GCF_000789215.1_ASM78921v2_genomic.fna")
 
 ## need to change names as whole name is imported
 fasta@ranges@NAMES <- gsub(" .*$","", fasta@ranges@NAMES)

@@ -22,6 +22,8 @@
 #' If \code{TRUE} is passed, will select the longest isoform for that gene. \cr
 #' If there is a \code{"biotype"} field in the GFF it will only deal with those labeled as 'protein coding.' \cr
 #' Selecting the longest isoform may be problematic if the \code{"biotype"} is missing.
+#' @param geneIdField \code{character} \cr
+#' Name of the gene id field in the gff, \code{"Name"} by default.
 #'
 #' @import rtracklayer
 #' @import pbmcapply
@@ -35,7 +37,7 @@
 #' @rdname getFeatures-methods
 #' @export
 
-setGeneric("getFeatures", function(gffName,  feature = "gene:cds", nCores = 1, longestIsoform = FALSE, includeRange,...){
+setGeneric("getFeatures", function(gffName,  feature = "gene:cds", nCores = 1, longestIsoform = FALSE, includeRange, geneIdField = "Name"){
   standardGeneric("getFeatures")
 })
 
@@ -76,10 +78,17 @@ setMethod("getFeatures", signature = "GRanges",
             # check ig gene is specified in the feature parameter
             if(grepl("gene", feature)){
 
+
               # filter all GRanges to contain only those with type == gene
               genes <- gffName[gffName$type == "gene",]
+
+              # get ID from Granges using the ID field
+              geneID <- genes@elementMetadata[colnames(genes@elementMetadata) == geneIdField][[1]]
+
               # make into GRangesList containing only genes
-              genes <- GRangesList(split(genes, genes$Name))
+              genes <- GRangesList(
+                split(genes,
+                      geneID))
 
               # if only genes are specified then return the genes GRangeList
               if(feature == "gene") return(genes)
@@ -95,6 +104,8 @@ setMethod("getFeatures", signature = "GRanges",
 
                   #get Grange using index position
                   gr <- genes[[x]]
+                  geneName <- names(genes)[x]
+
                   # get mRNA using the gene ID field
                   mRNA <- subset(gffName, gffName$Parent == gr$ID)
 
@@ -110,11 +121,12 @@ setMethod("getFeatures", signature = "GRanges",
                     # get the max length sequence
                     mRNA <- mRNA[which(mRNA@ranges@width == max(mRNA@ranges@width))]
 
-                  }else{
-
-                    mRNA <- mRNA[1]
 
                   }
+
+                  mRNA <- mRNA[1]
+
+
 
                   # subset exons by those within selected mRNA
                   subset(allExons, allExons$Parent == mRNA$ID)
@@ -179,9 +191,9 @@ setMethod("getFeatures", signature = "GRanges",
                     }))
 
                     # get the max length sequence, extract first element in longest if there are multiple longest
-                    longest <- which(isoformLengths == max(isoformLengths))[1]
-                    mRNA <- mRNA[[longest]]
-                  } else mRNA <- mRNA[[1]]
+                    longest <- which(isoformLengths == max(isoformLengths))
+                    mRNA <- mRNA[[longest]]}
+                    mRNA <- mRNA[1]
 
 
                 }))

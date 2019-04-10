@@ -9,10 +9,12 @@
 #' @param genome genome object of \code{DNAStringSet} class
 #' @param exons GrangeList exons generated using \code{getFeatures} by passing \code{"gene:cds"} to \code{feature}
 #' @param removeIndels removes indels, if false this will mess up the alignemtn in output fasta. concensus will also no longer work.
-#' @param fasta ss
+#' @param
 #'
 #' @importFrom BSgenome getSeq
 #' @importFrom Biostrings writeXStringSet
+#' @importFrom Biostrings DNAStringSet
+#' @importFrom msa msa
 #'
 #' @return  fasta in specified directory.
 #'
@@ -23,7 +25,7 @@
 #' @rdname outputLociFasta
 
 
-outputLociFasta <- function(GDS, loci, dir, pops, nCores = 1, ploidy = 2, alleles = "seperate", minSites = 0.1, removeIndels = TRUE, fasta = NULL){
+outputLociFasta <- function(GDS, loci, dir, pops, nCores = 1, ploidy = 2, alleles = "seperate", minSites = 0.1, removeIndels = TRUE, fasta = NULL, align = FALSE){
 
 
   store <- mclapply(1:length(loci), mc.cores = nCores, function(locus){
@@ -71,12 +73,6 @@ outputLociFasta <- function(GDS, loci, dir, pops, nCores = 1, ploidy = 2, allele
 
     }
 
-    if("Parent" %in% colnames(locus@elementMetadata)){
-
-      filename <- paste0(locus$Parent[[1]], ".fasta")
-
-    }
-
     else{
 
       filename <- paste(as.character(locus), collapse = ",")
@@ -88,27 +84,30 @@ outputLociFasta <- function(GDS, loci, dir, pops, nCores = 1, ploidy = 2, allele
     genos <- sapply(genos, paste, collapse="")
     genos <- DNAStringSet(genos)
 
-    if(!is.null(fasta)) {
-      ref <- getSeq(fasta, locus)
-      ref <- unlist(ref)
-      genos <- c(DNAStringSet(ref), genos)
-
-    }
-
     if(all(locus@strand == "-")) {
 
       genos <- reverseComplement(genos)
     }
 
+    if(!is.null(fasta)) {
+      ref <- getSeq(fasta, locus)
+      ref <- unlist(ref)
+      ref <- DNAStringSet(ref)
+      ref@ranges@NAMES <- "Ref"
+      genos <- c(ref, genos)
 
-    writeXStringSet(genos, paste0(dir, "/", filename))
+      if(align){
+
+      genos <- msa(genos, order = "input")
+      }
+    }
+
+
+    writeXStringSet(genos@unmasked, paste0(dir, "/", filename))
 
  }
 
   })
-
-
-
 
 
   }
