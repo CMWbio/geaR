@@ -24,9 +24,11 @@ contigMD <- tibble::data_frame(ID = df[[1]], length = df[[2]])
 contigMD <- filter(contigMD, ID %in% c("NW_011876398.1", "NW_017536897.1", "NW_017537045.1", "NW_017537168.1", "NW_017537234.1"))
 
 # converty VCF to GDS
-seqVCF2GDS(vcf.fn = "Dorsalis/WholeGenomeAnalysis/QTLAllSitesDorsalis_withBo_filtered.vcf.gz",
-             parallel = 6, out.fn = "Dorsalis/QTLAllSitesDorsalis_withBo_filtered.gds",
+seqVCF2GDS(vcf.fn = "Dorsalis/TestPrimitives/QTLAllSitesDorsalis_withBo_prim.vcf.gz",
+             parallel = 6, out.fn = "Dorsalis/TestPrimitives/QTLAllSitesDorsalis_withBo_prim.gds",
            fmt.import = c("GT"), storage.option = "ZIP_RA")
+
+GDS <-seqOpen("Dorsalis/TestPrimitives/QTLAllSitesDorsalis_withBo_prim.gds")
 
 # Parameters
 windowSize <- 100000

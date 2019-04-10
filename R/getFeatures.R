@@ -37,7 +37,8 @@
 #' @rdname getFeatures-methods
 #' @export
 
-setGeneric("getFeatures", function(gffName,  feature = "gene:cds", nCores = 1, longestIsoform = FALSE, includeRange, geneIdField = "Name"){
+setGeneric("getFeatures", function(gffName,  feature = "gene:cds", nCores = 1,
+                                   longestIsoform = FALSE, includeRange, geneIdField = "Name", ...){
   standardGeneric("getFeatures")
 })
 
@@ -73,7 +74,7 @@ setMethod("getFeatures", signature(gffName = "character"),
 #' @aliases getFeatures,import
 #' @export
 setMethod("getFeatures", signature = "GRanges",
-          function(gffName, feature = "gene:cds", nCores = 1, longestIsoform = FALSE, includeRange){
+          function(gffName, feature = "gene:cds", nCores = 1, longestIsoform = FALSE, includeRange, ...){
 
             # check ig gene is specified in the feature parameter
             if(grepl("gene", feature)){
@@ -193,7 +194,7 @@ setMethod("getFeatures", signature = "GRanges",
                     # get the max length sequence, extract first element in longest if there are multiple longest
                     longest <- which(isoformLengths == max(isoformLengths))
                     mRNA <- mRNA[[longest]]}
-                    mRNA <- mRNA[1]
+                    mRNA <- mRNA[[1]]
 
 
                 }))
