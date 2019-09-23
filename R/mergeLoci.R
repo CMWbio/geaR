@@ -1,21 +1,19 @@
-#' Combines overlaps in features and windows
+#' Combines overlaps in ys and xs
 #'
 #' @description Combines multiple GRange objects with overlapping ranges.
 #'
 #' @details Authour: Chris Ward
-#' Passing multiple \code{GRange} objects will result in ordered overlaping of ranges. e.g. if a genome wide 100kb tiled window \code{GRangeList}
-#'  generated using \code{windowMaker()} is passed along with a features \code{GRangesList} generated using \code{getFeatures(feature = "gene:cds")},
-#'  This will be combined into 100kb windows containing only regions of protein coding sequence.
+#' Passing multiple \code{GRange} objects will result in ordered overlaping of ranges. e.g. if a genome wide 100kb tiled x \code{GRangeList}
+#'  generated using \code{xMaker()} is passed along with a ys \code{GRangesList} generated using \code{getwindows(y = "gene:cds")},
+#'  This will be combined into 100kb xs containing only regions of protein coding sequence.
 #'
-#'
-#' @param window  \code{GRangesList}. Windows to overlap features to
-#' @param feature \code{GRangesList} containing features generated using either \code{getFeatures} or \code{codonRanges}
+#' @param x \code{GRangesList}. xs to overlap ys to
+#' @param y \code{GRangesList} containing ys generated using either \code{getfeatures} or \code{codonRanges}
 #' @param nCores \code{numeric} number of cores to run in parallel
 #' @param overlap \code{character} \cr
 #' Negative or positive overlap
-#' "-" will subtract the feature ranges from the windows \cr
-#' "+" will bin features into window ranges
-#'
+#' "-" will subtract the y ranges from the xs \cr
+#' "+" will bin ys into x ranges
 #'
 #' @return A \code{data_frame} of selected Diversity statistics
 #'
@@ -26,25 +24,22 @@
 #' @rdname combineRanges
 
 
-combineRanges <- function(window, feature, nCores, overlap = "+"){
+combineRanges <- function(x, y, nCores, overlap = "+"){
 
-    data <- mclapply(window, mc.cores = nCores, function(x){
+    data <- mclapply(x, mc.cores = nCores, function(locus){
 
-    overlapSeqName <- feature@unlistData[as.character(feature@unlistData@seqnames) == as.character(x@seqnames)]
+    overlapSeqName <- y@unlistData[as.character(y@unlistData@seqnames) == as.character(locus@seqnames)[1]]
 
-    grangeInRange <- overlapSeqName[overlapSeqName@ranges@start >= x@ranges@start & end(overlapSeqName) <= end(x),]
+    grangeInRange <- overlapSeqName[overlapSeqName@ranges@start >= locus@ranges@start[1] & end(overlapSeqName) <= end(locus)[length(locus)],]
 
     if(!length(grangeInRange)) grangeInRange <- NA
 
-    if(overlap == "-" & any(!is.na(grangeInRange))) {
+    if(any(!is.na(grangeInRange))) {
 
-      grangeInRange  <- psetdiff(x, GRangesList(grangeInRange))
-      grangeInRange <- unlist(grangeInRange)
-
+     if(overlap == "+") join_overlap_inner(grangeInRange, x )
+     else setdiff_ranges(x, grangeInRange)
 
     }
-
-    grangeInRange
 
     })
 

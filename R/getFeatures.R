@@ -38,7 +38,7 @@
 #' @export
 
 setGeneric("getFeatures", function(gffName,  feature = "gene:cds", nCores = 1,
-                                   longestIsoform = FALSE, includeRange, geneIdField = "Name", ...){
+                                   longestIsoform = FALSE, includeRange, geneIDField = "ID", ...){
   standardGeneric("getFeatures")
 })
 
@@ -79,12 +79,18 @@ setMethod("getFeatures", signature = "GRanges",
             # check ig gene is specified in the feature parameter
             if(grepl("gene", feature)){
 
+              gffName$gene <- gffName@elementMetadata[[geneIDField]]
+
+
+
+
 
               # filter all GRanges to contain only those with type == gene
               genes <- gffName[gffName$type == "gene",]
+              mRNA <- gffName[gffName$type == "mRNA"]
 
               # get ID from Granges using the ID field
-              geneID <- genes@elementMetadata[colnames(genes@elementMetadata) == geneIdField][[1]]
+              geneID <- genes$gene
 
               # make into GRangesList containing only genes
               genes <- GRangesList(
@@ -143,30 +149,40 @@ setMethod("getFeatures", signature = "GRanges",
                 # get all exons from all GRanges
                 allCDS <- gffName[gffName$type == "CDS",]
 
-                cdsList <- GRangesList(split(allCDS, unlist(allCDS$Parent)))
+                #make lookup table for CDS parent tracking
+
+                if(length(unlist(mRNA$Parent))){
+                  mRNA_df <- tibble::tibble(geneID = unlist(mRNA$Parent), mrnaID = mRNA$ID)
+
+                  gene_df <- tibble::tibble(geneName = genes$gene, geneID = genes$ID)
+
+                  comb_df <- dplyr::full_join(mRNA_df, gene_df)
+
+                  comb_df$mrnaID[is.na(comb_df$mrnaID)] <- comb_df$geneID[is.na(comb_df$mrnaID)]
+
+                  mRNAlookup <- comb_df$geneID
+                  names(mRNAlookup) <- comb_df$mrnaID
+
+                  gNames <- unlist(allCDS$Parent)
+                  gNames <- unname(mRNAlookup[gNames])
+
+                  geneLookup <-  comb_df$geneName
+                  names(geneLookup) <- comb_df$geneID
+
+                  gNames <- unname(geneLookup[gNames])
+
+                  allCDS$gene <- gNames
+                } else allCDS$gene <- unlist(allCDS$Parent)
 
 
-                # Start making Coding sequences, will select the longest isoform or the first entry for each gene
-                CDS <- GRangesList(mclapply(seq_along(cdsList), mc.cores = nCores, function(x){
 
 
-
-                  #get Grange using index position
-                  gr <- cdsList[[x]]
-
-                  noNA <- gffName[!is.na(gffName$ID),]
-                  transcript <- noNA[noNA$ID ==  gr$Parent[[1]],]
-                  gene <- noNA[noNA$ID == transcript$Parent[[1]],]
-
-                  gr$Name <- gene$Name
-
-                  gr
-
-
-                }))
+                CDS <- GRangesList(split(allCDS, allCDS$gene))
 
                 # get mRNA using the gene ID field
-                CDS <- split(CDS@unlistData, as.character(CDS@unlistData$Name))
+
+
+                cdsName <- names(CDS)
 
 
 
@@ -174,7 +190,7 @@ setMethod("getFeatures", signature = "GRanges",
 
                   rec <- CDS[[y]]
 
-                  mRNA <- split(rec, rec$ID)
+                  mRNA <- split(rec, rec$gene)
 
                   #select longest isoform
                   if(longestIsoform){
@@ -193,8 +209,7 @@ setMethod("getFeatures", signature = "GRanges",
 
                     # get the max length sequence, extract first element in longest if there are multiple longest
                     longest <- which(isoformLengths == max(isoformLengths))
-                    mRNA <- mRNA[[longest]]}
-                    mRNA <- mRNA[[1]]
+                    mRNA <- mRNA[[longest]]} else mRNA <- mRNA[[1]]
 
 
                 }))
@@ -202,13 +217,9 @@ setMethod("getFeatures", signature = "GRanges",
 
 
                 #name the GRanges List containing coding sequence
-                CDS <- Filter(length, CDS)
+                names(CDS) <- cdsName
 
-                list_elt_seqnames <- as.character(runValue(seqnames(CDS)))
-                list_elt_seqnames <- factor(list_elt_seqnames, levels=seqlevels(CDS))
-                list_elt_smallest_start <- min(start(CDS))
-                oo <- order(as.integer(list_elt_seqnames), list_elt_smallest_start)
-                CDS <- CDS[oo]
+                #CDS <- Filter(length, CDS)
 
                 return(CDS)
               }

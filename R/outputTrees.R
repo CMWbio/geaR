@@ -5,11 +5,7 @@
 #' Will export rough, distance based nj trees for each locus to a given directory.
 #'
 #'
-#' @param genome genome object of \code{DNAStringSet} class
-#' @param exons GrangeList exons generated using \code{getFeatures} by passing \code{"gene:cds"} to \code{feature}
-#' @param removeIndels removes indels, if false this will mess up the alignemtn in output fasta. concensus will also no longer work.
-#'
-#' @importFrom BSgenome getSeq
+#' @param GDS genome object of \code{DNAStringSet} class
 #'
 #' @return  fasta in specified directory.
 #'

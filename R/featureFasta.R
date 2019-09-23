@@ -8,8 +8,10 @@
 #'
 #' @param genome genome object of \code{DNAStringSet} class
 #' @param exons GrangeList exons generated using \code{getFeatures} by passing \code{"gene:cds"} to \code{feature}
-#' @param removeIndels removes indels, if false this will mess up the alignemtn in output fasta. concensus will also no longer work.
-#' @param
+#' @param removeIndels removes indels, if false this will mess up the alignemtn in output fasta. concensus will also no longer work.1
+#' @param fasta \code{DNAStringSet} the output of \code{Biostrings::readDNAStringSet()}. Input genome to extract features from, will align
+#' automatically to the reference positions.
+#'
 #'
 #' @importFrom BSgenome getSeq
 #' @importFrom Biostrings writeXStringSet
@@ -25,7 +27,7 @@
 #' @rdname outputLociFasta
 
 
-outputLociFasta <- function(GDS, loci, dir, pops, nCores = 1, ploidy = 2, alleles = "seperate", minSites = 0.1, removeIndels = TRUE, fasta = NULL, align = FALSE){
+outputLociFasta <- function(GDS, loci, dir, pops, nCores = 1, ploidy = 2, alleles = "seperate", minSites = 0.1, removeIndels = TRUE, fasta = NULL){
 
 
   store <- mclapply(1:length(loci), mc.cores = nCores, function(locus){
@@ -51,6 +53,7 @@ outputLociFasta <- function(GDS, loci, dir, pops, nCores = 1, ploidy = 2, allele
       names(codevec) <- bases
 
       names <- colnames(genoMat)
+      pos <- rownames(genoMat)
 
       genoMat <- sapply(seq(from = 2, to = ncol(genoMat), by = 2), function(k){
 
@@ -59,28 +62,61 @@ outputLociFasta <- function(GDS, loci, dir, pops, nCores = 1, ploidy = 2, allele
 
       })
       colnames(genoMat) <- unique(gsub("/.*", "", names))
-      rownames(genoMat) <- 1:nrow(genoMat)
+      rownames(genoMat) <- pos
 
     }
 
-    genoMat <- t(genoMat)
 
-    genos <- split(genoMat, rownames(genoMat))
 
-    if("Name" %in% colnames(locus@elementMetadata)){
 
-      filename <- paste0(locus$Name[[1]], ".fasta")
+
+    if("gene" %in% colnames(locus@elementMetadata)){
+
+      st <- min(locus@ranges@start)
+      ed <- min(end(locus))
+
+      filename <- paste(as.character(GRanges(seqnames = locus@seqnames[1],
+                                             strand = locus@strand[1],
+                                             IRanges(start = st, end = ed))), collapse = ",")
+
+
+      filename <- paste0(locus$gene[[1]], "_", filename, ".fasta")
 
     }
 
     else{
 
       filename <- paste(as.character(locus), collapse = ",")
+
       filename <- paste0(filename, ".fasta")
+
+    }
+
+      if(!is.null(fasta)) {
+        ref <- getSeq(fasta, locus)
+        ref <- unlist(ref)
+        ref <- DNAStringSet(ref)
+        ref@ranges@NAMES <- "Ref"
+        ref <- as_tibble(genos[[1]])
+        ref <- rownames_to_column(ref, "position")
+
+        colnames(ref) <- c("position", "Ref")
+
+        genoPos <- rownames(genoMat)
+        genoMat <- as.data.frame(genoMat)
+        rownames(genoMat) <- genoPos
+        genoMat <- rownames_to_column(genoMat, "position")
+
+        genoMat <- left_join(ref, genoMat, by = "position")
+        genoMat <- select(genoMat, -position)
+        genoMat[is.na(genoMat)] <- "N"
+
+        genoMat <- as.matrix(genoMat)
 
       }
 
-
+    genoMat <- t(genoMat)
+    genos <- split(genoMat, factor(rownames(genoMat), levels = rownames(genoMat)))
     genos <- sapply(genos, paste, collapse="")
     genos <- DNAStringSet(genos)
 
@@ -88,22 +124,10 @@ outputLociFasta <- function(GDS, loci, dir, pops, nCores = 1, ploidy = 2, allele
 
       genos <- reverseComplement(genos)
     }
-
-    if(!is.null(fasta)) {
-      ref <- getSeq(fasta, locus)
-      ref <- unlist(ref)
-      ref <- DNAStringSet(ref)
-      ref@ranges@NAMES <- "Ref"
-      genos <- c(ref, genos)
-
-      if(align){
-
-      genos <- msa(genos, order = "input")
-      }
-    }
+    if(align) writeXStringSet(genos@unmasked, paste0(dir, "/", filename))
+    else  writeXStringSet(genos, paste0(dir, "/", filename))
 
 
-    writeXStringSet(genos@unmasked, paste0(dir, "/", filename))
 
  }
 

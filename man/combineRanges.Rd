@@ -2,21 +2,21 @@
 % Please edit documentation in R/mergeLoci.R
 \name{combineRanges}
 \alias{combineRanges}
-\title{Combines overlaps in features and windows}
+\title{Combines overlaps in ys and xs}
 \usage{
-combineRanges(window, feature, nCores, overlap = "+")
+combineRanges(x, y, nCores, overlap = "+")
 }
 \arguments{
-\item{window}{\code{GRangesList}. Windows to overlap features to}
+\item{x}{\code{GRangesList}. xs to overlap ys to}
 
-\item{feature}{\code{GRangesList} containing features generated using either \code{getFeatures} or \code{codonRanges}}
+\item{y}{\code{GRangesList} containing ys generated using either \code{getfeatures} or \code{codonRanges}}
 
 \item{nCores}{\code{numeric} number of cores to run in parallel}
 
 \item{overlap}{\code{character} \cr
 Negative or positive overlap
-"-" will subtract the feature ranges from the windows \cr
-"+" will bin features into window ranges}
+"-" will subtract the y ranges from the xs \cr
+"+" will bin ys into x ranges}
 }
 \value{
 A \code{data_frame} of selected Diversity statistics
@@ -26,7 +26,7 @@ Combines multiple GRange objects with overlapping ranges.
 }
 \details{
 Authour: Chris Ward
-Passing multiple \code{GRange} objects will result in ordered overlaping of ranges. e.g. if a genome wide 100kb tiled window \code{GRangeList}
- generated using \code{windowMaker()} is passed along with a features \code{GRangesList} generated using \code{getFeatures(feature = "gene:cds")},
- This will be combined into 100kb windows containing only regions of protein coding sequence.
+Passing multiple \code{GRange} objects will result in ordered overlaping of ranges. e.g. if a genome wide 100kb tiled x \code{GRangeList}
+ generated using \code{xMaker()} is passed along with a ys \code{GRangesList} generated using \code{getwindows(y = "gene:cds")},
+ This will be combined into 100kb xs containing only regions of protein coding sequence.
 }

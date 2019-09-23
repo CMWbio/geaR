@@ -6,6 +6,7 @@
 #' calculates Gmin from ...
 #'
 #'
+#'
 #' @param distMat hamming distance matrix calculated using the hidden function \code{genoDist}
 #' @param popList List of populations made from \code{pops} dataframe provided by users
 #' @param pairs list of populaiton pairs generated in \code{getDiversityStats}

@@ -2,25 +2,20 @@
 % Please edit documentation in R/outputTrees.R
 \name{outputTrees}
 \alias{outputTrees}
-\title{Index genome according to provided exons}
+\title{Output nj distance trees}
 \usage{
 outputTrees(GDS, loci, dir, pops, nCores = 1, ploidy = 2,
   alleles = "seperate", minSites = 0.1, removeIndels = TRUE)
 }
 \arguments{
-\item{removeIndels}{removes indels, if false this will mess up the alignemtn in output fasta. concensus will also no longer work.}
-
-\item{genome}{genome object of \code{DNAStringSet} class}
-
-\item{exons}{GrangeList exons generated using \code{getFeatures} by passing \code{"gene:cds"} to \code{feature}}
+\item{GDS}{genome object of \code{DNAStringSet} class}
 }
 \value{
 fasta in specified directory.
 }
 \description{
 Author: Christopher Ward \cr
-Converts GDS directly to fasta and outputs to a directory. \cr
-Providing a range to the function will result in multiple files (number of ranges) being output with alignemnts within the ranges.
+Will export rough, distance based nj trees for each locus to a given directory.
 }
 \examples{
 

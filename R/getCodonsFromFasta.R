@@ -106,29 +106,12 @@ ct <- c()
 
   df <- data_frame(codon = names(RSCU), RSCU = RSCU) %>% separate(codon, c("AA", "codon"))
 
-  aaCodons <- dnaCodons
-
-  s <- lapply(1:length(lookUP), function(z){
-
-    aaCodons[grepl(lookUP[z], aaCodons)] <<- names(lookUP)[z]
-
-  })
-
-  rm(s)
-  frst <- 1:length(dnaCodons)
-
-  codonDF <- data_frame(AA = aaCodons, codon = dnaCodons, frst = 1:length(dnaCodons)*3-2, scnd = 1:length(dnaCodons)*3-1, thrd = 1:length(dnaCodons)*3)
-
-  codonList <- list(RCSU = df, codonDF = codonDF)
-
-
-
   }
 
 
   })
 
- names(codList) <- names(FL)
+ names(codList) <- names(Catgenes)
  codList <- Filter(Negate(is.null), codList)
 
 

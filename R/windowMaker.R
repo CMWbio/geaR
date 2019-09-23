@@ -101,31 +101,7 @@ setMethod("windowMaker", signature = "data.frame",
               ## Subsetting GRange object by chromosome
               con <- contigRange[y]
 
-              # if(!is.null(GDS) & snpWindow){
-              #
-              #   seqSetFilter(object = GDS, variant.sel = con)
-              #   position <- seqGetData(gdsfile = GDS, var.name = "position")
-              #    position <- zoo::rollapply(position, width = windowSize, by = stepSize, function(x){
-              #      x
-              #    })
-              #
-              #    posList <- split(position, 1:nrow(position))
-              #
-              #
-              #    grL <- lapply(posList, function(x){
-              #
-              #      gr <- GRanges(seqnames = con@seqnames, IRanges(start = x, end = x))
-              #
-              #      if(stepSize == windowSize) gr$lociType<- "tiledSnpWindow"
-              #      else gr$lociType<- "slidingSnpWindow"
-              #
-              #      gr
-              #    })
-              #
-              #    grL
-              # }
-              #else {
-                ## Splitting into windows
+                # Splitting into windows
                 gr <- slidingWindows(x = con, width = windowSize, step = stepSize)
                 gr <- unlist(gr) ## Need to unlist the slidingWindow object
 
@@ -133,23 +109,18 @@ setMethod("windowMaker", signature = "data.frame",
                 else gr$lociType<- "slidingWindow"
 
                 gr
-             # }
 
 
             })
 
             windowList <- do.call("c", windowList)
 
-
-            #if(!snpMid) {
               windowList <- mclapply(seq(length(windowList)), mc.cores = nCores, function(x){
 
                 windowList[x]
 
 
               })
-
-            #}
 
 
            GRangesList(windowList)

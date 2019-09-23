@@ -5,7 +5,7 @@
 \title{getFeatures}
 \usage{
 getFeatures(gffName, feature = "gene:cds", nCores = 1,
-  longestIsoform = FALSE, includeRange, ...)
+  longestIsoform = FALSE, includeRange, geneIDField = "ID", ...)
 }
 \arguments{
 \item{gffName}{\code{character} \cr
@@ -30,6 +30,9 @@ Target ranges to extract features over.}
 \item{contigMD}{\code{data.frame} \cr
 Contig metadata. Contains two columns: \code{ID} with scaffold names, \code{length} with scaffold length. \cr
 Used to select intergenic regions.}
+
+\item{geneIdField}{\code{character} \cr
+Name of the gene id field in the gff, \code{"Name"} by default.}
 }
 \value{
 A \code{GRangesList} object where each element is a genomic feature

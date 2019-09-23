@@ -4,7 +4,7 @@
 \alias{neisPi}
 \title{Calculates Nei's nucleotide diversity (pi)}
 \usage{
-neisPi(distMat, popList, ploidy = 2)
+neisPi(distMat, popList, ploidy = 2, sampleCorrect = FALSE)
 }
 \arguments{
 \item{distMat}{hamming distance matrix calculated using the hidden function \code{genoDist}}

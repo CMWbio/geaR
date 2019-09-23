@@ -16,7 +16,7 @@
 #' @export
 
 
-neisPi <- function(distMat, popList, ploidy = 2){
+neisPi <- function(distMat, popList, ploidy = 2, sampleCorrect = FALSE){
 
   pi <- lapply(popList, function(x){
     #make population matrix
@@ -24,7 +24,9 @@ neisPi <- function(distMat, popList, ploidy = 2){
                     as.vector(outer(x$Sample, 1:ploidy, paste, sep = "/"))]
     n <- ncol(popD)
     # get nucleotide diversity
-    pi <- sum(popD)/(n*(n-1)/2)
+
+    if(sampleCorrect) pi <- sum(popD)/(n*(n-1)/2)
+    else pi <- sum(popD)/n
     #determine pi for pop
     piDF <- data_frame(pi)
     # set colnames

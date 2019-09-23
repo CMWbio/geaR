@@ -9,6 +9,7 @@
 #' @param popList List of populations made from \code{pops} dataframe provided by users
 #' @param pairs list of populaiton pairs generated in \code{getDiversityStats}
 #' @param ploidy \code{numeric} number of chromosomes
+#'
 #' @param weighted \code{logical} \cr
 #' Weight by sample subpopulaiton size.
 #' If \code{TRUE} mean nuceotide diversity within the subpopulaiton will be weigthed by sample size. \cr

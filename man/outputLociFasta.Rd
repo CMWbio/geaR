@@ -9,9 +9,10 @@ outputLociFasta(GDS, loci, dir, pops, nCores = 1, ploidy = 2,
   fasta = NULL)
 }
 \arguments{
-\item{removeIndels}{removes indels, if false this will mess up the alignemtn in output fasta. concensus will also no longer work.}
+\item{removeIndels}{removes indels, if false this will mess up the alignemtn in output fasta. concensus will also no longer work.1}
 
-\item{fasta}{ss}
+\item{fasta}{\code{DNAStringSet} the output of \code{Biostrings::readDNAStringSet()}. Input genome to extract features from, will align
+automatically to the reference positions.}
 
 \item{genome}{genome object of \code{DNAStringSet} class}
 

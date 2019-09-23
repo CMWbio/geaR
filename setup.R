@@ -28,7 +28,7 @@ seqVCF2GDS(vcf.fn = "Dorsalis/TestPrimitives/QTLAllSitesDorsalis_withBo_prim.vcf
              parallel = 6, out.fn = "Dorsalis/TestPrimitives/QTLAllSitesDorsalis_withBo_prim.gds",
            fmt.import = c("GT"), storage.option = "ZIP_RA")
 
-GDS <-seqOpen("Dorsalis/TestPrimitives/QTLAllSitesDorsalis_withBo_prim.gds")
+GDS <-seqOpen("/media/chris/Seagate Expansion Drive/whitePupae/Dorsalis/TestPrimitives/QTLAllSitesDorsalis_withBo_prim.gds")
 
 # Parameters
 windowSize <- 100000
@@ -67,8 +67,11 @@ pops2 <- split(pops, pops$Population)
 VariantOnlyMandF <- getDiversityStats(GDS, loci, minSites = 0.01, nCores = 4, stats = "dxy", pops = pops, ploidy = 2, pairwiseDeletion = TRUE)
 
 
+
+fstSnd <- getCodonFeatures(genome = fasta, exons = )
+
 # to set up genome
-fasta <- Biostrings::readDNAStringSet("references/GCF_000789215.1_ASM78921v2_genomic.fna")
+fasta <- Biostrings::readDNAStringSet("../../Brapa_ref/Brapa_sequence_v3.0.fasta")
 
 ## need to change names as whole name is imported
 fasta@ranges@NAMES <- gsub(" .*$","", fasta@ranges@NAMES)

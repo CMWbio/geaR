@@ -39,14 +39,13 @@ getGenotypes <- function(GDS, locus = NULL, minSites = 0.5, nucleotide = FALSE, 
   minSites <- sum(minSites * width(locus))
 
 
-
   if(length(pops)){
     samples <- pops$Sample
     seqSetFilter(object = GDS, sample.id = samples)
 
+  }
 
-  } else samples <- seqGetData(gdsfile = GDS, var.name = "sample.id")
-
+  samples <- seqGetData(gdsfile = GDS, var.name = "sample.id")
 
   if(length(locus)){
     seqSetFilter(object = GDS, variant.sel = locus)
