@@ -97,21 +97,36 @@ outputLociFasta <- function(GDS, loci, dir, pops, nCores = 1, ploidy = 2, allele
         ref <- unlist(ref)
         ref <- DNAStringSet(ref)
         ref@ranges@NAMES <- "Ref"
-        ref <- as_tibble(genos[[1]])
+        ref <- as_tibble(ref[[1]])
         ref <- rownames_to_column(ref, "position")
+
+        if(all(locus@strand == "-")) {
+          pos <- unlist(lapply(seq(1, length(locus)), function(x){
+            as.character(seq(from = end(locus[x]),
+                             to = start(locus[x])))
+          }))
+        }
+        else {
+          pos <- unlist(lapply(seq(1,length(locus)), function(x){
+            as.character(seq(from = start(locus[x]),
+                             to = end(locus[x])))
+          }))
+        }
+
+        ref$position <- pos
 
         colnames(ref) <- c("position", "Ref")
 
         genoPos <- rownames(genoMat)
-        genoMat <- as.data.frame(genoMat)
-        rownames(genoMat) <- genoPos
+        genoMat <- as_tibble(genoMat)
         genoMat <- rownames_to_column(genoMat, "position")
-
+        genoMat$position <- genoPos
         genoMat <- left_join(ref, genoMat, by = "position")
         genoMat <- select(genoMat, -position)
+        genoMat <- as.matrix(genoMat)
         genoMat[is.na(genoMat)] <- "N"
 
-        genoMat <- as.matrix(genoMat)
+
 
       }
 
@@ -119,13 +134,14 @@ outputLociFasta <- function(GDS, loci, dir, pops, nCores = 1, ploidy = 2, allele
     genos <- split(genoMat, factor(rownames(genoMat), levels = rownames(genoMat)))
     genos <- sapply(genos, paste, collapse="")
     genos <- DNAStringSet(genos)
+    ref <- genos$Ref
+    genos <- genos[names(genos) != "Ref"]
 
     if(all(locus@strand == "-")) {
-
-      genos <- reverseComplement(genos)
+      genos <- reverseComplement(reverse(genos))
     }
-    if(align) writeXStringSet(genos@unmasked, paste0(dir, "/", filename))
-    else  writeXStringSet(genos, paste0(dir, "/", filename))
+    genos <- c(DNAStringSet(ref), genos)
+    writeXStringSet(genos, paste0(dir, "/", filename))
 
 
 

@@ -18,26 +18,18 @@
 #' @return A \code{matrix} of genotypes
 #'
 #'
-#' @import SeqArray
-#' @import tidyr
-#' @import dplyr
-#' @importFrom GenomicRanges end
-#' @importFrom GenomicRanges seqnames
-#' @importFrom GenomicRanges start
-#' @importFrom GenomicRanges width
 #' @examples
 #'
 #'
 #'
-#' @rdname getGenotypes
-
-
-Tpop <- function(x){
+#' @rdname getFStats
 
 
 
 
-GDS <- seqOpen("Dorsalis/WholeGenomeAnalysis/AllSitesDorsalis_biallelic.vcf.gz", allow.duplicate = TRUE)
+
+
+getFStats <- function(GDS, loci, pops, tests, nCores, minSites){
 
 
 if(length(pops) == 0){
@@ -48,117 +40,88 @@ if(length(pops) == 0){
 popList <- split(pops, pops$Population)
 
 stopifnot(minSites < 1 & minSites > 0)
-## Iterating through the window list by scaffold
 
+plan(multiprocess, workers = nCores)
 
+fstats <- future_map(seq(length(loci)), function(y){
 
-div <- mclapply(seq(length(loci)), mc.cores = 4, function(locusN){
-  locus <- loci[[locusN]]
+  locus <- loci[[y]]
 
+  testD <- map(tests, function(x){
 
- AF_list <- lapply(popList, function(x){
+    if(length(x) == 4) {
 
-      samples <- x$Sample
-      seqSetFilter(object = GDS, sample.id = samples)
-
-
-
-    if(length(locus)){
-      seqSetFilter(object = GDS, variant.sel = locus)
     }
+    if(length(x) == 3) fun <- "threePop"
 
+    f <- .fourPop(GDS, locus, pops, x)
 
-   seqAlleleFreq(GDS)
+    scaf <- locus@seqnames[1]
+    st <- locus@ranges@start[1]
+    end <- st + sum(locus@ranges@width)
 
-
+    bind_cols(tibble(scaf = as.character(scaf), start = st, end, snpMid = median(pos), nSites = length(pos)), f)
   })
 
- AF_df <- bind_cols(AF_list)
- AF_df <- AF_df[complete.cases(AF_df),]
-
- popString <- c(A = "tryoni", B = "hybrid", C = "dorsalis", D = "oleae")
-
-
-
- f4 <- apply(AF_df, 1, function(y){
-   p1 <- y[popString["A"]]
-   p2 <- y[popString["B"]]
-   p3 <- y[popString["C"]]
-   p4 <- y[popString["D"]]
-
-   q1 <- 1 - p1
-   q2 <- 1 - p2
-   q3 <- 1 - p3
-   q4 <- 1 - p4
-
-
-   # f4 <- (p1 - p2) * (p3 - p4)
-   #
-   # cor <- (q1 - q2) * (q3 - q4)
-
-   # from simon martin script same result
-   f4 <- q1*p2*p3*q4 - p1*q2*p3*q4
-   cor <- p1*q2*q3*p4 - q1*p2*q3*p4
-
-
-   f4 + cor
- })
-
- denom <- apply(AF_df, 1, function(y){
-
-
-
-   p1 <- y[popString["A"]]
-   p2 <- y[popString["B"]]
-   p3 <- y[popString["C"]]
-   p4 <- y[popString["D"]]
-
-   q1 <- 1 - p1
-   q2 <- 1 - p2
-   q3 <- 1 - p3
-   q4 <- 1 - p4
-
-   # multiply by logical to negate lower allele for pd
-   pd <- p2* (p2>p3) + p3*(p3>=p2)
-   qd <- 1 - pd
-
-   fd <- q1*pd*pd*q4 - p1*qd*pd*q4
-   cor <- p1*qd*qd*p4 - q1*pd*qd*p4
-
-   fd <- fd + cor
-
- })
-
-fd <- sum(f4) / sum(denom)
-
-seqname <- locus@seqnames@values[1]
-start <- locus@ranges@start
-end <- start + locus@ranges@width
-
-start <- min(start)
-end <- max(end)
-windowMid <- (start + end) /2
-
-position <- seqGetData(gdsfile = GDS, var.name = "position")
-snpMid <- floor(median(position))
-nSites <- length(position)
-
-data_frame(SeqName = seqname, Start = start, End = end, windowMid, snpMid, nSites, fd)
+  bind_rows(testD)
 
 })
-
-
-fd <- bind_rows(div)
-
-
-library(readr)
-write_tsv(fd, "Figure for paper/fd_100kb.tsv")
-
-
-
-
 
 }
 
 
+.fourPop <- function(GDS, locus, pops, x){
 
+  p <- filter(pops, pops$Population %in% x)
+
+  AF <- getAF(GDS, locus, pops = p, minSites = minSites)
+
+  AF <- as.matrix(AF[complete.cases(AF),])
+
+  pos <- as.numeric(AF[,1])
+
+
+
+
+  f4Stats <- apply(AF, 1, function(z){
+
+    #### get base AF
+    p1 <- as.numeric(z[4])
+    p2 <- as.numeric(z[5])
+    p3 <- as.numeric(z[6])
+    p4 <- as.numeric(z[7])
+
+    ## get pd for fd
+    f4 <- .f4fun(p1,p2,p3,p4)
+
+    fd <- .f4fun(p1,pd,pd,p4)
+
+    fhom <- .f4fun(p1,p3,p3,p4)
+
+
+    tibble(f4,fhom,fd)
+
+  })
+
+  f4Stats <- bind_rows(f4Stats)
+
+  fd <- abs(sum(f4Stats$f4)/sum(f4Stats$fd))
+
+  f4 <- mean(f4Stats$f4)
+
+  fhom <- abs(sum(f4Stats$f4)/sum(f4Stats$fhom))
+
+  tibble(f4, fhom, fd)
+
+}
+
+.f4fun <- function(p1,p2,p3,p4){
+  q1 <- 1 - p1
+  q2 <- 1 - p2
+  q3 <- 1 - p3
+  q4 <- 1 - p4
+  f4p <- (p1 - p2) * (p3 - p4)
+  f4q <- (q1 - q2) * (q3 - q4)
+  f4Corr <- -1*((f4p + f4q)/2)
+
+}

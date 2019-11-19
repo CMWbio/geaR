@@ -44,7 +44,7 @@ setwd("/media/chris/Seagate Expansion Drive/1000Genomes/")
 contigMD <- tibble::data_frame(ID = "chr1", length = 10000000)
 
 # Parametersd
-windowSize <- 10000
+windowSize <- 100000
 stepSize <- 0
 minSites <- 0.25
 
@@ -64,7 +64,7 @@ pops2 <- split(pops, pops$Population)
 
 
 
-VariantOnlyMandF <- getDiversityStats(GDS, loci, minSites = 0.01, nCores = 4, stats = "dxy", pops = pops, ploidy = 2, pairwiseDeletion = TRUE)
+VariantOnlyMandF <- getDiversityStats(GDS, loci, minSites = 0.01, nCores = 2, stats = "dxy", pops = pops, ploidy = 2, pairwiseDeletion = TRUE)
 
 
 
