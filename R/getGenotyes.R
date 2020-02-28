@@ -33,7 +33,7 @@
 #' @rdname getGenotypes
 
 
-getGenotypes <- function(GDS, locus = NULL, minSites = 0.5, nucleotide = FALSE, ploidy = 2, pops = NULL, removeIndels = TRUE){
+getGenotypes <- function(GDS, locus = NULL, minSites = 0.5, raw = FALSE, ploidy = 2, pops = NULL, removeIndels = TRUE){
 
   stopifnot(minSites < 1 & minSites > 0)
   minSites <- sum(minSites * width(locus))
@@ -49,8 +49,6 @@ getGenotypes <- function(GDS, locus = NULL, minSites = 0.5, nucleotide = FALSE, 
 
   if(length(locus)){
     seqSetFilter(object = GDS, variant.sel = locus)
-
-
 
   }
 
@@ -86,42 +84,44 @@ getGenotypes <- function(GDS, locus = NULL, minSites = 0.5, nucleotide = FALSE, 
     #samples <- paste(rep(samples, each = ploidy), c(1:ploidy), sep = "/")
 
 
-    if(nucleotide){
-      # convert to nuceotides
-      alleleArr <- seqGetData(gdsfile = GDS, var.name = "allele")
-      genoList <- lapply(1:varNumber, function(x){
+    if(raw) return(list(genoArr, varNumber, samples))
 
-        # get position and replace NA with N
-        mat <- genoArr[,,x]
-        mat[is.na(mat)] <- "N"
-
-        # split allele string into vector
-        alleles <- strsplit(alleleArr[x], ",")[[1]]
-
-        # get genotype coding
-        geno <- 1:length(alleles) -1
-
-        # change RAW genotypes to nucleotide genotypes
-        res <- matrix(alleles[match(mat, geno)], 2)
-        mat <- ifelse(is.na(res), mat, res)
-        # vectorize to order alleles and name
-        mat <- c(mat)
-
-        ## remove alleles of unequal lengths ie insertions or deleletions
-        if(removeIndels & !length(unique(nchar(mat))) == 1) return(NULL)
-
-
-        mat <- matrix(mat, nrow = 1)
-        rownames(mat) <- position[x]
-        colnames(mat) <- paste(rep(samples, each = ploidy), c(1:ploidy), sep = "/")
-
-        return(mat)
-      })
-
-      # bind all elements in list into matrix
-      genoMat <- do.call(rbind, genoList)
-
-    }
+    # if(nucleotide){
+    #   # convert to nuceotides
+    #   alleleArr <- seqGetData(gdsfile = GDS, var.name = "allele")
+    #   genoList <- lapply(1:varNumber, function(x){
+    #
+    #     # get position and replace NA with N
+    #     mat <- genoArr[,,x]
+    #     mat[is.na(mat)] <- "N"
+    #
+    #     # split allele string into vector
+    #     alleles <- strsplit(alleleArr[x], ",")[[1]]
+    #
+    #     # get genotype coding
+    #     geno <- 1:length(alleles) -1
+    #
+    #     # change RAW genotypes to nucleotide genotypes
+    #     res <- matrix(alleles[match(mat, geno)], 2)
+    #     mat <- ifelse(is.na(res), mat, res)
+    #     # vectorize to order alleles and name
+    #     mat <- c(mat)
+    #
+    #     ## remove alleles of unequal lengths ie insertions or deleletions
+    #     if(removeIndels & !length(unique(nchar(mat))) == 1) return(NULL)
+    #
+    #
+    #     mat <- matrix(mat, nrow = 1)
+    #     rownames(mat) <- position[x]
+    #     colnames(mat) <- paste(rep(samples, each = ploidy), c(1:ploidy), sep = "/")
+    #
+    #     return(mat)
+    #   })
+    #
+    #   # bind all elements in list into matrix
+    #   genoMat <- do.call(rbind, genoList)
+    #
+    # }
     else {
 
       # concatenate array across 3d (Variant) margin, set colnames then replace NA with N
@@ -130,11 +130,9 @@ getGenotypes <- function(GDS, locus = NULL, minSites = 0.5, nucleotide = FALSE, 
       rownames(genoMat) <- position
       colnames(genoMat) <- paste(rep(samples, each = ploidy), c(1:ploidy), sep = "/")
       genoMat[is.na(genoMat)] <- "N"
+      return(genoMat)
 
-    }
-
-    #set variant positional information
-    return(genoMat)
+ }
   }
 
 }

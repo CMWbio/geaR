@@ -46,6 +46,7 @@ combineRanges <- function(x, y, nCores, overlap = "+"){
 
 
   data <- data[!is.na(data)]
+  data <- Filter(Negate(is.null), data)
 
   GRangesList(data)
 

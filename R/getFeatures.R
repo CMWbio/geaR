@@ -256,7 +256,7 @@ setMethod("getFeatures", signature = "GRanges",
 
                 #CDS <- Filter(length, CDS)
 
-                return(CDS)
+                return(allCDS)
               }
 
 

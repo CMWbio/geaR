@@ -16,8 +16,6 @@
 #' @useDynLib geaR
 #'
 #' @import Rcpp
-#' @import RcppArmadillo
-#' @import RcppEigen
 #'
 #' @rdname genoDist
 #' @export

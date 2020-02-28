@@ -70,26 +70,31 @@ setMethod("snpWindowMaker", signature = "data.frame",
 
 
                 position <- gr@ranges@start
+                if(length(position) > windowSize) {
+                  position <- zoo::rollapply(position, width = windowSize, by = stepSize, function(x){
+                    x
+                  })
+
+                  posList <- split(position, 1:nrow(position))
 
 
-                position <- zoo::rollapply(position, width = windowSize, by = stepSize, function(x){
-                  x
-                })
+                  grL <- lapply(posList, function(posX){
 
-                posList <- split(position, 1:nrow(position))
+                    gr <- gr[gr@ranges@start %in% posX]
+
+                    if(stepSize == windowSize) gr$lociType<- "tiledSnpWindow"
+                    else gr$lociType<- "slidingSnpWindow"
+
+                    gr
+                  })
+
+                  grL
 
 
-                grL <- lapply(posList, function(posX){
+                }
 
-                  gr <- gr[gr@ranges@start %in% posX]
 
-                  if(stepSize == windowSize) gr$lociType<- "tiledSnpWindow"
-                  else gr$lociType<- "slidingSnpWindow"
 
-                  gr
-                })
-
-                grL
 
             })
 

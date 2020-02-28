@@ -4,7 +4,7 @@
 \alias{getAF}
 \title{Calculates population based allele frequency}
 \usage{
-getAF(GDS, locus, minSites, pops)
+getAF(GDS, locus, minSites, pops, refAllele)
 }
 \arguments{
 \item{GDS}{allele frequency}

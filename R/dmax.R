@@ -18,7 +18,7 @@
 #' @export
 
 
-dmax<- function(distMat, popList, pairs, ploidy) {
+dmax <- function(distMat, popList, pairs, ploidy) {
   if(length(distMat)){
     dmax <- lapply(pairs, function(f){
       #population distance matrix for pairwise pop

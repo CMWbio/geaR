@@ -161,7 +161,7 @@ setMethod("getCodonFeatures", signature = "DNAStringSet",
                 }
                 if(refAnno@strand@values == "-") {
                   codDF <- tibble(seqnames = refAnno@seqnames@values,
-                                      strand = refAnno@strand@values, gene = exons[[x]]$Name[[1]],
+                                      strand = refAnno@strand@values, gene = exons[[x]]$gene[[1]],
                                       residue = rev(aaCodons), codon = rev(geneCodons), first = fst, second = snd, third = trd)
 
                   codDF <- gather(codDF, "codonPosition", "start", c("first", "second", "third"))

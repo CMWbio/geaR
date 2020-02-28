@@ -18,10 +18,9 @@
 #' @rdname getAF
 #' @export
 
-getAF <- function(GDS, locus, minSites, pops){
+getAF <- function(GDS, locus, minSites, pops, refAllele){
   stopifnot(minSites < 1 & minSites > 0)
   minSites <- sum(minSites * width(locus))
-
   popL <- split(pops, pops$Population)
 
   data <- map(seq(length(popL)), function(x){
@@ -35,6 +34,7 @@ getAF <- function(GDS, locus, minSites, pops){
 
     pos <- seqGetData(GDS, var.name = "position")
 
+    seqname <- seqGetData(GDS, var.name = "chromosome")
     ## Filtering empty arrays/arrays with too few variants
     if(length(pos) < minSites) {
 
@@ -48,11 +48,11 @@ getAF <- function(GDS, locus, minSites, pops){
       ref <- seqGetData(GDS, var.name = "$ref")
       alt <- seqGetData(GDS, var.name = "$alt")
 
-      AF <- seqAlleleFreq(GDS)
+      AF <- seqAlleleFreq(GDS, ref.allele =  refAllele)
 
-      df <- tibble::tibble(pos,ref,alt,AF)
+      df <- tibble::tibble(seqname,pos,ref,alt,AF)
       df <- df[nchar(df$ref) == nchar(df$alt) & nchar(df$alt) == 1,]
-      colnames(df) <- c("pos", "ref", "alt", paste0(n, "_AF"))
+      colnames(df) <- c("seqname", "pos", "ref", "alt", paste0(n, "_AF"))
 
       df
 
@@ -61,7 +61,9 @@ getAF <- function(GDS, locus, minSites, pops){
 
   })
 
-  data <- reduce(data, left_join, by = c("pos", "ref", "alt"))
+
+  data <- Filter(Negate(is.null), data)
+  if(length(data)) data <- reduce(data, left_join, by = c("seqname","pos", "ref", "alt"))
 
 
 

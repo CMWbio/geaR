@@ -4,7 +4,7 @@
 \alias{getGenotypes}
 \title{Import genotypes from GDS}
 \usage{
-getGenotypes(GDS, locus = NULL, minSites = 0.5, nucleotide = FALSE,
+getGenotypes(GDS, locus = NULL, minSites = 0.5, raw = FALSE,
   ploidy = 2, pops = NULL, removeIndels = TRUE)
 }
 \arguments{
@@ -14,13 +14,13 @@ getGenotypes(GDS, locus = NULL, minSites = 0.5, nucleotide = FALSE,
 
 \item{minSites}{\code{numeric} minimum number of sites as a proportion of loci length}
 
-\item{nucleotide}{\code{logical} Import RAW genotypes or nucleotides}
-
 \item{ploidy}{\code{numeric} ploidy of sample}
 
 \item{pops}{\code{data_frame} populaiton dataFrame}
 
 \item{removeIndels}{removes indels}
+
+\item{nucleotide}{\code{logical} Import RAW genotypes or nucleotides}
 }
 \value{
 A \code{matrix} of genotypes
