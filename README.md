@@ -17,8 +17,11 @@ devtools::install_github("CMWbio/geaR")
 # Quick usage 
 For detailed usage please see here.
 The easiest way to use geaR is to use the cog/gear object interface. 
-This example will use a reasonably sized human chromosome 20 downloaded from here[ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/] on a 4 core machine.
+This example will use a reasonably sized human chromosome 20 downloaded from here[ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/] on a 4 core laptop.
 
+In the example we will calculate nucleotide diversity (pi), genetic distance (dXY), minimum distance (dmin), maximum distance (dmax), Fst, and ancesteral distance (da) for 100 populaitons of 10 diploid individuals per populaiton. As geaR is made to carry out analysis from a single function we will also output haplotypes within each window to file in fasta format.
+
+Reading in this many samples can consume reasonable amounts of ram that scale with the number of cores used. For most analyses (including this one, 6Gb peak usage) a 1-2Gb peak ram usage is observed for each core. 
 
 ```
 ## Make 100kb windows across the genome.
@@ -34,7 +37,7 @@ loci <- windowMaker(chr20_df, windowSize = 100000, stepSize = 0,  nCores = 4)
 
 ## Next we will construct our analysis
 ### first loading the GDS and setting up population definitions.
-GDS <- seqOpen("/media/chris/Seagate Expansion Drive/geaR_Test/ALL.chr20.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.gds")
+GDS <- seqOpen("~/Desktop/setupGear/ALL.chr20.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.gds")
 
 ### We can easily query the GDS for sample names.
 samples <- seqGetData(gdsfile = GDS, var.name = "sample.id")
