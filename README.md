@@ -16,6 +16,9 @@ devtools::install_github("CMWbio/geaR")
 ```
 # Quick usage 
 For detailed usage please see here.
+
+**While using please try and be careful with ram usage. If you have an analysis size of 1000 samples with an average of ~100000 bp in each analysis region (eg a 1Mb tiled window) try to run on 1 core first to see your memory requirements**
+
 The easiest way to use geaR is to use the cog/gear object interface. 
 This example will use a reasonably sized human chromosome 20 downloaded from here[ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/] on a 4 core laptop.
 
