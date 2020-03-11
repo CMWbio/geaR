@@ -4,8 +4,7 @@
 \alias{makeGear}
 \title{make gear object}
 \usage{
-makeGear(loci, populations, outgroup = vector("character", 1),
-  cogs = list())
+makeGear(loci, populations, outgroup = vector("character", 1), cogs = list())
 }
 \arguments{
 \item{loci}{\code{GRangesList} containing genomic loci to work on}

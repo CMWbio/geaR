@@ -4,8 +4,15 @@
 \alias{getGenotypes}
 \title{Import genotypes from GDS}
 \usage{
-getGenotypes(GDS, locus = NULL, minSites = 0.5, raw = FALSE,
-  ploidy = 2, pops = NULL, removeIndels = TRUE)
+getGenotypes(
+  GDS,
+  locus = NULL,
+  minSites = 0.5,
+  raw = FALSE,
+  ploidy = 2,
+  pops = NULL,
+  removeIndels = TRUE
+)
 }
 \arguments{
 \item{GDS}{\code{GDS} object with variant data to import genotypes from}

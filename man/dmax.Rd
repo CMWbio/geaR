@@ -22,6 +22,5 @@ A \code{dataframe} maximum genetic distance between samples
 Calculates maximum population genetic distance from hamming distance
 }
 \details{
-Authours: Chris Ward
 Calculates maximum population genetic distance from hamming distance
 }

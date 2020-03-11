@@ -4,7 +4,7 @@
 \alias{RND}
 \title{Calculates Relative Node Depth}
 \usage{
-RND(distMat, popList, pairs, ploidy, outgroup, type = "fender")
+RND(distMat, popList, pairs, ploidy, outgroup, type = "feder")
 }
 \arguments{
 \item{distMat}{hamming distance matrix calculated using the hidden function \code{genoDist}}

@@ -7,6 +7,8 @@
 #'
 #' @return the output of the supplied cog
 #'
+#'
+#' @importFrom combinat permn
 #' @import furrr
 #' @importFrom future plan
 #' @importFrom dplyr bind_cols
@@ -29,7 +31,7 @@ setMethod("analyzeCog", signature(c(cog = "cog.NULL")),
 #' @aliases analyzeCog
 setMethod("analyzeCog", signature(c(cog = "cog.diversityFULL")),
           function(cog, pairs, distMat,
-                   arg, popList, seqname, start, end, windowMid, snpMid, nSites, locus){
+                   arg, popList, seqname, start, end, windowMid, snpMid, nSites, locus, outgroup){
               
               
               #### build up stats to calculate
@@ -44,7 +46,9 @@ setMethod("analyzeCog", signature(c(cog = "cog.diversityFULL")),
               dmin <- c()
               dmax <- c()
               fst <- c()
-              
+              rndMin <- c()
+              rndFeder <- c()
+              rD <- c()
               
               #### conditionally calculates stats of interes based on cog@stats
               if("dxy" %in% cog@stats) dxy <- neisDxy(distMat, popList, pairs, ploidy = arg@ploidy)
@@ -59,13 +63,18 @@ setMethod("analyzeCog", signature(c(cog = "cog.diversityFULL")),
               
               if("Fst" %in% cog@stats) fst <- Nei82Fst(distMat, popList, pairs, ploidy = arg@ploidy, weighted = TRUE)
               
+              if("RNDmin" %in% cog@stats & !is.null(outgroup)) rndMin <- RND(istMat, popList, pairs, ploidy = arg@ploidy, outgroup = outgroup, type = "min")
+              
+              if("RNDfeder" %in% cog@stats & !is.null(outgroup)) rndFeder <- RND(istMat, popList, pairs, ploidy = arg@ploidy, outgroup = outgroup, type = "feder")
+     
+              if("FTD" %in% cog@stats & !is.null(outgroup)) rD <- relDxy(distMat, popList, ploidy = arg@ploidy, outgroup = outgroup)
               
               #### if a genes are used in construction of gear@Loci tehy will have a name
               #### retreive this and add this to the filename
               if("Name" %in% colnames(locus@elementMetadata)) {
                   gNames <- paste(unique(locus$Name), collapse = ",")
-                  bind_cols(tibble(SeqName = seqname, Start = start, End = end, Gene = gNames, windowMid, snpMid, nSites), pi, dxy, da, dmin, dmax, fst)}
-              else bind_cols(tibble(SeqName = seqname, Start = start, End = end, windowMid, snpMid, nSites), pi, dxy, da, dmin, dmax, fst)
+                  bind_cols(tibble(SeqName = seqname, Start = start, End = end, Gene = gNames, windowMid, snpMid, nSites), pi, dxy, da, dmin, dmax, fst, rndMin, rndFeder, rD)}
+              else bind_cols(tibble(SeqName = seqname, Start = start, End = end, windowMid, snpMid, nSites), pi, dxy, da, dmin, dmax, fst, rndMin, rndFeder, rD)
           })
 
 
@@ -81,7 +90,7 @@ setMethod("analyzeCog", signature(c(cog = "cog.admixture")),
               ### specified tests do not contain all populations in gear@Populaitons
               uTest <- unique(pops$Population)
               noOut <- uTest[uTest != outgroup]
-              if(any(cog@fourPop == "all")) cog@fourPop <- lapply(combinat::permn(noOut), function(x) c(x, outgroup))
+              if(any(unlist(cog@fourPop) == "all")) cog@fourPop <- lapply(combinat::permn(noOut), function(x) c(x, outgroup))
               
               p <- filter(pops, pops$Population %in% unique(unlist(cog@fourPop)))
               

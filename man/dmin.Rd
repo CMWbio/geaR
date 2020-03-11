@@ -22,6 +22,5 @@ A \code{dataframe} mean minimum genetic distance between samples
 Calculates minimum population genetic distance from hamming distance
 }
 \details{
-Authours: Chris Ward
 Calculates minimum population genetic distance from hamming distance
 }

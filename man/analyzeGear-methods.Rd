@@ -9,6 +9,8 @@ analyzeGear(GDS, gear = NULL, ...)
 \arguments{
 \item{GDS}{\code{character} contating the path to a GDS file 
 or an already imported \code{SeqVarGDSClass}}
+
+\item{gear}{\code{gear} an object created with \code{makeGear()} contating the desired analyses.}
 }
 \value{
 the supplied object with cogs replaced by results

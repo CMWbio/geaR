@@ -8,6 +8,7 @@
 #' 
 #' @param GDS \code{character} contating the path to a GDS file 
 #' or an already imported \code{SeqVarGDSClass} 
+#' @param gear \code{gear} an object created with \code{makeGear()} contating the desired analyses.
 #'
 #' @return the supplied object with cogs replaced by results
 #'
@@ -112,7 +113,7 @@ setMethod("analyzeGear", signature = c(GDS = "SeqVarGDSClass"),
                           #### calculate diversity statistics, will return NULL if gear@DiversityStatsFULL
                           #### slot is cog.NULL
                           divFULL <- analyzeCog(cog = gear@DiversityStatsFULL, pairs = pairs, distMat = distMat,
-                                                arg = gear@Args, popList, seqname, start, end, windowMid, snpMid, nSites, locus)
+                                                arg = gear@Args, popList, seqname, start, end, windowMid, snpMid, nSites, locus, outgroup = gear@Outgroup)
                           #### output trees, will return NULL if gear@OutputTrees
                           #### slot is cog.NULL
                           analyzeCog(cog = gear@OutputTrees, GDS, arg = gear@Args, pops = gear@Populations, locus, distMat)

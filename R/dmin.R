@@ -2,7 +2,7 @@
 #'
 #' @description Calculates minimum population genetic distance from hamming distance
 #'
-#' @details Authours: Chris Ward
+#' @details
 #' Calculates minimum population genetic distance from hamming distance
 #'
 #'
@@ -15,8 +15,6 @@
 #' @return A \code{dataframe} mean minimum genetic distance between samples
 #'
 #' @rdname dmin
-#' @export
-
 
 dmin <- function(distMat, popList, pairs, ploidy) {
   if(length(distMat)){

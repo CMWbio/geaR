@@ -15,10 +15,8 @@
 #' @return A \code{dataframe} containing relative node depth
 #'
 #' @rdname RND
-#' @export
 
-
-RND <- function(distMat, popList, pairs, ploidy, outgroup, type = "fender") {
+RND <- function(distMat, popList, pairs, ploidy, outgroup, type = "feder") {
   if(length(distMat)){
     RND <- lapply(pairs, function(f){
 
@@ -37,7 +35,7 @@ RND <- function(distMat, popList, pairs, ploidy, outgroup, type = "fender") {
 
         dout <- (mean(dxo) + mean(dyo)) / 2
 
-        if(type == "fender"){
+        if(type == "feder"){
 
           #calculate dxy
           dxy <- mean(distMat[as.vector(outer(popList[[p1]]$Sample, 1:ploidy, paste, sep = "/")),

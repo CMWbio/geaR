@@ -2,7 +2,7 @@
 #'
 #' @description Calculates maximum population genetic distance from hamming distance
 #'
-#' @details Authours: Chris Ward
+#' @details 
 #' Calculates maximum population genetic distance from hamming distance
 #'
 #'
@@ -15,7 +15,6 @@
 #' @return A \code{dataframe} maximum genetic distance between samples
 #'
 #' @rdname dmax
-#' @export
 
 
 dmax <- function(distMat, popList, pairs, ploidy) {

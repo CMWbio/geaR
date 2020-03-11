@@ -26,6 +26,8 @@
 #'
 #' @importFrom BSgenome getSeq
 #' @importFrom Biostrings readDNAStringSet
+#' @importFrom Biostrings readDNAStringSet
+
 #' @importFrom Biostrings codons
 #'
 #'
@@ -88,126 +90,122 @@ setMethod("getCodonFeatures", signature = "DNAStringSet",
             )
 
 
-            # get the genes from the genome using GRange list
-            genes <- BSgenome::getSeq(genome, exons)
+            #### add genes to exon grange this saves alot of memory
+            #### why the fuck do DNAstringSets take up so much memory???
+            exons <- .getGenes(genome, exons)
+            
+            plan(multiprocess, workers = nCores)
+            codList <- future_map(seq(exons), .f = .mapCodons, exons, lookUP)
 
-
-            codList <- mclapply(seq(exons), mc.cores = nCores, function(x){
-
-              iGene <- genes[[x]]
-              refAnno <- exons[[x]]
-
-              catGene <- unlist(iGene)
-
-              if((length(catGene)/3)%%1 == 0 & !grepl("N", as.character(catGene), ignore.case = TRUE)){
-
-                # get codons cahnge to lower case
-                geneCodons <- tolower(codons(catGene))
-
-                # initialize aa sequence
-                aaCodons <-  geneCodons
-
-                residueRename <- lapply(1:length(lookUP), function(z){
-
-                  aaCodons[grepl(lookUP[z], aaCodons)] <<- names(lookUP)[z]
-
-                })
-
-                rm(residueRename)
-
-
-                #if(refAnno@strand@values == "+") {
-
-                # get teh exon widths for the gene
-                #exonWidths <- iGene@ranges@width / 3
-
-                # sum to get the sfinal position in each exon codon position
-                #lastCodon <- cumsum(exonWidths)
-                # get the first codon numbers
-                #firstCodon <- as.integer(lastCodon - exonWidths + 1)
-
-                #lastCodon <- as.integer(lastCodon)
-
-                positions <- lapply(seq(refAnno), function(y){
-
-                  #get exon
-                  ex <- refAnno[y]
-
-                  ex <- seq(start(ex), end(ex))
-
-                  if(refAnno@strand@values == "-") ex <- rev(ex)
-
-                  ex
-
-
-                })
-
-                positions <- do.call("c", positions)
-
-
-                fst <- positions[seq(1, length(positions), 3)]
-                snd <- positions[seq(2, length(positions), 3)]
-                trd <- positions[seq(3, length(positions), 3)]
-
-
-                if(refAnno@strand@values == "+") {
-                  codDF <- tibble(seqnames = refAnno@seqnames@values,start = fst, end = trd,
-                                      strand = refAnno@strand@values, gene = exons[[x]]$Name[[1]],
-                                      residue = aaCodons, codon = geneCodons, first = fst, second = snd, third = trd)
-                  codDF <- gather(codDF, "codonPosition", "start", c("first", "second", "third"))
-                  codDF["end"] <- codDF$start
-
-                  codDF <- codDF[order(codDF$start),]
-                }
-                if(refAnno@strand@values == "-") {
-                  codDF <- tibble(seqnames = refAnno@seqnames@values,
-                                      strand = refAnno@strand@values, gene = exons[[x]]$gene[[1]],
-                                      residue = rev(aaCodons), codon = rev(geneCodons), first = fst, second = snd, third = trd)
-
-                  codDF <- gather(codDF, "codonPosition", "start", c("first", "second", "third"))
-                  codDF["end"] <- codDF$start
-
-                  codDF <- codDF[order(-codDF$start),]
-                }
-
-
-                if(fourFoldCodon %in% c("only", "exclude")){
-
-                  fourFold <- c("Ala", "Gly", "Pro", "Thr", "Val", "Arg4", "Leu4", "Ser4")
-                  codDF$rownum <- 1:nrow(codDF)
-                  cod4Fold <- codDF[codDF$residue %in% fourFold,]
-
-
-                }
-
-                if(fourFoldCodon == "only"){
-                  position <- "third"
-
-                  codDF <- cod4Fold[colnames(cod4Fold) != "rownum"]
-
-                }
-
-                if(fourFoldCodon == "exclude"){
-                  cod4Fold <- cod4Fold[cod4Fold$codonPosition == "third",]
-
-                  codDF <- codDF[!codDF[["rownum"]] %in% cod4Fold[["rownum"]],]
-
-                  codDF <- codDF[colnames(codDF) != "rownum"]
-
-                }
-
-
-
-
-                codDF <- codDF[codDF$codonPosition %in% position,]
-
-                codGR <- makeGRangesFromDataFrame(codDF, keep.extra.columns = TRUE)
-              }
-
-
-            })
-
-            codList <- Filter(Negate(is.null), codList)
-            GRangesList(codList)
-
+            codList <- dplyr::bind_rows(codList)
+            codList <- makeGRangesListFromDataFrame(codList, split.field = "gene", keep.extra.columns = TRUE)
           })
+
+
+.getGenes <- function(genome, exons){
+    # get the genes from the genome using GRange list
+    genes <- getSeq(genome, exons)
+    exons@unlistData$seq <- as.character(unlist(genes))
+    exons
+}
+
+.mapCodons <- function(x, ...){
+    
+    refAnno <- exons[[x]]
+    iGene <- DNAStringSet(refAnno$seq)
+    
+    catGene <- unlist(iGene)
+    
+    if((length(catGene)/3)%%1 == 0 & !grepl("N", as.character(catGene), ignore.case = TRUE)){
+        
+        # get codons cahnge to lower case
+        geneCodons <- tolower(codons(catGene))
+        
+        # initialize aa sequence
+        aaCodons <-  geneCodons
+        
+        aaCodons <- .replaceCodonNames(lookUP, aaCodons)
+        
+        positions <- .getCodonPositions(refAnno)
+        
+        fst <- positions[seq(1, length(positions), 3)]
+        snd <- positions[seq(2, length(positions), 3)]
+        trd <- positions[seq(3, length(positions), 3)]
+        
+        
+        codDF <- .formatCodonStrands(refAnno, fst, snd, trd, geneCodons, aaCodons, exons, x)
+        
+        # 
+        # if(fourFoldCodon %in% c("only", "exclude")){
+        #     
+        #     fourFold <- c("Ala", "Gly", "Pro", "Thr", "Val", "Arg4", "Leu4", "Ser4")
+        #     codDF$rownum <- 1:nrow(codDF)
+        #     cod4Fold <- codDF[codDF$residue %in% fourFold,]
+        #     
+        #     
+        # }
+        # 
+        # if(fourFoldCodon == "only"){
+        #     codDF <- cod4Fold[colnames(cod4Fold) != "rownum"]
+        #     
+        # }
+        # 
+        # if(fourFoldCodon == "exclude"){
+        #     cod4Fold <- cod4Fold[cod4Fold$codonPosition == "third",]
+        #     
+        #     codDF <- codDF[!codDF[["rownum"]] %in% cod4Fold[["rownum"]],]
+        #     
+        #     codDF <- codDF[colnames(codDF) != "rownum"]
+        #     
+        # }
+        
+        codDF <- codDF[codDF$codonPosition %in% position,]
+        }
+
+}
+
+.formatCodonStrands <- function(refAnno, fst, snd, trd, geneCodons, aaCodons, exons, x){
+    if(refAnno@strand@values == "+") {
+        codDF <- tibble(seqnames = refAnno@seqnames@values,start = fst, end = trd,
+                        strand = refAnno@strand@values, gene = exons[[x]]$gene[[1]],
+                        residue = aaCodons, codon = geneCodons, first = fst, second = snd, third = trd)
+        codDF <- gather(codDF, "codonPosition", "start", c("first", "second", "third"))
+        codDF["end"] <- codDF$start
+        
+        codDF <- codDF[order(codDF$start),]
+    }
+    if(refAnno@strand@values == "-") {
+        codDF <- tibble(seqnames = refAnno@seqnames@values,
+                        strand = refAnno@strand@values, gene = exons[[x]]$gene[[1]],
+                        residue = rev(aaCodons), codon = rev(geneCodons), first = fst, second = snd, third = trd)
+        
+        codDF <- gather(codDF, "codonPosition", "start", c("first", "second", "third"))
+        codDF["end"] <- codDF$start
+        
+        codDF <- codDF[order(-codDF$start),]
+    }
+    return(codDF)
+}
+
+
+.replaceCodonNames <- function(lookUP, aaCodons){
+    residueRename <- lapply(1:length(lookUP), function(z){
+        aaCodons[grepl(lookUP[z], aaCodons)] <<- names(lookUP)[z]
+    })
+    return(aaCodons)
+}
+
+.getCodonPositions <- function(refAnno){
+    positions <- lapply(seq(refAnno), function(y){
+        #get exon
+        ex <- refAnno[y]
+        
+        ex <- seq(start(ex), end(ex))
+        
+        if(refAnno@strand@values == "-") ex <- rev(ex)
+        
+        ex
+    })
+    positions <- do.call("c", positions)
+}
+

@@ -1,4 +1,4 @@
-#' Calculates block jackknifed mean for statistics
+#' Calculates block jackkniffed mean for statistics
 #'
 #' @description summarize statistics using a block jacknife
 #'

@@ -3,59 +3,30 @@
 %   R/summarizeStats.R
 \name{summarizeStats}
 \alias{summarizeStats}
-\title{Calculates block jackknifed mean for statistics}
+\title{Calculates block jackkniffed mean for statistics}
 \usage{
-summarizeStats(x, blockSize = 1e+06, which = NULL, nCores = 1,
-  stats = NULL)
+summarizeStats(x, blockSize = 1e+06, which = NULL, nCores = 1, stats = NULL)
 
-summarizeStats(x, blockSize = 1e+06, which = NULL, nCores = 1,
-  stats = NULL)
+summarizeStats(x, blockSize = 1e+06, which = NULL, nCores = 1, stats = NULL)
 
-summarizeStats(x, blockSize = 1e+06, which = NULL, nCores = 1,
-  stats = NULL)
+summarizeStats(x, blockSize = 1e+06, which = NULL, nCores = 1, stats = NULL)
 }
 \arguments{
 \item{x}{A \code{matrix} \cr
 Allele genotypes for each individual}
 
-\item{blockSize}{\code{integer} default \code{1000000L}. The block size in
-basepairs.}
-
-\item{which}{\code{character,NULL} default \code{NULL}. Only calculates
-across specified scaffolds/chromosomes. if  \code{NULL} will calculate
-across all windows provided.}
-
-\item{nCores}{\code{numeric} Number of cores allcated for calculations.}
-
-\item{stats}{\code{character,NULL} default \code{NULL}. Only calculates
-for specified statistics contained in the dataframe. if  \code{NULL} will
-calculate across all statistics provided.}
-
-\item{nCores}{\code{numeric} Number of cores allcated for calculations.}
-
-\item{x}{A \code{matrix} \cr
-Allele genotypes for each individual}
-
-\item{blockSize}{\code{integer} default \code{1000000L}. The block size in
-basepairs.}
-
-\item{which}{\code{character,NULL} default \code{NULL}. Only calculates
-across specified scaffolds/chromosomes. if  \code{NULL} will calculate
-across all windows provided.}
-
-\item{nCores}{\code{numeric} Number of cores allcated for calculations.}
-
-\item{stats}{\code{character,NULL} default \code{NULL}. Only calculates
-for specified statistics contained in the dataframe. if  \code{NULL} will
-calculate across all statistics provided.}
-
-\item{nCores}{\code{numeric} Number of cores allcated for calculations.}
-
-\item{x}{A \code{matrix} \cr
-Allele genotypes for each individual}
-
 \item{blockSize}{\code{logical}
 If \code{TRUE} missing data will be removed from distance calculations in a paiwise manner.}
+
+\item{which}{\code{character,NULL} default \code{NULL}. Only calculates
+across specified scaffolds/chromosomes. if  \code{NULL} will calculate
+across all windows provided.}
+
+\item{nCores}{\code{numeric} Number of cores allcated for calculations.}
+
+\item{stats}{\code{character,NULL} default \code{NULL}. Only calculates
+for specified statistics contained in the dataframe. if  \code{NULL} will
+calculate across all statistics provided.}
 }
 \value{
 A \code{dataframe} with mean, jackSE, Zscore, median, and maximum for

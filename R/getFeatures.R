@@ -35,53 +35,59 @@
 #'
 #' @examples
 #'
-#' @name getFeatures
-#' @rdname getFeatures-methods
+#' @name makeFeatures
+#' @rdname makeFeatures-methods
 #' @export
 
-setGeneric("getFeatures", function(gffName,  feature = "gene:cds", nCores = 1,
-                                   longestIsoform = FALSE, includeRange, geneIDField = "ID", ...){
-  standardGeneric("getFeatures")
+setGeneric("makeFeatures", function(gffName,  feature, nCores = 1,
+                                   longestIsoform, includeRange, geneIDField, ...){
+  standardGeneric("makeFeatures")
 })
 
 
-#' @aliases getFeatures,which-Granges
+#' @aliases makeFeatures,which-Granges
 #' @export
-setMethod("getFeatures", signature(gffName = "character",
+setMethod("makeFeatures", signature(gffName = "character",
                                    includeRange = "GRanges"),
-          function(gffName, feature = "gene:cds", nCores = 1, longestIsoform = FALSE, includeRange, ...){
+          function(gffName, feature, nCores,
+                   longestIsoform, includeRange, geneIDField){
             G_range <- import.gff(gffName, which = includeRange)
-            getFeatures(gffName = G_range, feature, nCores, longestIsoform, ...)
+            makeFeatures(gffName = G_range, feature = feature, nCores = nCores, longestIsoform = longestIsoform, geneIDField = geneIDField)
           })
 
-#' @aliases getFeatures,which-GrangesList
+#' @aliases makeFeatures,which-GrangesList
 #' @export
-setMethod("getFeatures", signature(gffName = "character",
+setMethod("makeFeatures", signature(gffName = "character",
                                    includeRange = "GRangesList"),
-          function(gffName, feature = "gene:cds", nCores = 1, longestIsoform = FALSE, includeRange, ...){
+          function(gffName, feature, nCores,
+                   longestIsoform, includeRange, geneIDField){
             G_range <- import.gff(gffName, which = includeRange)
-            getFeatures(gffName = G_range, feature, nCores, longestIsoform, ...)
+            makeFeatures(gffName = G_range, feature = feature, nCores = nCores, longestIsoform = longestIsoform, geneIDField = geneIDField)
           })
 
-#' @aliases getFeatures,which
+#' @aliases makeFeatures,which
 #' @export
-setMethod("getFeatures", signature(gffName = "character"),
-          function(gffName, feature = "gene:cds", nCores = 1, longestIsoform = FALSE, ...){
+setMethod("makeFeatures", signature(gffName = "character"),
+          function(gffName, feature, nCores,
+                   longestIsoform, geneIDField){
             G_range <- import.gff(gffName)
-            getFeatures(gffName = G_range, feature, nCores, longestIsoform, ...)
+            makeFeatures(gffName = G_range, feature = feature, nCores = nCores, longestIsoform = longestIsoform, geneIDField = geneIDField)
           })
 
 
 
-#' @aliases getFeatures,import
+#' @aliases makeFeatures,import
 #' @export
-setMethod("getFeatures", signature = "GRanges",
-          function(gffName, feature = "gene:cds", nCores = 1, longestIsoform = FALSE, includeRange, ...){
+setMethod("makeFeatures", signature = "GRanges",
+          function(gffName, feature, nCores,
+                   longestIsoform, geneIDField){
 
             # check ig gene is specified in the feature parameter
             if(grepl("gene", feature)){
-
+              
+              if(missing(geneIDField)) geneIDField <- "ID"
               gffName$gene <- gffName@elementMetadata[[geneIDField]]
+              gffName@elementMetadata <- gffName@elementMetadata[,colnames(gffName@elementMetadata) %in% c("type", "ID", "Name", "gene", "Parent")]
 
 
               # filter all GRanges to contain only those with type == gene
@@ -104,8 +110,8 @@ setMethod("getFeatures", signature = "GRanges",
               if(feature == "gene:exons"){
 
                 # get all exons from all GRanges
-                allExons <- gffName[gffName$type == "exon",]
-                allExons@elementMetadata <- allExons@elementMetadata[colnames(allExons@elementMetadata) %in% c("gene", "Parent")]
+                all <- gffName[gffName$type == "exon",]
+                all@elementMetadata <- all@elementMetadata[colnames(all@elementMetadata) %in% c("gene", "Parent")]
 
                 if(length(unlist(mRNA$Parent))){
                   mRNA_df <- tibble::tibble(geneID = unlist(mRNA$Parent), mrnaID = mRNA$ID)
@@ -119,7 +125,7 @@ setMethod("getFeatures", signature = "GRanges",
                   mRNAlookup <- comb_df$geneID
                   names(mRNAlookup) <- comb_df$mrnaID
 
-                  gNames <- unlist(allExons$Parent)
+                  gNames <- unlist(all$Parent)
                   gNames <- unname(mRNAlookup[gNames])
 
                   geneLookup <-  comb_df$geneName
@@ -127,63 +133,29 @@ setMethod("getFeatures", signature = "GRanges",
 
                   gNames <- unname(geneLookup[gNames])
 
-                  allExons$gene <- gNames
-                } else allExons$gene <- unlist(allExons$Parent)
+                  all$gene <- gNames
+                } else all$gene <- unlist(all$Parent)
 
-                allExons <- split(allExons, allExons$gene)
+                all <- split(all, all$gene)
 
                 # get mRNA using the gene ID field
 
 
-                ExonName <- names(allExons)
-
-
-                mapFun <- function(y){
-
-                  rec <- allExons[[y]]
-
-                  mRNA <- split(rec, rec$gene)
-
-                  #select longest isoform
-                  if(longestIsoform){
-                    #check for biotype to only select isoforms with 'protien_coding' and 'TEC'
-                    #if("biotype" %in% names(mRNA@elementMetadata)){
-
-                    #     if(length(mRNA$biotype) != 1) mRNA <- subset(mRNA, biotype %in% c("protein_coding", "TEC"))
-                    #
-                    #   }
-                    #
-
-                    isoformLengths <- unlist(lapply(mRNA, function(x){
-
-                      sum(width(x))
-                    }))
-
-                    # get the max length sequence, extract first element in longest if there are multiple longest
-                    longest <- which(isoformLengths == max(isoformLengths))
-                    mRNA <- mRNA[[longest]]} else mRNA <- mRNA[[1]]
-
-                  tibble::as_tibble(mRNA)
-
-                }
-
-
-
+                ExonName <- names(all)
 
                 plan(multiprocess, workers = nCores)
-                allExons <- future_map(seq_along(allExons), mapFun)
+                all <- future_map(seq_along(all), .f = .mapFun, all, longestIsoform)
 
-                allExons <- dplyr::bind_rows(allExons)
-                allExons <- makeGRangesFromDataFrame(allExons, keep.extra.columns = TRUE)
-                allExons <- GRangesList(split(allExons, allExons$gene))
-                return(allExons)
+                all <- dplyr::bind_rows(all)
+                all <- makeGRangesListFromDataFrame(all, split.field = "gene", keep.extra.columns = TRUE)            
+                return(all)
               }
               if(feature == "gene:cds"){
 
                 # get all exons from all GRanges
-                allCDS <- gffName[gffName$type == "CDS",]
+                all <- gffName[gffName$type == "CDS",]
 
-                allCDS@elementMetadata <- allCDS@elementMetadata[colnames(allCDS@elementMetadata) %in% c("gene", "Parent")]
+                all@elementMetadata <- all@elementMetadata[colnames(all@elementMetadata) %in% c("gene", "Parent")]
 
                 #make lookup table for CDS parent tracking
 
@@ -199,7 +171,7 @@ setMethod("getFeatures", signature = "GRanges",
                   mRNAlookup <- comb_df$geneID
                   names(mRNAlookup) <- comb_df$mrnaID
 
-                  gNames <- unlist(allCDS$Parent)
+                  gNames <- unlist(all$Parent)
                   gNames <- unname(mRNAlookup[gNames])
 
                   geneLookup <-  comb_df$geneName
@@ -207,62 +179,27 @@ setMethod("getFeatures", signature = "GRanges",
 
                   gNames <- unname(geneLookup[gNames])
 
-                  allCDS$gene <- gNames
-                } else allCDS$gene <- unlist(allCDS$Parent)
+                  all$gene <- gNames
+                } else all$gene <- unlist(all$Parent)
 
 
-                allCDS <- split(allCDS, allCDS$gene)
-
-                # get mRNA using the gene ID field
-
-                mapFun <- function(y){
-
-                  rec <- allCDS[[y]]
-
-                  mRNA <- split(rec, rec$gene)
-
-                  #select longest isoform
-                  if(longestIsoform){
-                    #check for biotype to only select isoforms with 'protien_coding' and 'TEC'
-                    #if("biotype" %in% names(mRNA@elementMetadata)){
-
-                    #     if(length(mRNA$biotype) != 1) mRNA <- subset(mRNA, biotype %in% c("protein_coding", "TEC"))
-                    #
-                    #   }
-                    #
-
-                    isoformLengths <- unlist(lapply(mRNA, function(x){
-
-                      sum(width(x))
-                    }))
-
-                    # get the max length sequence, extract first element in longest if there are multiple longest
-                    longest <- which(isoformLengths == max(isoformLengths))
-                    mRNA <- mRNA[[longest]]} else mRNA <- mRNA[[1]]
-
-                  tibble::as_tibble(mRNA)
-
-                }
-
-
+                all <- split(all, all$gene)
 
                 plan(multiprocess, workers = nCores)
 
-                allCDS <- future_map(seq_along(allCDS), mapFun)
+                all <- future_map(seq_along(all), .f = .mapFun, all, longestIsoform)
 
-                allCDS <- dplyr::bind_rows(allCDS)
-                allCDS <- makeGRangesFromDataFrame(allCDS, keep.extra.columns = TRUE)
-                allCDS <- GRangesList(split(allCDS, allCDS$gene))
+                all <- dplyr::bind_rows(all)
+                all <- makeGRangesListFromDataFrame(all, split.field = "gene", keep.extra.columns = TRUE)
+                
 
                 #CDS <- Filter(length, CDS)
 
-                return(allCDS)
+                return(all)
               }
 
 
             }
-
-
 
             #get the psuedogenes out
             if(feature == "pseudogene"){
@@ -302,3 +239,34 @@ setMethod("getFeatures", signature = "GRanges",
 
 
           })
+
+.mapFun <- function(y, all, longestIsoform){
+    
+    rec <- all[[y]]
+    
+    mRNA <- split(rec, as.character(rec$Parent))
+    
+    #select longest isoform
+    if(longestIsoform){
+        #check for biotype to only select isoforms with 'protien_coding' and 'TEC'
+        #if("biotype" %in% names(mRNA@elementMetadata)){
+        
+        #     if(length(mRNA$biotype) != 1) mRNA <- subset(mRNA, biotype %in% c("protein_coding", "TEC"))
+        #
+        #   }
+        #
+        
+        isoformLengths <- unlist(lapply(mRNA, function(x){
+            
+            sum(width(x))
+        }))
+        
+        # get the max length sequence, extract first element in longest if there are multiple longest
+        longest <- which(isoformLengths == max(isoformLengths))[1]
+        mRNA <- mRNA[[longest]]} else mRNA <- mRNA[[1]]
+    
+    tibble::as_tibble(mRNA)
+    
+}
+
+
