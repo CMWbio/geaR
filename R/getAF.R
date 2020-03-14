@@ -50,7 +50,8 @@ getAF <- function(GDS, locus, minSites, pops, refAllele){
 
       AF <- seqAlleleFreq(GDS, ref.allele =  refAllele)
 
-      df <- tibble::tibble(seqname,pos,ref,alt,AF)
+      df <- tibble(seqname,pos,ref,alt,AF)
+      df$alt[df$alt == ""] <- "N"
       df <- df[nchar(df$ref) == nchar(df$alt) & nchar(df$alt) == 1,]
       colnames(df) <- c("seqname", "pos", "ref", "alt", paste0(n, "_AF"))
 
@@ -60,7 +61,6 @@ getAF <- function(GDS, locus, minSites, pops, refAllele){
     }
 
   })
-
 
   data <- Filter(Negate(is.null), data)
   if(length(data)) data <- reduce(data, left_join, by = c("seqname","pos", "ref", "alt"))

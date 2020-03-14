@@ -145,7 +145,7 @@ setMethod("makeFeatures", signature = "GRanges",
 
                 plan(multiprocess, workers = nCores)
                 all <- future_map(seq_along(all), .f = .mapFun, all, longestIsoform)
-
+                plan(sequential)
                 all <- dplyr::bind_rows(all)
                 all <- makeGRangesListFromDataFrame(all, split.field = "gene", keep.extra.columns = TRUE)            
                 return(all)
@@ -188,9 +188,10 @@ setMethod("makeFeatures", signature = "GRanges",
                 plan(multiprocess, workers = nCores)
 
                 all <- future_map(seq_along(all), .f = .mapFun, all, longestIsoform)
-
+                plan(sequential)
                 all <- dplyr::bind_rows(all)
-                all <- makeGRangesListFromDataFrame(all, split.field = "gene", keep.extra.columns = TRUE)
+                all$Name <- all$gene
+                all <- makeGRangesListFromDataFrame(all, split.field = "Name", keep.extra.columns = TRUE)
                 
 
                 #CDS <- Filter(length, CDS)

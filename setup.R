@@ -7,72 +7,84 @@ library(tibble)
 library(dplyr)
 library(pbmcapply)
 
+######## new version with S4 methods
+arg <- makeCog(analysisType = "args", ploidy = 2, nCores = 4, minSites = 0.02, pairwiseDeletion = TRUE, removeIndels = TRUE)
+diversity <- makeCog(analysisType = "diversityFULL", stats = "FTD")
+admix <- makeCog(analysisType = "admixture", threePop = list(c("tryoni", "hybrid", "dorsalis")),
+                     fourPop = rep(list(c("hybrid", "tryoni", "dorsalis", "oleae")), 2))
+outloci <-  makeCog(analysisType = "outputLoci", outputDirectory = "~/Desktop/setupGear/", alleles = "seperate", removeIndels = TRUE)
+outTrees <-  makeCog(analysisType = "outputTrees", outputDirectory = "~/Desktop/setupGear/", alleles = "seperate", removeIndels = TRUE)
 
-gff <- "/media/chris/Seagate Expansion Drive/Divergent_Plutella/cleanedGenomes/Aassec_busco/gffs/EOG090W0QXM.gff"
-inDir <- "/media/chris/Seagate Expansion Drive/Divergent_Plutella/cleanedGenomes/Aassec_busco/gffs/"
-outDir <- "/media/chris/Seagate Expansion Drive/Divergent_Plutella/cleanedGenomes/Aassec_busco/gffs/"
 
-## files for analysis
-VCF <- "~/Desktop/Tree-TipR/"
-GDS <- "~/Desktop/setupGear/Plutella_filtered_noMAF.recode.gds"
-  #"~/Desktop/Tree-TipR/PlutellaSNP.GDS"
-df <- readr::read_tsv("/media/chris/Seagate Expansion Drive/whitePupae/GCF_000789215.1_ASM78921v2_genomic.fna.fai", col_names = FALSE)
-#get header from VCF will be needed for windows
-contigMD <- tibble::data_frame(ID = "20", length = 63000000)
-contigMD <- tibble::data_frame(ID = df[[1]], length = df[[2]])
+gear <- makeGear(loci, populations = pops, outgroup = "oleae", cogs = list(diversity, arg))
 
-contigMD <- filter(contigMD, ID %in% c("NW_011876398.1", "NW_017536897.1", "NW_017537045.1", "NW_017537168.1", "NW_017537234.1"))
+gear <- analyzeGear(GDS = AllSamplesVariant, gear)
 
-# converty VCF to GDS
-seqVCF2GDS(vcf.fn = "Dorsalis/TestPrimitives/QTLAllSitesDorsalis_withBo_prim.vcf.gz",
-             parallel = 6, out.fn = "Dorsalis/TestPrimitives/QTLAllSitesDorsalis_withBo_prim.gds",
-           fmt.import = c("GT"), storage.option = "ZIP_RA")
-
-GDS <-seqOpen("/media/chris/Seagate Expansion Drive/whitePupae/Dorsalis/TestPrimitives/QTLAllSitesDorsalis_withBo_prim.gds")
-
-# Parameters
-windowSize <- 100000
-stepSize <- 0
-minSites <- 0.25
-
-#open GDS
-setwd("/media/chris/Seagate Expansion Drive/1000Genomes/")
+######
+CDS <- makeFeatures("/media/chris/Seagate Expansion Drive/whitePupae/references/GCF_000347755.3_Ccap_2.1_genomic.gff", feature = "gene:cds", nCores = 4, longestIsoform = TRUE)
+exon <- makeFeatures("/media/chris/Seagate Expansion Drive/whitePupae/references/GCF_000347755.3_Ccap_2.1_genomic.gff", feature = "gene:exons", nCores = 4)
 
 
 
-#get header from VCF will be needed for windows
-contigMD <- tibble::data_frame(ID = "chr1", length = 10000000)
+##### testing read.me code
 
-# Parametersd
-windowSize <- 100000
-stepSize <- 0
-minSites <- 0.25
+library(geaR)
+library(tibble)
+library(SeqArray)
 
-loci <- windowMaker(contigMD, windowSize, stepSize = 0, nCores = 5)
+### if you dont know the lengths, it can easily be determined from your reference index (.fai)
+chr20_df <- tibble(ID = "chr20", length = 64444167)
+loci <- windowMaker(chr20_df, windowSize = 1000000, stepSize = 0,  nCores = 4)
 
-which <- GRangesList(GRanges(seqnames = "NW_011876372.1", ranges = IRanges(start = 1, end = 650000)), GRanges(seqnames = "NW_011876398.1", ranges = IRanges(start = 3800000, end = 5850278)))
-exons <- geaR::getFeatures(gffName = "/media/chris/Seagate Expansion Drive/whitePupae/references/GCF_000789215.1_ASM78921v2_genomic.gff", nCores = 4, includeRange = which, feature = "gene:cds")
+## Next we will construct our analysis
+### first loading the GDS and setting up population definitions.
+GDS <- seqOpen("/media/chris/Seagate Expansion Drive/geaR_Test/ALL.chr20.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.gds")
+
+### We can easily query the GDS for sample names.
+samples <- seqGetData(gdsfile = GDS, var.name = "sample.id")
+### for the example populations are arbitrary so we will just set 100 equal populations each with 10 samples
+pops <- tibble(Sample = samples[1:1000], Population = rep(paste0("P", 1:100), each = 10))
+
+### general arguments for the analysis
+argCog <- makeCog(analysisType = "args", ploidy = 2, nCores = 4, minSites = 0.002, pairwiseDeletion = TRUE, removeIndels = TRUE)
+
+### set up diverstity analysis
+divCog <- makeCog(analysisType = "diversityFULL", stats = "all")
+
+### set up admixture cog
+admixCog <- makeCog(analysisType = "admixture", threePop = list(),
+                 fourPop = list("all"))
+
+### set up cog to output loci to file
+
+outlociCog <-  makeCog(analysisType = "outputLoci", outputDirectory = "~/Desktop/setupGear/", alleles = "seperate", removeIndels = TRUE)
 
 
+### build the gear object for analysis
+### We will also arbitrarily define P100 as the outgroup for this analysis
+gear <- makeGear(loci[1:20], populations = pops, outgroup = "P100", cogs = list(argCog, divCog, outlociCog))
+
+### Run the three analyses 
+gear <- analyzeGear(GDS, gear)
 
 
-GDS <- seqOpen("ALL.chr1.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.gds", allow.duplicate = TRUE)
+############ codons 
 
-samples <- SeqArray::seqGetData(gdsfile = GDS, var.name = "sample.id")
-pops <- tibble::data_frame(Sample = samples[c(1:1000)], Population = rep(c("P1", "P2", "P3", "P4"), each = 250))
-pops2 <- split(pops, pops$Population)
+GDS <- seqOpen("/media/chris/Seagate Expansion Drive/whitePupae/Dorsalis/AllSamplesAllSitesDorsalis_filtered.gds", allow.duplicate = TRUE)
+samples <- seqGetData(gdsfile = GDS, var.name = "sample.id")
+### for the example populations are arbitrary so we will just set 100 equal populations each with 10 samples
+pops <- tibble::tibble(Sample = samples, Population = samples)
+cds <- makeFeatures("/media/chris/Seagate Expansion Drive/whitePupae/references/GCF_000789215.1_ASM78921v2_genomic.gff", feature = "gene:cds", nCores = 7, geneIDField = "Name", longestIsoform = TRUE)
 
-
-
-VariantOnlyMandF <- getDiversityStats(GDS, loci, minSites = 0.01, nCores = 2, stats = "dxy", pops = pops, ploidy = 2, pairwiseDeletion = TRUE)
-
-
-
-fstSnd <- getCodonFeatures(genome = fasta, exons = )
-
-# to set up genome
-fasta <- Biostrings::readDNAStringSet("../../Brapa_ref/Brapa_sequence_v3.0.fasta")
+genome <- Biostrings::readDNAStringSet("/media/chris/Seagate Expansion Drive/whitePupae/references/GCF_000789215.1_ASM78921v2_genomic.fna")
 
 ## need to change names as whole name is imported
-fasta@ranges@NAMES <- gsub(" .*$","", fasta@ranges@NAMES)
+genome@ranges@NAMES <- gsub(" .*$","", genome@ranges@NAMES)
 
+tic()
+fourF <- buildCodonDB(genome, exons = cds[1:10], sqlDir = "./testMySql.db", nCores = 4)
+toc()
+f <- validate4FoldCodons(GDS, sqlDir = "~/Desktop/geaR/DorsalisCodons.db", nCores = 4, pops = pops)
+
+
+test <- mclapply(1:1000000,mc.cores = 5, function(x) rnorm(10000))

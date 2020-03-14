@@ -55,14 +55,14 @@ setMethod("analyzeGear", signature = c(GDS = "SeqVarGDSClass"),
                   
                   pops <- gear@Populations
                   
-                  GDS <- seqOpen(gds.fn = Gname, allow.duplicate = TRUE)
+                  GDS2 <- seqOpen(gds.fn = Gname, allow.duplicate = TRUE)
                   
                   locus <- gear@Loci[[x]]
                   
                   ### read in the raw genotype matrix to convert to nucleotide if 
                   ### gear@OutputLoci is an analysis
                   
-                  rawMat <- getGenotypes(GDS = GDS, locus = locus, minSites = minSites,
+                  rawMat <- getGenotypes(GDS = GDS2, locus = locus, minSites = minSites,
                                          raw = TRUE, ploidy = ploidy, pops = pops, removeIndels = removeIndels)
                   
                   ### get info from rawMat
@@ -74,7 +74,7 @@ setMethod("analyzeGear", signature = c(GDS = "SeqVarGDSClass"),
                   samples <-rawMat[[3]]
                   
                   ### get indexed genotype positions
-                  position <- seqGetData(gdsfile = GDS, var.name = "position")
+                  position <- seqGetData(gdsfile = GDS2, var.name = "position")
                   
                   ### convert from raw geno array to genotype matrix in order to process downstream
                   genoMat <- t(apply(genoArr, MARGIN = 3, function(z){c(z)}))
@@ -116,7 +116,7 @@ setMethod("analyzeGear", signature = c(GDS = "SeqVarGDSClass"),
                                                 arg = gear@Args, popList, seqname, start, end, windowMid, snpMid, nSites, locus, outgroup = gear@Outgroup)
                           #### output trees, will return NULL if gear@OutputTrees
                           #### slot is cog.NULL
-                          analyzeCog(cog = gear@OutputTrees, GDS, arg = gear@Args, pops = gear@Populations, locus, distMat)
+                          analyzeCog(cog = gear@OutputTrees, GDS2, arg = gear@Args, pops = gear@Populations, locus, distMat)
                       }
                       
                       #divFAST <- analyzeCog(cog = gear@DiversityStatsFAST)
@@ -124,12 +124,12 @@ setMethod("analyzeGear", signature = c(GDS = "SeqVarGDSClass"),
                       #### calculate admixture statistics, will return NULL if gear@AdmixtureStats
                       #### slot is cog.NULL
                       admix <- analyzeCog(cog = gear@AdmixtureStats, arg = gear@Args, pops = pops,
-                                          locus, outgroup = gear@Outgroup, GDS)
+                                          locus, outgroup = gear@Outgroup, GDS2)
                       
                       ###### need to read in necleotides, distance matrix was slow as dick with freebayes MNPs
                       if(class(gear@OutputLoci) == "cog.outputLoci") {
                           # convert genomat numeric genotypes 0123 to nuceotides ATCG
-                          genoMat <- .convertToNucleotide(GDS, varNumber, genoArr, removeIndels, ploidy, samples, position)
+                          genoMat <- .convertToNucleotide(GDS2, varNumber, genoArr, removeIndels, ploidy, samples, position)
                           
                           #### output loci, will return NULL if gear@OutputTrees
                           #### slot is cog.NULL
@@ -141,9 +141,10 @@ setMethod("analyzeGear", signature = c(GDS = "SeqVarGDSClass"),
                   outList <- vector(mode = "list", length = sum(c(!is.null(divFULL), !is.null(admix))))
                   if(!is.null(divFULL)) outList[[1]] <- divFULL 
                   if(!is.null(admix)) outList[[2]] <- admix
+                  seqClose(GDS2)
                   return(outList)
               }, gear = gear, Gname = GDS$filename))
-              
+              plan(sequential)
               ## generate output
               if(class(gear@DiversityStatsFULL) == "cog.diversityFULL") gear@DiversityStatsFULL <- bind_rows(lapply(data, extract2, 1))
               if(class(gear@AdmixtureStats) == "cog.admixture") gear@AdmixtureStats <- bind_rows(lapply(data, extract2, 2))

@@ -61,5 +61,6 @@ Collate:
     'neisda.R'
     'snpWindowMaker.R'
     'summarizeStats.R'
+    'validate4FoldCodons.R'
     'weightedFst.R'
     'windowMaker.R'
