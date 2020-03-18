@@ -4,14 +4,7 @@
 \alias{buildCodonDB}
 \title{build a codon sqlLite DB}
 \usage{
-buildCodonDB(
-  genome,
-  exons,
-  sqlDir = "./CodonStore.db",
-  nCores = 1,
-  fourFoldCodon = "include",
-  ...
-)
+buildCodonDB(genome, exons, sqlDir = NULL, fourFoldCodon = "include", ...)
 }
 \arguments{
 \item{genome}{\code{character} or \code{DNAStringSet} \cr
@@ -20,8 +13,7 @@ Import fasta reference genome from file by passsing a \code{character} or provid
 \item{exons}{\code{GrangesList} \cr
 Generated using \code{getFeatures()} by passing \code{"gene:cds"} to the  \code{feature} argument.}
 
-\item{nCores}{\code{numeric}
-Number of cores allcated.}
+\item{sqlDir}{\code{character} set to sql output to run in lower memory mode.}
 
 \item{fourFoldCodon}{\code{character}
  Options are \code{NULL}, \code{"only"} or \code{"remove"}. \cr

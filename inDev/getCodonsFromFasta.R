@@ -133,3 +133,40 @@ ct <- c()
 
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+if(!is.null(RCSU)){
+  
+  count <- table(codons[[x]]$codon)
+  
+  cub <- lapply(lookUP, function(z){
+    n <- nchar(gsub(".*\\[", "", z)) -1
+    countSplit <- count[grepl(z, rownames(count))]
+    
+    if(length(countSplit) != 1) {
+      cub <- lapply(countSplit, function(c){
+        (n*c)/sum(countSplit)/n
+        
+      }) 
+      cub <- unlist(cub)
+      #if(any(cub < RCSU[1] | cub > RCSU[2])) NULL
+    }
+    else NULL
+  })  
+  
+  cub <- unlist(cub)
+  pass <- all((cub))
+  
+}else pass <- TRUE

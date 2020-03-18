@@ -4,7 +4,7 @@
 \alias{validate4FoldCodons}
 \title{Validate 4fold degenerate codons}
 \usage{
-validate4FoldCodons(GDS, sqlDir, nCores, pops)
+validate4FoldCodons(GDS, input, nCores, pops)
 }
 \value{
 An object of class \code{GRanges} containing codon ranges for positions specified.

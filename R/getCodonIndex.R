@@ -10,8 +10,7 @@
 #' Import fasta reference genome from file by passsing a \code{character} or provide a preloaded (using \code{Biostrings::readDNAStringSet()}) \code{DNAStringSet}
 #' @param exons \code{GrangesList} \cr
 #' Generated using \code{getFeatures()} by passing \code{"gene:cds"} to the  \code{feature} argument.
-#' @param nCores \code{numeric}
-#' Number of cores allcated.
+#' @param sqlDir \code{character} set to sql output to run in lower memory mode.
 #' @param position \code{character}
 #' Options are \code{"all"}, default, or any combination of \code{c("first", "second", "third")}. \cr
 #' Output will contain only specified codon positions.
@@ -27,7 +26,7 @@
 #' @importFrom BSgenome getSeq
 #' @importFrom Biostrings readDNAStringSet
 #' @importFrom Biostrings readDNAStringSet
-#' @importFrom future sequential
+#' @import future 
 #' @importFrom Biostrings codons
 #' @importFrom RSQLite SQLite
 #' @importFrom RSQLite dbWriteTable
@@ -43,51 +42,69 @@
 #' @rdname buildCodonDB-methods
 
 
-setGeneric("buildCodonDB", function(genome, exons, sqlDir = "./CodonStore.db", nCores = 1, fourFoldCodon = "include", ...){
+setGeneric("buildCodonDB", function(genome, exons, sqlDir = NULL, fourFoldCodon = "include", ...){
   standardGeneric("buildCodonDB")
 })
 
 #' @aliases getCodonFeature,character
 #' @export
 setMethod("buildCodonDB", signature(genome = "character"),
-          function(genome, exons, sqlDir = "./CodonStore.db", nCores = 1, fourFoldCodon = "include", ...){
+          function(genome, exons, sqlDir = NULL, fourFoldCodon = "include", ...){
             
             genome <- readDNAStringSet(genome)
             
-            getCodonFeatures(genome, exons, nCores, sqlDir, fourFoldCodon, ...)
+            getCodonFeatures(genome, exons, sqlDir, fourFoldCodon, ...)
             
           })
 
 #' @aliases getCodonFeature,DNAStringSet
 #' @export
 setMethod("buildCodonDB", signature = "DNAStringSet",
-          function(genome, exons, sqlDir = "./CodonStore.db", nCores = 1, fourFoldCodon = "include"){
+          function(genome, exons, sqlDir = NULL, fourFoldCodon = "include"){
             
             # Residue lookup table
-            lookUP <- c(Ala = "gc[tcag]",
-                        Gly = "gg[tcag]",
-                        Pro = "cc[tcga]",
-                        Thr = "ac[tcga]",
-                        Val = "gt[tagc]",
-                        Arg4 = "cg[tagc]",
-                        Leu4 = "ct[tagc]",
-                        Ser4 = "tc[tagc]",
-                        Arg2 = "ag[ag]",
-                        Leu2 = "tt[ag]",
-                        Ser2 = "ag[tc]",
-                        Asn = "aa[tc]",
-                        Asp = "ga[tc]",
-                        Cys = "tg[tc]",
-                        Gln = "ca[ag]",
-                        Glu = "ga[ag]",
-                        His = "ca[tc]",
-                        Ile = "at[tca]",
-                        Lys = "aa[ag]",
-                        Met = "atg",
-                        Phe = "tt[tc]",
-                        Trp = "tgg",
-                        Tyr = "ta[tc]",
-                        Stp = "ta[ag]|tga"
+            # lookUP <- c(Ala = "gc[tcag]",
+            #             Gly = "gg[tcag]",
+            #             Pro = "cc[tcga]",
+            #             Thr = "ac[tcga]",
+            #             Val = "gt[tagc]",
+            #             Arg4 = "cg[tagc]",
+            #             Leu4 = "ct[tagc]",
+            #             Ser4 = "tc[tagc]",
+            #             Arg2 = "ag[ag]",
+            #             Leu2 = "tt[ag]",
+            #             Ser2 = "ag[tc]",
+            #             Asn = "aa[tc]",
+            #             Asp = "ga[tc]",
+            #             Cys = "tg[tc]",
+            #             Gln = "ca[ag]",
+            #             Glu = "ga[ag]",
+            #             His = "ca[tc]",
+            #             Ile = "at[tca]",
+            #             Lys = "aa[ag]",
+            #             Met = "atg",
+            #             Phe = "tt[tc]",
+            #             Trp = "tgg",
+            #             Tyr = "ta[tc]",
+            #             Stp = "ta[ag]|tga"
+            # )
+
+            lookUP <-  c(gct = "Ala", gcc = "Ala", gca = "Ala", gcg = "Ala",
+                         ggt = "Gly", ggc = "Gly", gga = "Gly", ggg = "Gly",
+                         cct = "Pro", ccc = "Pro", ccg = "Pro", cca = "Pro",
+                         act = "Thr", acc = "Thr", acg = "Thr", aca = "Thr",
+                         gtt = "Val", gtc = "Val", gta = "Val", gtg = "Val",
+                         cgt = "Arg4", cgc = "Arg4", cga = "Arg4", cgg = "Arg4",
+                         tct = "Ser4", tcc = "Ser4", tca = "Ser4", tcg = "Ser4",
+                         ctt = "Leu4", ctc = "Leu4", cta = "Leu4", ctg = "Leu4",
+                         aga = "Arg2", agg = "Arg2", tta = "Leu2", ttg =  "Leu2",
+                         agt = "Ser2", agc = "Ser2", aat = "Asn", aac = "Asn",
+                         gat = "Asp", gac = "Asp", tgt = "Cys", tgc = "Cys",
+                         caa = "Gln", cag = "Gln", gaa = "Glu", gag = "Glu",
+                         cat = "His", cac = "His", att = "Ile", atc ="Ile",
+                         ata = "Ile", aaa = "Lys", aag = "Lys", atg = "Met",
+                         ttt = "Phe", ttc = "Phe", tgg = "Trp", tat = "Tyr",
+                         tac = "Tyr", taa = "Stp", tag = "Stp", tga = "Stp"
             )
             
             
@@ -95,34 +112,48 @@ setMethod("buildCodonDB", signature = "DNAStringSet",
             #### why the fuck do DNAstringSets take up so much memory???
             exons <- .getGenes(genome, exons)
             
-            
-            codDF <- mclapply(seq(exons), mc.cores = nCores, .mapCodons, exons, lookUP)
-            
-            # codDF <- bind_rows(codDF)
-            conn <- dbConnect(SQLite(), sqlDir)
-            
-            codDF2 <- map(seq(codDF)[1:10], function(x){
-              d <- codDF[[x]]
-              if(!is.null(d)){
-                name <- d$gene[[1]]
-                d$seqnames <- as.character(d$seqnames)
-                d$strand <- as.character(d$strand)
-                dbWriteTable(conn = conn, name = name, value = as.data.frame(d))
-                name
-              }
+            codDF <- map(seq(exons), .mapCodons, exons, lookUP)
+
+            if(!is.null(sqlDir)){
               
-            })
-            
-            codDF2 <- unlist(codDF2)
-            
-            dbWriteTable(conn = conn, name = "genes", value = data.frame(genes = codDF2))
-            # dbWriteTable(conn = conn, name = "First", value = as.data.frame(filter(codDF, codonPosition == "first")), overwrite = TRUE)
-            # dbWriteTable(conn = conn, name = "Second", value = as.data.frame(filter(codDF, codonPosition == "second")), overwrite = TRUE)
-            # dbWriteTable(conn = conn, name = "Third", value = as.data.frame(filter(codDF, codonPosition == "third")), overwrite = TRUE)
-            codDF <- NULL
-            dbDisconnect(conn)
-            return(paste0("sqlDB built at ", sqlDir))
-          })
+              # codDF <- bind_rows(codDF)
+              conn <- dbConnect(SQLite(), sqlDir)
+              
+              codDF <- map(seq(codDF), function(x){
+                d <- codDF[[x]]
+                if(!is.null(d)){
+                  name <- d$gene[[1]]
+                  d$seqnames <- as.character(d$seqnames)
+                  d$strand <- as.character(d$strand)
+                  dbWriteTable(conn = conn, name = name, value = as.data.frame(d))
+                  name
+                }
+                
+              })
+              
+              codDF <- unlist(codDF)
+              
+              dbWriteTable(conn = conn, name = "genes", value = data.frame(genes = codDF))
+              # dbWriteTable(conn = conn, name = "First", value = as.data.frame(filter(codDF, codonPosition == "first")), overwrite = TRUE)
+              # dbWriteTable(conn = conn, name = "Second", value = as.data.frame(filter(codDF, codonPosition == "second")), overwrite = TRUE)
+              # dbWriteTable(conn = conn, name = "Third", value = as.data.frame(filter(codDF, codonPosition == "third")), overwrite = TRUE)
+              codDF <- NULL
+              dbDisconnect(conn)
+              return(paste0("sqlDB built at ", sqlDir))
+              
+            } 
+            else{
+              
+              codDF <- bind_rows(codDF)
+              
+              codDF$Name <- codDF$gene
+              
+              makeGRangesListFromDataFrame(codDF, split.field = "Name", keep.extra.columns=TRUE)
+              
+              
+            }
+           
+          }) 
 
 
 .getGenes <- function(genome, exons){
@@ -146,8 +177,8 @@ setMethod("buildCodonDB", signature = "DNAStringSet",
     
     # initialize aa sequence
     aaCodons <-  geneCodons
-    
-    aaCodons <- .replaceCodonNames(lookUP, aaCodons)
+    aaCodons <- lookUP[aaCodons]
+    # aaCodons <- .replaceCodonNames(lookUP, aaCodons)
     
     positions <- .getCodonPositions(refAnno)
     
@@ -211,12 +242,12 @@ setMethod("buildCodonDB", signature = "DNAStringSet",
 }
 
 
-.replaceCodonNames <- function(lookUP, aaCodons){
-  residueRename <- lapply(1:length(lookUP), function(z){
-    aaCodons[grepl(lookUP[z], aaCodons)] <<- names(lookUP)[z]
-  })
-  return(aaCodons)
-}
+# .replaceCodonNames <- function(lookUP, aaCodons){
+#   residueRename <- lapply(1:length(lookUP), function(z){
+#     aaCodons[grepl(lookUP[z], aaCodons)] <<- names(lookUP)[z]
+#   })
+#   return(aaCodons)
+# }
 
 .getCodonPositions <- function(refAnno){
   positions <- lapply(seq(refAnno), function(y){

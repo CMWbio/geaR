@@ -3,7 +3,7 @@
 #' @description applies set methods to analyze a supplied cog
 #'
 #' @details 
-#' backend methods to calculate cogs for a \code{gear} object  
+#' backend methods to calculate cogs for a \code{gear} object
 #'
 #' @return the output of the supplied cog
 #'
@@ -63,11 +63,15 @@ setMethod("analyzeCog", signature(c(cog = "cog.diversityFULL")),
               
               if("Fst" %in% cog@stats) fst <- Nei82Fst(distMat, popList, pairs, ploidy = arg@ploidy, weighted = TRUE)
               
-              if("RNDmin" %in% cog@stats & !is.null(outgroup)) rndMin <- RND(istMat, popList, pairs, ploidy = arg@ploidy, outgroup = outgroup, type = "min")
+              if(!is.null(outgroup)){
+                  if("RNDmin" %in% cog@stats) rndMin <- RND(istMat, popList, pairs, ploidy = arg@ploidy, outgroup = outgroup, type = "min")
+                  
+                  if("RNDfeder" %in% cog@stats) rndFeder <- RND(istMat, popList, pairs, ploidy = arg@ploidy, outgroup = outgroup, type = "feder")
+                  
+                  if("FTD" %in% cog@stats) rD <- relDxy(distMat, popList, ploidy = arg@ploidy, outgroup = outgroup)
+                  
+              }
               
-              if("RNDfeder" %in% cog@stats & !is.null(outgroup)) rndFeder <- RND(istMat, popList, pairs, ploidy = arg@ploidy, outgroup = outgroup, type = "feder")
-     
-              if("FTD" %in% cog@stats & !is.null(outgroup)) rD <- relDxy(distMat, popList, ploidy = arg@ploidy, outgroup = outgroup)
               
               #### if a genes are used in construction of gear@Loci tehy will have a name
               #### retreive this and add this to the filename

@@ -10,7 +10,12 @@ analyzeGear(GDS, gear = NULL, ...)
 \item{GDS}{\code{character} contating the path to a GDS file 
 or an already imported \code{SeqVarGDSClass}}
 
-\item{gear}{\code{gear} an object created with \code{makeGear()} contating the desired analyses.}
+\item{gear}{\code{gear} an object created with \code{makeGear()} contating the desired analyses. \cr
+Analyses that can be carried out are (see \code{?makeCog() for details}): \cr
+Genetic Diversity
+Admixture
+Output Loci 
+Output Trees}
 }
 \value{
 the supplied object with cogs replaced by results
