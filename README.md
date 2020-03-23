@@ -53,10 +53,6 @@ argCog <- makeCog(analysisType = "args", ploidy = 2, nCores = 4, minSites = 0.00
 ### set up diverstity analysis
 divCog <- makeCog(analysisType = "diversityFULL", stats = "all")
 
-### set up admixture cog
-admixCog <- makeCog(analysisType = "admixture", threePop = list(),
-                 fourPop = list("all"))
-
 ### set up cog to output loci to file
 
 outlociCog <-  makeCog(analysisType = "outputLoci", outputDirectory = "~/Desktop/setupGear/", alleles = "seperate", removeIndels = TRUE)
