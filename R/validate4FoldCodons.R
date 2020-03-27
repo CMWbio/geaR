@@ -8,6 +8,11 @@
 #'
 #' @return An object of class \code{GRanges} containing codon ranges for positions specified.
 #'
+#' @param GDS an open GDS file with genptypes
+#' @param input \code{character} or \code{GRangesList}. Path to sql database or GRange list containing codon index
+#' @param nCores \code{numeric} number of cores
+#' @param pops \code{data.frame} population data frame
+#'
 #' @importFrom RSQLite dbGetQuery
 #'
 #' @examples

@@ -1,6 +1,6 @@
 #' Combines overlaps in ys and xs
 #'
-#' @description Combines multiple GRange objects with overlapping ranges.
+#' @description Combines multiple GRangeList objects with overlapping ranges.
 #'
 #' @details Authour: Chris Ward
 #' Passing multiple \code{GRange} objects will result in ordered overlaping of ranges. e.g. if a genome wide 100kb tiled x \code{GRangeList}
@@ -14,8 +14,13 @@
 #' Negative or positive overlap
 #' "-" will subtract the y ranges from the xs \cr
 #' "+" will bin ys into x ranges
+#' @param FFD \code{logical} Set to deal with Four fold degenerate sites
+#' @param genes \code{character} Vector of genes to limit anlaysis to. This 
+#' can be useful if you have a set of low codon usage bias genes
+#' @param positions \code{character} A vector of codon positions, 
+#' e.g. \code{c("first", "second")} will extract codons in a 1+2 position scheme
 #'
-#' @return A \code{data_frame} of selected Diversity statistics
+#' @return A \code{GRangesList} containing merged ranges 
 #'
 #' @importFrom dplyr bind_cols
 #' @importFrom dplyr bind_rows
@@ -43,7 +48,7 @@ setMethod("mergeLoci", signature(c(y = "character")),
             else {
               
               df <-  RSQLite::dbGetQuery(conn, paste0("SELECT * FROM genes"))[[1]]
-             tic()
+              tic()
               df <- purrr::map(df, function(x){
                 df <-  RSQLite::dbGetQuery(conn, paste0("SELECT seqnames,strand,start,end FROM '", x, 
                                                         "' WHERE codonPosition IN ('", paste(positions, collapse = "', '"),"')"))
@@ -75,7 +80,7 @@ setMethod("mergeLoci", signature(c(y = "character")),
             data <- Filter(Negate(is.null), data)
             
             GRangesList(data)
-
+            
           })
 
 setMethod("mergeLoci", signature(c(y = "GRangesList")),

@@ -94,24 +94,36 @@ setMethod("analyzeCog", signature(c(cog = "cog.admixture")),
               ### specified tests do not contain all populations in gear@Populaitons
               uTest <- unique(pops$Population)
               noOut <- uTest[uTest != outgroup]
-              if(any(unlist(cog@fourPop) == "all")) cog@fourPop <- lapply(combinat::permn(noOut), function(x) c(x, outgroup))
+              if(any(unlist(cog@fourPop) == "all")) {
+                  combs <- combn(noOut, m = 3)
+                  cog@fourPop <- lapply(seq(dim(combs)[[2]]), function(x){
+                      x <- combs[,x]
+                      c(x, outgroup)
+                  })
+              }
               
-              p <- filter(pops, pops$Population %in% unique(unlist(cog@fourPop)))
+              p <- pops[pops$Population %in% unique(unlist(cog@fourPop)),]
               
               AF <- getAF(GDS, locus, pops = p, minSites = arg@minSites, refAllele = 0)
+              calcFourPop <- NULL
+              if(length(AF)){
+                  
+                  calcFourPop <- map(cog@fourPop, function(x){
+                      f4 <- .fourPop(AF, locus = locus, pops = pops, x = x)
+                  })
+                  scaf <- locus@seqnames[1]
+                  st <- locus@ranges@start[1]
+                  end <- st + sum(locus@ranges@width)
+                  calcFourPop <- bind_cols(calcFourPop)
+                  sM <- calcFourPop$snpMid
+                  nS <- calcFourPop$nSites
+                  
+                  calcFourPop <- calcFourPop[!grepl("nSites", colnames(calcFourPop)) & !grepl("snpMid", colnames(calcFourPop))]
+                  calcFourPop <- bind_cols(tibble(scaf = as.character(scaf), start = st, end, snpMid = sM, nSites = nS), calcFourPop)
+              } 
               
-              calcFourPop <- map(cog@fourPop, function(x){
-                  f4 <- .fourPop(AF, locus = locus, pops = pops, x = x)
-              })
-              scaf <- locus@seqnames[1]
-              st <- locus@ranges@start[1]
-              end <- st + sum(locus@ranges@width)
-              calcFourPop <- bind_cols(calcFourPop)
-              sM <- calcFourPop$snpMid
-              nS <- calcFourPop$nSites
+              return(calcFourPop)
               
-              calcFourPop <- calcFourPop[!grepl("nSites", colnames(calcFourPop)) & !grepl("snpMid", colnames(calcFourPop))]
-              calcFourPop <- bind_cols(tibble(scaf = as.character(scaf), start = st, end, snpMid = sM, nSites = nS), calcFourPop)
           })
 
 #' @aliases analyzeCog

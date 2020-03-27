@@ -45,113 +45,127 @@ setMethod("analyzeGear", signature = c(GDS = "SeqVarGDSClass"),
           function(GDS, ...){
               
               ### plan the future
-              plan(multiprocess, workers = gear@Args@nCores)
+              # plan(multiprocess, workers = gear@Args@nCores)
+              
+              ##### set up variables
+              ploidy <- gear@Args@ploidy
+              nCores <- gear@Args@nCores
+              minSites <- gear@Args@minSites
+              pairwiseDeletion <- gear@Args@pairwiseDeletion
+              removeIndels <- gear@Args@removeIndels
+              
+              pops <- gear@Populations
               
               #### this is the bulk of the package, takes the loci object in 
               #### gear@Loci and runs each cog on it 
-              data <- .quiet(future_map(seq_along(gear@Loci), function(x, gear, Gname){
+              data <- mclapply(seq_along(gear@Loci), mc.cores = nCores, function(x){
                   
-                  ##### set up variables
-                  ploidy <- gear@Args@ploidy
-                  nCores <- gear@Args@nCores
-                  minSites <- gear@Args@minSites
-                  pairwiseDeletion <- gear@Args@pairwiseDeletion
-                  removeIndels <- gear@Args@removeIndels
+                  ### set some dummy variables 
+                  divFULL <- NULL
+                  admix <- NULL
                   
-                  pops <- gear@Populations
-                  
-                  GDS2 <- seqOpen(gds.fn = Gname, allow.duplicate = TRUE)
                   
                   locus <- gear@Loci[[x]]
                   
                   ### read in the raw genotype matrix to convert to nucleotide if 
                   ### gear@OutputLoci is an analysis
                   
-                  rawMat <- getGenotypes(GDS = GDS2, locus = locus, minSites = minSites,
+                  rawMat <- getGenotypes(GDS = GDS, locus = locus, minSites = minSites,
                                          raw = TRUE, ploidy = ploidy, pops = pops, removeIndels = removeIndels)
                   
-                  ### get info from rawMat
-                  ## genotype array
-                  genoArr <- rawMat[[1]]
-                  ## number of variants in array
-                  varNumber <- rawMat[[2]]
-                  ## sample names in array
-                  samples <-rawMat[[3]]
-                  
-                  ### get indexed genotype positions
-                  position <- seqGetData(gdsfile = GDS2, var.name = "position")
-                  
-                  ### convert from raw geno array to genotype matrix in order to process downstream
-                  genoMat <- t(apply(genoArr, MARGIN = 3, function(z){c(z)}))
-                  rownames(genoMat) <- position
-                  colnames(genoMat) <- paste(rep(samples, each = gear@Args@ploidy), c(1:gear@Args@ploidy), sep = "/")
-                  genoMat[is.na(genoMat)] <- "N"
-                  
-                  ### general locus metadata
-                  seqname <- locus@seqnames@values[1]
-                  start <- locus@ranges@start
-                  end <- start + locus@ranges@width
-                  start <- min(start)
-                  end <- max(end)
-                  windowMid <- (start + end) /2
-                  snpMid <- floor(median(position))
-                  nSites <- length(position)
-                  
-                  if(length(genoMat)){
+                  if(length(rawMat)){
                       
-                      #### dummy variable to the distance matrix
-                      distMat <- matrix()
+                      ### get info from rawMat
+                      ## genotype array
+                      genoArr <- rawMat[[1]]
+                      ## number of variants in array
+                      varNumber <- rawMat[[2]]
+                      ## sample names in array
+                      samples <-rawMat[[3]]
                       
+                      ### get indexed genotype positions
+                      position <- seqGetData(gdsfile = GDS, var.name = "position")
                       
-                      #### only need to calc the distance matrix for "cog.diversityFULL" or
-                      #### "cog.outputTrees"
-                      needDist <- c(class(gear@DiversityStatsFULL),
-                                    class(gear@OutputTrees)) %in% c("cog.diversityFULL",
-                                                                    "cog.outputTrees")
-                      
-                      if(any(needDist)){
-                          distMat <- genoDist(genoMat, gear@Args@pairwiseDeletion)
-                          #### pregenerate populations list and pairs for pairwise dxy
-                          popList <- split(pops, pops$Population)
-                          pairs <- .generatePairs(popList)
+                      if(length(position)){
                           
-                          #### calculate diversity statistics, will return NULL if gear@DiversityStatsFULL
-                          #### slot is cog.NULL
-                          divFULL <- analyzeCog(cog = gear@DiversityStatsFULL, pairs = pairs, distMat = distMat,
-                                                arg = gear@Args, popList, seqname, start, end, windowMid, snpMid, nSites, locus, outgroup = gear@Outgroup)
-                          #### output trees, will return NULL if gear@OutputTrees
-                          #### slot is cog.NULL
-                          analyzeCog(cog = gear@OutputTrees, GDS2, arg = gear@Args, pops = gear@Populations, locus, distMat)
+                          ### convert from raw geno array to genotype matrix in order to process downstream
+                          genoMat <- t(apply(genoArr, MARGIN = 3, function(z){c(z)}))
+                          rownames(genoMat) <- position
+                          colnames(genoMat) <- paste(rep(samples, each = gear@Args@ploidy), c(1:gear@Args@ploidy), sep = "/")
+                          genoMat[is.na(genoMat)] <- "N"
+                          
+                          ### general locus metadata
+                          seqname <- locus@seqnames@values[1]
+                          start <- locus@ranges@start
+                          end <- start + locus@ranges@width
+                          start <- min(start)
+                          end <- max(end)
+                          windowMid <- (start + end) /2
+                          snpMid <- floor(median(position))
+                          nSites <- length(position)
+                          
+                          if(length(genoMat)){
+                              
+                              #### dummy variable to the distance matrix
+                              distMat <- matrix()
+                              
+                              
+                              #### only need to calc the distance matrix for "cog.diversityFULL" or
+                              #### "cog.outputTrees"
+                              needDist <- c(class(gear@DiversityStatsFULL),
+                                            class(gear@OutputTrees)) %in% c("cog.diversityFULL",
+                                                                            "cog.outputTrees")
+                              
+                              if(any(needDist)){
+                                  distMat <- genoDist(genoMat, gear@Args@pairwiseDeletion)
+                                  #### pregenerate populations list and pairs for pairwise dxy
+                                  popList <- split(pops, pops$Population)
+                                  pairs <- .generatePairs(popList)
+                                  
+                                  #### calculate diversity statistics, will return NULL if gear@DiversityStatsFULL
+                                  #### slot is cog.NULL
+                                  divFULL <- geaR:::analyzeCog(cog = gear@DiversityStatsFULL, pairs = pairs, distMat = distMat,
+                                                        arg = gear@Args, popList, seqname, start, end, windowMid, snpMid, nSites, locus, outgroup = gear@Outgroup)
+                                  #### output trees, will return NULL if gear@OutputTrees
+                                  #### slot is cog.NULL
+                                  geaR:::analyzeCog(cog = gear@OutputTrees, GDS, arg = gear@Args, pops = gear@Populations, locus, distMat)
+                              }
+                              
+                              #divFAST <- analyzeCog(cog = gear@DiversityStatsFAST)
+                              
+                              #### calculate admixture statistics, will return NULL if gear@AdmixtureStats
+                              #### slot is cog.NULL
+                              admix <- geaR:::analyzeCog(cog = gear@AdmixtureStats, arg = gear@Args, pops = pops,
+                                                  locus, outgroup = gear@Outgroup, GDS)
+                              
+                              ###### need to read in necleotides, distance matrix was slow as dick with freebayes MNPs
+                              if(class(gear@OutputLoci) == "cog.outputLoci") {
+                                  # convert genomat numeric genotypes 0123 to nuceotides ATCG
+                                  genoMat <- .convertToNucleotide(GDS, varNumber, genoArr, removeIndels, ploidy, samples, position)
+                                  
+                                  #### output loci, will return NULL if gear@OutputTrees
+                                  #### slot is cog.NULL
+                                  geaR:::analyzeCog(cog = gear@OutputLoci, genoMat, arg = gear@Args, locus,
+                                             pops = gear@Populations)
+                              }
+                          } 
                       }
                       
-                      #divFAST <- analyzeCog(cog = gear@DiversityStatsFAST)
                       
-                      #### calculate admixture statistics, will return NULL if gear@AdmixtureStats
-                      #### slot is cog.NULL
-                      admix <- analyzeCog(cog = gear@AdmixtureStats, arg = gear@Args, pops = pops,
-                                          locus, outgroup = gear@Outgroup, GDS2)
                       
-                      ###### need to read in necleotides, distance matrix was slow as dick with freebayes MNPs
-                      if(class(gear@OutputLoci) == "cog.outputLoci") {
-                          # convert genomat numeric genotypes 0123 to nuceotides ATCG
-                          genoMat <- .convertToNucleotide(GDS2, varNumber, genoArr, removeIndels, ploidy, samples, position)
-                          
-                          #### output loci, will return NULL if gear@OutputTrees
-                          #### slot is cog.NULL
-                          analyzeCog(cog = gear@OutputLoci, genoMat, arg = gear@Args, locus,
-                                     pops = gear@Populations)
-                      }
                   }
+                  
                   ### this will save some memory if only one of diversity and admixture analyses are calculated
-                  outList <- vector(mode = "list", length = sum(c(!is.null(divFULL), !is.null(admix))))
+                  outList <- list(NULL, NULL)
                   if(!is.null(divFULL)) outList[[1]] <- divFULL 
                   if(!is.null(admix)) outList[[2]] <- admix
-                  seqClose(GDS2)
-                  return(outList)
-              }, gear = gear, Gname = GDS$filename))
-              plan(sequential)
+                  return(outList)  
+                  
+                  
+                  
+              })
               ## generate output
-              if(class(gear@DiversityStatsFULL) == "cog.diversityFULL") gear@DiversityStatsFULL <- bind_rows(lapply(data, extract2, 1))
+              if(class(gear@DiversityStatsFULL) == "cog.diversityFULL") gear@DiversityStatsFULL <- dplyr::bind_rows(lapply(data, extract2, 1))
               if(class(gear@AdmixtureStats) == "cog.admixture") gear@AdmixtureStats <- bind_rows(lapply(data, extract2, 2))
               if(class(gear@OutputLoci) == "cog.outLoci") gear@OutputLoci <- paste0("Loci output to \"", gear@OutputLoci@outputDirectory)
               if(class(gear@OutputTrees) == "cog.outTrees") gear@OutputTrees <- paste0("Trees output to \"", gear@OutputTrees@outputDirectory)

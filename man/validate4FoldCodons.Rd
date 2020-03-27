@@ -6,6 +6,15 @@
 \usage{
 validate4FoldCodons(GDS, input, nCores, pops)
 }
+\arguments{
+\item{GDS}{an open GDS file with genptypes}
+
+\item{input}{\code{character} or \code{GRangesList}. Path to sql database or GRange list containing codon index}
+
+\item{nCores}{\code{numeric} number of cores}
+
+\item{pops}{\code{data.frame} population data frame}
+}
 \value{
 An object of class \code{GRanges} containing codon ranges for positions specified.
 }

@@ -25,12 +25,20 @@ mergeLoci(
 Negative or positive overlap
 "-" will subtract the y ranges from the xs \cr
 "+" will bin ys into x ranges}
+
+\item{FFD}{\code{logical} Set to deal with Four fold degenerate sites}
+
+\item{genes}{\code{character} Vector of genes to limit anlaysis to. This 
+can be useful if you have a set of low codon usage bias genes}
+
+\item{positions}{\code{character} A vector of codon positions, 
+e.g. \code{c("first", "second")} will extract codons in a 1+2 position scheme}
 }
 \value{
-A \code{data_frame} of selected Diversity statistics
+A \code{GRangesList} containing merged ranges
 }
 \description{
-Combines multiple GRange objects with overlapping ranges.
+Combines multiple GRangeList objects with overlapping ranges.
 }
 \details{
 Authour: Chris Ward
