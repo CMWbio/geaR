@@ -25,12 +25,15 @@ Imports:
   BSgenome,
   bootstrap,
   dplyr (>= 0.7.5),
-  msa,
   parallel,
   pbmcapply,
   reshape2,
   tibble,
-  tidyr
+  tidyr, 
+  purrr,
+  furrr,
+  RSQLite,
+  plyranges
 Collate: 
     'Gmin.R'
     'RcppExports.R'
