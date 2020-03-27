@@ -11,6 +11,9 @@ This package is currently under development, use at own risk.
 
 install.packages("BiocManager")
 install.packages("devtools")
+
+pkgs <- c("SeqArray", "GenomicRanges", "rtracklayer", "Biostrings", "BSgenome")
+BiocManager::install(pkgs)
 devtools::install_github("CMWbio/geaR")
 
 ```
