@@ -124,18 +124,18 @@ setMethod("analyzeGear", signature = c(GDS = "SeqVarGDSClass"),
                                   
                                   #### calculate diversity statistics, will return NULL if gear@DiversityStatsFULL
                                   #### slot is cog.NULL
-                                  divFULL <- geaR:::analyzeCog(cog = gear@DiversityStatsFULL, pairs = pairs, distMat = distMat,
+                                  divFULL <- analyzeCog(cog = gear@DiversityStatsFULL, pairs = pairs, distMat = distMat,
                                                         arg = gear@Args, popList, seqname, start, end, windowMid, snpMid, nSites, locus, outgroup = gear@Outgroup)
                                   #### output trees, will return NULL if gear@OutputTrees
                                   #### slot is cog.NULL
-                                  geaR:::analyzeCog(cog = gear@OutputTrees, GDS, arg = gear@Args, pops = gear@Populations, locus, distMat)
+                                  analyzeCog(cog = gear@OutputTrees, GDS, arg = gear@Args, pops = gear@Populations, locus, distMat)
                               }
                               
                               #divFAST <- analyzeCog(cog = gear@DiversityStatsFAST)
                               
                               #### calculate admixture statistics, will return NULL if gear@AdmixtureStats
                               #### slot is cog.NULL
-                              admix <- geaR:::analyzeCog(cog = gear@AdmixtureStats, arg = gear@Args, pops = pops,
+                              admix <- analyzeCog(cog = gear@AdmixtureStats, arg = gear@Args, pops = pops,
                                                   locus, outgroup = gear@Outgroup, GDS)
                               
                               ###### need to read in necleotides, distance matrix was slow as dick with freebayes MNPs
@@ -145,7 +145,7 @@ setMethod("analyzeGear", signature = c(GDS = "SeqVarGDSClass"),
                                   
                                   #### output loci, will return NULL if gear@OutputTrees
                                   #### slot is cog.NULL
-                                  geaR:::analyzeCog(cog = gear@OutputLoci, genoMat, arg = gear@Args, locus,
+                                  analyzeCog(cog = gear@OutputLoci, genoMat, arg = gear@Args, locus,
                                              pops = gear@Populations)
                               }
                           } 

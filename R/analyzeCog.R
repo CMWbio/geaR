@@ -119,7 +119,7 @@ setMethod("analyzeCog", signature(c(cog = "cog.admixture")),
                   nS <- calcFourPop$nSites
                   
                   calcFourPop <- calcFourPop[!grepl("nSites", colnames(calcFourPop)) & !grepl("snpMid", colnames(calcFourPop))]
-                  calcFourPop <- bind_cols(tibble(scaf = as.character(scaf), start = st, end, snpMid = sM, nSites = nS), calcFourPop)
+                  calcFourPop <- bind_cols(tibble(SeqName = as.character(scaf), Start = st, End = end, windowMid = (st + end)/2, snpMid = sM, nSites = nS), calcFourPop)
               } 
               
               return(calcFourPop)

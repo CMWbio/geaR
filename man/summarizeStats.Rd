@@ -4,13 +4,25 @@
 \alias{summarizeStats}
 \title{Calculates block jackknifed mean for statistics}
 \usage{
-summarizeStats(x, blockSize = 1000000L, which = NULL, nCores = 1, stats = NULL)
+summarizeStats(
+  x,
+  blockSize = 1000000L,
+  which = NULL,
+  nCores = 1,
+  stat = "diversity"
+)
 
-summarizeStats(x, blockSize = 1000000L, which = NULL, nCores = 1, stats = NULL)
+summarizeStats(
+  x,
+  blockSize = 1000000L,
+  which = NULL,
+  nCores = 1,
+  stat = "diversity"
+)
 }
 \arguments{
-\item{x}{A \code{matrix} \cr
-Allele genotypes for each individual}
+\item{x}{A \code{gear} \cr
+Analyzed gear object}
 
 \item{blockSize}{\code{integer} default \code{1000000L}. The block size in
 basepairs.}

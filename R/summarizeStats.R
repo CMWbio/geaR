@@ -5,8 +5,8 @@
 #' @details Authours: Chris Ward
 #'
 #'
-#' @param x A \code{matrix} \cr
-#' Allele genotypes for each individual
+#' @param x A \code{gear} \cr
+#' Analyzed gear object
 #' @param blockSize  \code{integer} default \code{1000000L}. The block size in
 #' basepairs.
 #' @param which \code{character,NULL} default \code{NULL}. Only calculates
@@ -24,9 +24,11 @@
 #' @export
 
 
-summarizeStats <- function(x, blockSize = 1000000L, which = NULL, nCores = 1, stats = NULL){
+summarizeStats <- function(x, blockSize = 1000000L, which = NULL, nCores = 1, stat = "diversity"){
   
-  cols <- colnames(x)
+  if(stat == "admixture") x <- x@AdmixtureStats
+  else x <- x@DiversityStatsFULL
+  
   
   if(!is.null(which)) x <- x[SeqName %in% which]
   
@@ -44,7 +46,7 @@ summarizeStats <- function(x, blockSize = 1000000L, which = NULL, nCores = 1, st
     blockEnd <- blockStart + blockSize
     
     
-    tibble(chr = scaffs[y], blockStart, blockEnd)
+    tibble(SeqName = scaffs[y], blockStart, blockEnd)
     
   })
   
@@ -52,23 +54,28 @@ summarizeStats <- function(x, blockSize = 1000000L, which = NULL, nCores = 1, st
   
   blocks <- split(blocks, 1:nrow(blocks))
   
-  
+  cols <- colnames(x)
   avgStats <- mclapply(seq_along(blocks), mc.cores = nCores, function(z){
     
     
     block <- blocks[[z]]
     
     avgStats  <-  x[
-      x[["SeqName"]] == block[["chr"]] &
+      x[["SeqName"]] == block[["SeqName"]] &
         x[["Start"]] >= block[["blockStart"]]&
         x[["End"]] <= block[["blockEnd"]],
       ]
     
+    if(nrow(avgStats) > 1){
     
-    avgStats <- avgStats[,!cols %in% c("SeqName", "Start", "End", "windowMid", "snpMid", "Gene") &
-                           ifelse(grepl(paste(paste0("_", stats), collapse = "|"), cols), TRUE, FALSE)]
-    
-    colMeans(avgStats, na.rm = TRUE)
+      avgStats <- avgStats[,!cols %in% c("SeqName", "Start", "End", "windowMid", "snpMid", "Gene", "nSites")]
+      # else {avgStats <- avgStats[,!cols %in% c("SeqName", "Start", "End", "windowMid", "snpMid", "Gene") &
+      #                             ifelse(grepl(paste(paste0("_", stats), collapse = "|"), cols), TRUE, FALSE)]}
+      
+      colMeans(avgStats, na.rm = TRUE)
+      
+      
+    }
     
   })
   

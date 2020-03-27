@@ -45,6 +45,7 @@ Collate:
     'dmax.R'
     'dmin.R'
     'dxyAF.R'
+    'extractionFunctions.R'
     'federRND.R'
     'gear-class.R'
     'genoDist.R'
