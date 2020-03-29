@@ -30,7 +30,7 @@ setGeneric("analyzeGear",function(GDS, gear = NULL, ...){
     standardGeneric("analyzeGear")
 })
 
-#' @aliases getDiversityStats,character
+#' @aliases analyzeGear,character
 #' @export
 setMethod("analyzeGear", signature = "character",
           function(GDS, ...){
@@ -39,7 +39,7 @@ setMethod("analyzeGear", signature = "character",
           })
 
 
-#' @aliases getDiversityStats,character
+#' @aliases analyzeGear,character
 #' @export
 setMethod("analyzeGear", signature = c(GDS = "SeqVarGDSClass"),
           function(GDS, ...){

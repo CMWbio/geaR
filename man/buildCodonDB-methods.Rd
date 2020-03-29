@@ -4,7 +4,7 @@
 \alias{buildCodonDB}
 \title{build a codon sqlLite DB}
 \usage{
-buildCodonDB(genome, exons, sqlDir = NULL, fourFoldCodon = "include", ...)
+buildCodonDB(genome, exons, sqlDir = NULL, ...)
 }
 \arguments{
 \item{genome}{\code{character} or \code{DNAStringSet} \cr
@@ -15,18 +15,13 @@ Generated using \code{getFeatures()} by passing \code{"gene:cds"} to the  \code{
 
 \item{sqlDir}{\code{character} set to sql output to run in lower memory mode.}
 
-\item{fourFoldCodon}{\code{character}
- Options are \code{NULL}, \code{"only"} or \code{"remove"}. \cr
-Determines what to do with 4-fold degenerate sites. \cr
- \cr
-\code{NULL}, the default, will have no effect on the output, \code{"only"} will include only 4 fold degenerate sites in the output, \cr
-\code{"exclude"} will output all sites (unless a position is specified) excluding 4-fold degenerate sites. \cr
- \cr
-\code{"only"} is incompatable with specifying a position.}
-
 \item{position}{\code{character}
 Options are \code{"all"}, default, or any combination of \code{c("first", "second", "third")}. \cr
 Output will contain only specified codon positions.}
+
+\item{fourFoldCodon}{\code{character}
+ Options are \code{NULL}, \code{"only"} or \code{"remove"}. \cr
+Determines what to do with 4-fold degenerate sites. \cr}
 }
 \value{
 An object of class \code{GRanges} containing codon ranges for positions specified.

@@ -17,11 +17,6 @@
 #' @param fourFoldCodon \code{character}
 #'  Options are \code{NULL}, \code{"only"} or \code{"remove"}. \cr
 #' Determines what to do with 4-fold degenerate sites. \cr
-#'  \cr
-#' \code{NULL}, the default, will have no effect on the output, \code{"only"} will include only 4 fold degenerate sites in the output, \cr
-#' \code{"exclude"} will output all sites (unless a position is specified) excluding 4-fold degenerate sites. \cr
-#'  \cr
-#' \code{"only"} is incompatable with specifying a position.
 #'
 #' @importFrom BSgenome getSeq
 #' @importFrom Biostrings readDNAStringSet
@@ -42,14 +37,14 @@
 #' @rdname buildCodonDB-methods
 
 
-setGeneric("buildCodonDB", function(genome, exons, sqlDir = NULL, fourFoldCodon = "include", ...){
+setGeneric("buildCodonDB", function(genome, exons, sqlDir = NULL, ...){
   standardGeneric("buildCodonDB")
 })
 
 #' @aliases getCodonFeature,character
 #' @export
 setMethod("buildCodonDB", signature(genome = "character"),
-          function(genome, exons, sqlDir = NULL, fourFoldCodon = "include", ...){
+          function(genome, exons, sqlDir = NULL, ...){
             
             genome <- readDNAStringSet(genome)
             
@@ -60,7 +55,7 @@ setMethod("buildCodonDB", signature(genome = "character"),
 #' @aliases getCodonFeature,DNAStringSet
 #' @export
 setMethod("buildCodonDB", signature = "DNAStringSet",
-          function(genome, exons, sqlDir = NULL, fourFoldCodon = "include"){
+          function(genome, exons, sqlDir = NULL){
             
             # Residue lookup table
             # lookUP <- c(Ala = "gc[tcag]",
