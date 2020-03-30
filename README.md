@@ -17,6 +17,19 @@ BiocManager::install(pkgs)
 devtools::install_github("CMWbio/geaR")
 
 ```
+Some users may experience warnings during the build like:
+```
+/Library/Frameworks/R.framework/Versions/3.6/Resources/library/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+```
+
+This is a harmless warning thrown by RcppEigen. See here[https://discourse.mc-stan.org/t/boost-and-rcppeigen-warnings-for-r-package-using-stan/3478/2] for discussion.
+
+```
+devtools::install_github("CMWbio/geaR")
+```
+
+
 # Quick usage 
 For detailed usage please see here.
 
