@@ -24,6 +24,8 @@
 #'
 #' @importFrom dplyr bind_cols
 #' @importFrom dplyr bind_rows
+#' @importFrom plyranges join_overlap_inner
+#' @importFrom plyranges setdiff_ranges
 #'
 #' @export
 #' @rdname mergeLoci
