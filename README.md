@@ -31,7 +31,7 @@ devtools::install_github("CMWbio/geaR")
 
 
 # Quick usage 
-For detailed usage please see here.
+For detailed usage please see [here](https://github.com/CMWbio/geaR-vignette/blob/master/index.html).
 
 **While using please try and be careful with ram usage. If you have an analysis size of 1000 samples with an average of ~100000 bp in each analysis region (eg a 1Mb tiled window) try to run on 1 core first to see your memory requirements**
 
