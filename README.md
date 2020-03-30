@@ -23,7 +23,7 @@ Some users may experience warnings during the build like:
     #pragma clang diagnostic pop
 ```
 
-This is a harmless warning thrown by RcppEigen. See here[https://discourse.mc-stan.org/t/boost-and-rcppeigen-warnings-for-r-package-using-stan/3478/2] for discussion.
+This is a harmless warning thrown by RcppEigen. See [here](https://discourse.mc-stan.org/t/boost-and-rcppeigen-warnings-for-r-package-using-stan/3478/2) for discussion.
 
 ```
 devtools::install_github("CMWbio/geaR")
