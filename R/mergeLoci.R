@@ -31,13 +31,13 @@
 #' @rdname mergeLoci
 
 
-setGeneric("mergeLoci", function(x, y, nCores, overlap = "+", FFD = FALSE, genes = NULL, positions = NULL){
+setGeneric("mergeLoci", function(x, y, nCores, overlap = "+", FFD = FALSE, genes = NULL){
   standardGeneric("mergeLoci")
 })
 
 
 setMethod("mergeLoci", signature(c(y = "character")),
-          function(x, y, nCores, overlap, FFD, genes, positions){
+          function(x, y, nCores, overlap, FFD, genes){
             
             conn <- RSQLite::dbConnect(RSQLite::SQLite(), y)
             
@@ -50,12 +50,12 @@ setMethod("mergeLoci", signature(c(y = "character")),
             else {
               
               df <-  RSQLite::dbGetQuery(conn, paste0("SELECT * FROM genes"))[[1]]
-              tic()
+              
               df <- purrr::map(df, function(x){
                 df <-  RSQLite::dbGetQuery(conn, paste0("SELECT seqnames,strand,start,end FROM '", x, 
                                                         "' WHERE codonPosition IN ('", paste(positions, collapse = "', '"),"')"))
               }) 
-              toc()
+              
               df <- bind_rows(df)
             }
             
@@ -86,7 +86,7 @@ setMethod("mergeLoci", signature(c(y = "character")),
           })
 
 setMethod("mergeLoci", signature(c(y = "GRangesList")),
-          function(x, y, nCores, overlap, FFD, genes, positions){
+          function(x, y, nCores, overlap, FFD, genes){
             
             data <- mclapply(seq(x), mc.cores = nCores, function(locus){
               locus <- x[[locus]]

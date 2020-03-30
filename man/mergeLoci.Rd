@@ -4,15 +4,7 @@
 \alias{mergeLoci}
 \title{Combines overlaps in ys and xs}
 \usage{
-mergeLoci(
-  x,
-  y,
-  nCores,
-  overlap = "+",
-  FFD = FALSE,
-  genes = NULL,
-  positions = NULL
-)
+mergeLoci(x, y, nCores, overlap = "+", FFD = FALSE, genes = NULL)
 }
 \arguments{
 \item{x}{\code{GRangesList}. xs to overlap ys to.}
