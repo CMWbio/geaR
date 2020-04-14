@@ -2,7 +2,7 @@ Package: geaR
 Type: Package
 Title: GDS Evolutionary Analysis in R
 Version: 0.1.0
-Author: Christopher Ward (cre,auth), Alastair Luddington (auth), Simon Baxter (auth)
+Author: Christopher Ward (cre,auth), Alastair Luddington (auth), Jimmy Breen (auth), Simon Baxter (auth)
 Maintainer: Christopher Ward <christopher.ward@adelaide.edu.au>
 Description: An R package to carry out evolutionary/population genetics on feature-partitioned genomes using GenomicRanges and the Genomic Data Structure format  
 License: GNU v3
@@ -21,6 +21,7 @@ Depends:
   RcppEigen,
   rtracklayer
 Imports:
+  ape,
   Biostrings,
   BSgenome,
   bootstrap,

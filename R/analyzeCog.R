@@ -8,7 +8,6 @@
 #' @return the output of the supplied cog
 #'
 #'
-#' @importFrom combinat permn
 #' @import furrr
 #' @importFrom future plan
 #' @importFrom dplyr bind_cols
