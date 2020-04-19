@@ -81,12 +81,18 @@ setMethod("analyzeCog", signature(c(cog = "cog.diversityFULL")),
           })
 
 
-
+setMethod("analyzeCog", signature(c(cog = "cog.diversityFAST")),
+          function(cog, pairs, distMat,
+                   arg, popList, seqname, start, end, windowMid, snpMid, nSites, locus, outgroup, AF){
+              
+              
+              
+          })
 
 #' @aliases analyzeCog
 setMethod("analyzeCog", signature(c(cog = "cog.admixture")),
           function(cog, arg, pops,
-                   locus, outgroup, GDS){
+                   locus, outgroup, AF){
               
               ### get the unique populations that do not belong to the outgroup 
               ### to construct comparisons from and to reduce the search space if 
@@ -103,7 +109,6 @@ setMethod("analyzeCog", signature(c(cog = "cog.admixture")),
               
               p <- pops[pops$Population %in% unique(unlist(cog@fourPop)),]
               
-              AF <- getAF(GDS, locus, pops = p, minSites = arg@minSites, refAllele = 0)
               calcFourPop <- NULL
               if(length(AF)){
                   

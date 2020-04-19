@@ -17,9 +17,16 @@
 #' #' @rdname dxyAF
 #' #' @export
 #'
-#' dxyAF <- function(AF, pop){
-#'
-#'
-#'
-#'
-#' }
+dxyAF <- function(AF){
+
+    mat <- as.matrix(AF[5:ncol(AF)])
+    
+
+    t <- lapply(1:nrow(mat), function(x){
+        dist(mat[x,])
+        
+    })
+    
+    Reduce('+', t) / nrow(AF)
+
+}
