@@ -27,7 +27,7 @@ This is a harmless warning thrown by RcppEigen. See [here](https://discourse.mc-
 
 # Quick usage 
 For detailed usage please see [here](https://cmwbio.github.io/geaR-vignette/index.html).
-For example workplows see [here](https://github.com/CMWbio/geaR/wiki)
+For example workflows see [here](https://github.com/CMWbio/geaR/wiki)
 
 **While using please try and be careful with ram usage. If you have an analysis size of 1000 samples with an average of ~100000 bp in each analysis region (eg a 1Mb tiled window) try to run on 1 core first to see your memory requirements**
 
