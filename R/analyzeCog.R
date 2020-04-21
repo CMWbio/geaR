@@ -81,13 +81,13 @@ setMethod("analyzeCog", signature(c(cog = "cog.diversityFULL")),
           })
 
 
-setMethod("analyzeCog", signature(c(cog = "cog.diversityFAST")),
-          function(cog, pairs, distMat,
-                   arg, popList, seqname, start, end, windowMid, snpMid, nSites, locus, outgroup, AF){
-              
-              
-              
-          })
+# setMethod("analyzeCog", signature(c(cog = "cog.diversityFAST")),
+#           function(cog, pairs, distMat,
+#                    arg, popList, seqname, start, end, windowMid, snpMid, nSites, locus, outgroup, AF){
+#               
+#               
+#               
+#           })
 
 #' @aliases analyzeCog
 setMethod("analyzeCog", signature(c(cog = "cog.admixture")),

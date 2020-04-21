@@ -37,7 +37,7 @@ setGeneric("mergeLoci", function(x, y, nCores, overlap = "+", FFD = FALSE, genes
 
 
 setMethod("mergeLoci", signature(c(y = "character")),
-          function(x, y, nCores, overlap, FFD, genes){
+          function(x, y, nCores, overlap, genes){
             
             conn <- RSQLite::dbConnect(RSQLite::SQLite(), y)
             
@@ -86,12 +86,12 @@ setMethod("mergeLoci", signature(c(y = "character")),
           })
 
 setMethod("mergeLoci", signature(c(y = "GRangesList")),
-          function(x, y, nCores, overlap, FFD, genes){
+          function(x, y, nCores, overlap, genes){
             
             data <- mclapply(seq(x), mc.cores = nCores, function(locus){
               locus <- x[[locus]]
               
-              y <- y@unlistData[y@unlistData$codonPosition %in% positions,]
+              y <- y@unlistData #[y@unlistData$codonPosition %in% positions,]
               y@elementMetadata <- y@elementMetadata[colnames(y@elementMetadata) == "gene"]
               overlapSeqName <- y[as.character(y@seqnames) == as.character(locus@seqnames)[1]]
               

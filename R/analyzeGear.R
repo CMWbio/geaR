@@ -163,7 +163,7 @@ setMethod("analyzeGear", signature = c(GDS = "SeqVarGDSClass"),
                           # precompute allele frequencies
                           AF <- getAF(GDS, locus, pops = pops, minSites = minSites, refAllele = 0)
                           
-                          divFAST <- analyzeCog()
+                          # divFAST <- analyzeCog()
                           
                           #### calculate admixture statistics, will return NULL if gear@AdmixtureStats
                           #### slot is cog.NULL
