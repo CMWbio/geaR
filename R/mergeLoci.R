@@ -14,12 +14,8 @@
 #' Negative or positive overlap
 #' "-" will subtract the y ranges from the xs \cr
 #' "+" will bin ys into x ranges
-#' @param FFD \code{logical} Set to deal with Four fold degenerate sites
-#' @param genes \code{character} Vector of genes to limit anlaysis to. This 
-#' can be useful if you have a set of low codon usage bias genes
-#' @param positions \code{character} A vector of codon positions, 
-#' e.g. \code{c("first", "second")} will extract codons in a 1+2 position scheme
-#'
+#' @param table \code{character} one of \code{c("4Degen", "0Degen", "2Degen")} 
+#' 
 #' @return A \code{GRangesList} containing merged ranges 
 #'
 #' @importFrom dplyr bind_cols
@@ -31,19 +27,19 @@
 #' @rdname mergeLoci
 
 
-setGeneric("mergeLoci", function(x, y, nCores, overlap = "+", FFD = FALSE, genes = NULL){
+setGeneric("mergeLoci", function(x, y, nCores, overlap = "+", table = NULL){
   standardGeneric("mergeLoci")
 })
 
 
 setMethod("mergeLoci", signature(c(y = "character")),
-          function(x, y, nCores, overlap, genes){
+          function(x, y, nCores, overlap, table){
             
             conn <- RSQLite::dbConnect(RSQLite::SQLite(), y)
             
-            if(FFD){
+            if(!is.null(table)){
               
-              df <-  RSQLite::dbGetQuery(conn, paste0("SELECT * FROM '4Degen'"))
+              df <-  RSQLite::dbGetQuery(conn, paste0("SELECT * FROM '", table, "'"))
               
             }
             
@@ -86,7 +82,7 @@ setMethod("mergeLoci", signature(c(y = "character")),
           })
 
 setMethod("mergeLoci", signature(c(y = "GRangesList")),
-          function(x, y, nCores, overlap, genes){
+          function(x, y, nCores, overlap, table){
             
             data <- mclapply(seq(x), mc.cores = nCores, function(locus){
               locus <- x[[locus]]

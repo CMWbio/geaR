@@ -48,6 +48,7 @@ Collate:
     'dxyAF.R'
     'extractionFunctions.R'
     'federRND.R'
+    'filterCodonDB.R'
     'gear-class.R'
     'genoDist.R'
     'genoDistFAST.R'

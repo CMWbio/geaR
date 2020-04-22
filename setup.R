@@ -82,9 +82,9 @@ genome <- Biostrings::readDNAStringSet("/media/chris/Seagate Expansion Drive/whi
 genome@ranges@NAMES <- gsub(" .*$","", genome@ranges@NAMES)
 
 tic()
-fourF <- buildCodonDB(genome, exons = cds[1:10], sqlDir = "./testMySql.db", nCores = 4)
+fourF <- buildCodonDB(genome, exons = cds[1:10], sqlDir = NULL)
 toc()
-f <- validate4FoldCodons(GDS, sqlDir = "~/Desktop/geaR/DorsalisCodons.db", nCores = 4, pops = pops)
+tic()
+f <- validate4FoldCodons(GDS, input = fourF, nCores = 4, pops = pops)
+toc()
 
-
-test <- mclapply(1:1000000,mc.cores = 5, function(x) rnorm(10000))

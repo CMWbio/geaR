@@ -4,7 +4,7 @@
 \alias{mergeLoci}
 \title{Combines overlaps in ys and xs}
 \usage{
-mergeLoci(x, y, nCores, overlap = "+", FFD = FALSE, genes = NULL)
+mergeLoci(x, y, nCores, overlap = "+", table = NULL)
 }
 \arguments{
 \item{x}{\code{GRangesList}. xs to overlap ys to.}
@@ -18,13 +18,7 @@ Negative or positive overlap
 "-" will subtract the y ranges from the xs \cr
 "+" will bin ys into x ranges}
 
-\item{FFD}{\code{logical} Set to deal with Four fold degenerate sites}
-
-\item{genes}{\code{character} Vector of genes to limit anlaysis to. This 
-can be useful if you have a set of low codon usage bias genes}
-
-\item{positions}{\code{character} A vector of codon positions, 
-e.g. \code{c("first", "second")} will extract codons in a 1+2 position scheme}
+\item{table}{\code{character} one of \code{c("4Degen", "0Degen", "2Degen")}}
 }
 \value{
 A \code{GRangesList} containing merged ranges
