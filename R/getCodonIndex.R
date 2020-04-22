@@ -41,7 +41,7 @@ setGeneric("buildCodonDB", function(genome, exons, sqlDir = NULL, ...){
   standardGeneric("buildCodonDB")
 })
 
-#' @aliases getCodonFeature,character
+#' @aliases buildCodonDB,character
 #' @export
 setMethod("buildCodonDB", signature(genome = "character"),
           function(genome, exons, sqlDir = NULL, ...){
@@ -52,7 +52,7 @@ setMethod("buildCodonDB", signature(genome = "character"),
             
           })
 
-#' @aliases getCodonFeature,DNAStringSet
+#' @aliases buildCodonDB,DNAStringSet
 #' @export
 setMethod("buildCodonDB", signature = "DNAStringSet",
           function(genome, exons, sqlDir = NULL){
