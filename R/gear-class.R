@@ -50,13 +50,13 @@ setClass(
 #'
 #' @details This object contains \code{cog} objects to allow for multiple analyses to
 #' be carried out on the same loci
-#' 
+#'
 #' @param loci \code{GRangesList} containing genomic loci to work on
-#' @param populations \code{data.frame} contating two columns \code{Sample} and 
-#' \code{Populaiton} 
-#' @param outgroup \code{character} the population in the \code{populaitons} 
+#' @param populations \code{data.frame} containing two columns \code{Sample} and
+#' \code{Population}
+#' @param outgroup \code{character} the population in the \code{populations}
 #' argument that corresponds to the outgroup
-#' @param cogs \code{list} a list of cog objects for the analysis 
+#' @param cogs \code{list} a list of cog objects for the analysis
 #'
 #' @rdname makeGear
 #' @export
