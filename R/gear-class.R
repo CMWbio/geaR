@@ -66,6 +66,8 @@ makeGear <- function(loci, populations, outgroup = vector("character", 1), cogs 
   classes <- unlist(lapply(cogs, function(x) class(x)))
   stopifnot(length(unique(classes)) == length(classes))
 
+  if(any(grepl(":", pops$Population))) stop("remove the ':' from population names ")
+  
   gear@Loci <- loci
   gear@Populations <- populations
   gear@Outgroup <- outgroup

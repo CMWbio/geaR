@@ -40,27 +40,27 @@ Nei82Fst <- function(distMat, popList, pairs, ploidy, weighted = TRUE) {
 
       if(weighted) {
         w <- length(p1)/(length(p1)+length(p2))
-        piB1 <- w * mean(distMat[p1alleles, p1alleles])
-        piB2 <- (1 - w) * mean(distMat[p2alleles, p2alleles])
+        piB1 <- w * mean(distMat[p1alleles, p1alleles], na.rm = TRUE)
+        piB2 <- (1 - w) * mean(distMat[p2alleles, p2alleles], na.rm = TRUE)
 
         piB <- piB1 + piB2
 
       } else {
 
-        piB1 <- mean(distMat[p1alleles, p1alleles])
-        piB2 <- mean(distMat[p2alleles, p2alleles])
+        piB1 <- mean(distMat[p1alleles, p1alleles], na.rm = TRUE)
+        piB2 <- mean(distMat[p2alleles, p2alleles], na.rm = TRUE)
 
         piB <- piB1 + piB2 / 2
       }
 
-      piT <- mean(distMat[allP, allP])
+      piT <- mean(distMat[allP, allP], na.rm = TRUE)
 
 
       ## as pi
       fst <- data_frame(1 - piB / piT)
 
       #name col
-      colnames(fst) <-  paste0(f[1], "v" , f[2], c("_Fst"))
+      colnames(fst) <-  paste0(f[1], "_vs_" , f[2], c("_Fst"))
       fst
     })
 

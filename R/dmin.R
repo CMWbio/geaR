@@ -25,7 +25,7 @@ dmin <- function(distMat, popList, pairs, ploidy) {
       #make a tibble with the average number of pairwise differences
       dmin <- data_frame(min(popD))
       #name col
-      colnames(dmin) <-  paste0(f[1], "v" , f[2], c("_dmin"))
+      colnames(dmin) <-  paste0(f[1], ":" , f[2], c("_dmin"))
       dmin
     })
 

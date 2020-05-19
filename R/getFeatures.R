@@ -147,7 +147,7 @@ setMethod("makeFeatures", signature = "GRanges",
                 all <- future_map(seq_along(all), .f = .mapFun, all, longestIsoform)
                 plan(sequential)
                 all <- dplyr::bind_rows(all)
-                all <- makeGRangesListFromDataFrame(all, split.field = "gene", keep.extra.columns = TRUE)            
+                all <- makeGRangesListFromDataFrame(all, split.field = "Name", keep.extra.columns = TRUE)            
                 return(all)
               }
               if(feature == "gene:cds"){
@@ -266,8 +266,9 @@ setMethod("makeFeatures", signature = "GRanges",
         longest <- which(isoformLengths == max(isoformLengths))[1]
         mRNA <- mRNA[[longest]]} else mRNA <- mRNA[[1]]
     
-    tibble::as_tibble(mRNA)
-    
+    mRNA <- tibble::as_tibble(mRNA)
+    mRNA <- mRNA[colnames(mRNA) != "Parent"]
+    mRNA
 }
 
 

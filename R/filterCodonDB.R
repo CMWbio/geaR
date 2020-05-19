@@ -27,40 +27,43 @@ setGeneric("filterCodonDB", function(DB, position, degeneracy){
 #' @export
 setMethod("filterCodonDB", signature(DB = "GRangesList"),
           function(DB, position, degeneracy = NULL){
-
-    if(is.null(degeneracy)) return(DB@unlistData[DB@unlistData$codonPosition %in% position])
-    
-    if(degeneracy == 0){
-        position <- c("first", "second")
-        filt <- c("Trp", "Met")
-        
-        DB@unlistData <- DB@unlistData[DB@unlistData$codonPosition %in% position |
-                               DB@unlistData$residue %in% filt]
-        
-        DB@unlistData <- DB@unlistData[DB@unlistData$residue != "Stp"]
-    } 
-    
-    if(degeneracy == 2){
-        
-        position <- "third"
-        filt <- c("Phe", "Leu2", "Tyr", "His", "Glu", "Asn", "Lys", "Asp", "Glu", "Cys", 
-                  "Ser", "Arg2")
-        
-        DB@unlistData <- DB@unlistData[DB@unlistData$residue %in% filt]
-        
-        DB@unlistData <- DB@unlistData[DB@unlistData$codonPosition %in% position]
-        
-    }
-   
-    
-    
-})
+              
+              if(is.null(degeneracy)) return(DB@unlistData[DB@unlistData$codonPosition %in% position])
+              degeneracy <- as.numeric(degeneracy)
+              
+              if(degeneracy == 0){
+                  position <- c("first", "second")
+                  filt <- c("Trp", "Met")
+                  
+                  DB@unlistData <- DB@unlistData[DB@unlistData$codonPosition %in% position |
+                                                     DB@unlistData$residue %in% filt]
+                  
+                  DB@unlistData <- DB@unlistData[DB@unlistData$residue != "Stp"]
+                  return(DB)
+              } 
+              
+              if(degeneracy == 2){
+                  
+                  position <- "third"
+                  filt <- c("Phe", "Leu2", "Tyr", "His", "Glu", "Asn", "Lys", "Asp", "Glu", "Cys", 
+                            "Ser", "Arg2")
+                  
+                  DB@unlistData <- DB@unlistData[DB@unlistData$residue %in% filt]
+                  
+                  DB@unlistData <- DB@unlistData[DB@unlistData$codonPosition %in% position]
+                  return(DB)
+              }
+              
+              
+              
+          })
 
 #' @aliases filterCodonDB,character
 #' @export
 setMethod("filterCodonDB", signature(DB = "character"),
           function(DB, position, degeneracy = NULL){
               
+              name <- DB
               conn <- dbConnect(SQLite(), DB)
               genes <- dbGetQuery(conn, paste0("SELECT * FROM genes"))[[1]]
               
@@ -78,14 +81,14 @@ setMethod("filterCodonDB", signature(DB = "character"),
                   DB <- DB[DB$codonPosition %in% position,]
                   dbWriteTable(conn = conn, name = paste(position, collapse = "_"), value = data, overwrite = TRUE)
                   
-                  }
+              }
               
               if(degeneracy == 0){
                   position <- c("first", "second")
                   filt <- c("Trp", "Met")
                   
                   DB <- DB[DB$codonPosition %in% position |
-                                   DB$residue %in% filt,]
+                               DB$residue %in% filt,]
                   
                   DB <- DB[DB$residue != "Stp",]
                   
@@ -108,6 +111,6 @@ setMethod("filterCodonDB", signature(DB = "character"),
               }
               
               dbDisconnect(conn)
-              return(paste0("Sites have been added to ", DV))
+              return(paste0("Sites have been added to ", name))
               
           })

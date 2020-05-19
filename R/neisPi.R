@@ -27,7 +27,7 @@ neisPi <- function(distMat, popList, ploidy = 2){
 
     # if(sampleCorrect) pi <- sum(popD)/(n*(n-1))
     # else
-    pi <- mean(popD)
+    pi <- mean(popD, na.rm = TRUE)
     #determine pi for pop
     piDF <- data_frame(pi)
     # set colnames

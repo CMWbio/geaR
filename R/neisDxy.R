@@ -25,9 +25,9 @@ neisDxy <- function(distMat, popList, pairs, ploidy) {
           popD <- distMat[as.vector(outer(popList[[f[1]]]$Sample, 1:ploidy, paste, sep = "/")),
                           as.vector(outer(popList[[f[2]]]$Sample, 1:ploidy, paste, sep = "/"))]
           #make a tibble with the average number of pairwise differences
-          dxy <- data_frame(mean(popD), sd(popD))
+          dxy <- data_frame(mean(popD, na.rm = TRUE), sd(popD, na.rm = TRUE))
           #name col
-          colnames(dxy) <-  paste0(f[1], "v" , f[2], c("_dxy", "_SDdxy"))
+          colnames(dxy) <-  paste0(f[1], ":" , f[2], c("_dxy", "_SDdxy"))
           dxy
     })
 

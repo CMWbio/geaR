@@ -22,7 +22,7 @@ neisDa <- function(dxy, pi){
     #remove the dxy from the end
     compName <- gsub("_dxy", "", dxyName)
     #get sample names
-    samples <- unlist(strsplit(compName, "v"))
+    samples <- unlist(strsplit(compName, ":"))
 
     #get pi for population x
     xPi <- pi[[paste0(samples[1], "_pi")]]

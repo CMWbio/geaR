@@ -27,8 +27,8 @@ genoDist <- function(genoMat, pairwiseDeletion){
   geno <- union(genoMat, genoMat)
   dat <- lapply(geno, function(f){
     mat <- genoMat == f
-    mat <- apply(mat, 2, as.numeric)
-    multiMat <- eigenMapMatMult(t(mat), mat)
+    mat <- apply(mat, 2, as.double)
+    multiMat <- geaR:::eigenMapMatMult(t(mat), mat)
     colnames(multiMat) <- colnames(mat)
     rownames(multiMat) <- colnames(mat)
     multiMat
@@ -58,6 +58,7 @@ genoDist <- function(genoMat, pairwiseDeletion){
     nonNdif <- dif - Ndif
     # differences without Ns
     distMat <- nonNdif / nonNsites
+    #distMat <- nonNdif / nrow(genoMat)
 
 
   }else{

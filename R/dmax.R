@@ -26,7 +26,7 @@ dmax <- function(distMat, popList, pairs, ploidy) {
       #make a tibble with the average number of pairwise differences
       dmax <- data_frame(max(popD))
       #name col
-      colnames(dmax) <-  paste0(f[1], "v" , f[2], c("_dmax"))
+      colnames(dmax) <-  paste0(f[1], ":" , f[2], c("_dmax"))
       dmax
     })
 

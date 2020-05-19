@@ -26,23 +26,23 @@
 #'
 #' @rdname analyzeGear-methods
 #' @export
-setGeneric("analyzeGear",function(GDS, gear = NULL, ...){
+setGeneric("analyzeGear",function(GDS, gear = NULL){
     standardGeneric("analyzeGear")
 })
 
 #' @aliases analyzeGear,character
 #' @export
 setMethod("analyzeGear", signature = "character",
-          function(GDS, ...){
+          function(GDS, gear){
               GDS <- seqOpen(GDS, allow.duplicate = TRUE)
-              getDiversityStats(GDS, ...)
+              analyzeGear(GDS, ...)
           })
 
 
 #' @aliases analyzeGear,character
 #' @export
 setMethod("analyzeGear", signature = c(GDS = "SeqVarGDSClass"),
-          function(GDS, ...){
+          function(GDS, gear){
               
               ### plan the future
               # plan(multiprocess, workers = gear@Args@nCores)
@@ -81,8 +81,8 @@ setMethod("analyzeGear", signature = c(GDS = "SeqVarGDSClass"),
                   #### test if it is necessary to read in actual genotypes
                   #### if the user just wants AF modules we dont need to read into mem
                   if(class(gear@DiversityStatsFULL) == "cog.diversityFULL" |
-                     class(gear@OutputLoci) == "cog.outLoci" | 
-                     class(gear@OutputTrees) == "cog.outTrees"){
+                     class(gear@OutputLoci) == "cog.outputLoci" | 
+                     class(gear@OutputTrees) == "cog.outputTrees"){
                       
                       ### read in the raw genotype matrix
                       rawMat <- getGenotypes(GDS = GDS, locus = locus, minSites = minSites,
@@ -129,11 +129,11 @@ setMethod("analyzeGear", signature = c(GDS = "SeqVarGDSClass"),
                                   distMat <- genoDist(genoMat, gear@Args@pairwiseDeletion)
                                   #### pregenerate populations list and pairs for pairwise dxy
                                   popList <- split(pops, pops$Population)
-                                  pairs <- .generatePairs(popList)
+                                  pairs <- geaR:::.generatePairs(popList)
                                   
                                   #### calculate diversity statistics, will return NULL if gear@DiversityStatsFULL
                                   #### slot is cog.NULL
-                                  divFULL <- analyzeCog(cog = gear@DiversityStatsFULL, pairs = pairs, distMat = distMat,
+                                  divFULL <- geaR:::analyzeCog(cog = gear@DiversityStatsFULL, pairs = pairs, distMat = distMat,
                                                         arg = gear@Args, popList, seqname, start, end, windowMid, snpMid, nSites, locus, outgroup = gear@Outgroup)
                                   #### output trees, will return NULL if gear@OutputTrees
                                   #### slot is cog.NULL
