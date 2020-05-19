@@ -56,7 +56,7 @@ Collate:
     'getCodonIndex.R'
     'getCodonsFromFasta.R'
     'getFeatures.R'
-    'getGenotyes.R'
+    'getGenotypes.R'
     'getPositionFromDB.R'
     'getsummaryStats.R'
     'makeCog.R'
