@@ -9,10 +9,10 @@ makeGear(loci, populations, outgroup = vector("character", 1), cogs = list())
 \arguments{
 \item{loci}{\code{GRangesList} containing genomic loci to work on}
 
-\item{populations}{\code{data.frame} contating two columns \code{Sample} and 
-\code{Populaiton}}
+\item{populations}{\code{data.frame} containing two columns \code{Sample} and
+\code{Population}}
 
-\item{outgroup}{\code{character} the population in the \code{populaitons} 
+\item{outgroup}{\code{character} the population in the \code{populations}
 argument that corresponds to the outgroup}
 
 \item{cogs}{\code{list} a list of cog objects for the analysis}

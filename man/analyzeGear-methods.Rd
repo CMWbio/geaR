@@ -4,7 +4,7 @@
 \alias{analyzeGear}
 \title{analyzeGear}
 \usage{
-analyzeGear(GDS, gear = NULL, ...)
+analyzeGear(GDS, gear = NULL)
 }
 \arguments{
 \item{GDS}{\code{character} contating the path to a GDS file 

@@ -6,6 +6,7 @@
 
   AF <- AF[complete.cases(AF),]
   AF <- AF[AF[[paste0(x[[4]], "_AF")]] %in% c(1,0),]
+  AF <- AF[AF$alt != "N",]
   pos <- AF$pos
 
   AF <- AF[,paste0(x, "_AF")]

@@ -35,7 +35,7 @@ setGeneric("analyzeGear",function(GDS, gear = NULL){
 setMethod("analyzeGear", signature = "character",
           function(GDS, gear){
               GDS <- seqOpen(GDS, allow.duplicate = TRUE)
-              analyzeGear(GDS, ...)
+              analyzeGear(GDS, gear)
           })
 
 
@@ -156,22 +156,21 @@ setMethod("analyzeGear", signature = c(GDS = "SeqVarGDSClass"),
                           
                       }
                       
-                      ##### resolve diversityFAST and admixture modules
-                      if(class(gear@DiversityStatsFAST) == "cog.diversityFAST" | 
-                         class(gear@AdmixtureStats) == "cog.admixture") {
-                          
-                          # precompute allele frequencies
-                          AF <- getAF(GDS, locus, pops = pops, minSites = minSites, refAllele = 0)
-                          
-                          # divFAST <- analyzeCog()
-                          
-                          #### calculate admixture statistics, will return NULL if gear@AdmixtureStats
-                          #### slot is cog.NULL
-                          admix <- analyzeCog(cog = gear@AdmixtureStats, arg = gear@Args, pops = pops,
-                                              locus, outgroup = gear@Outgroup, AF)
-                          
-                      }
+                  }
+                  
+                  ##### resolve diversityFAST and admixture modules
+                  if(class(gear@DiversityStatsFAST) == "cog.diversityFAST" | 
+                     class(gear@AdmixtureStats) == "cog.admixture") {
                       
+                      # precompute allele frequencies
+                      AF <- getAF(GDS, locus, pops = pops, minSites = minSites, refAllele = 0)
+                      
+                      # divFAST <- analyzeCog()
+                      
+                      #### calculate admixture statistics, will return NULL if gear@AdmixtureStats
+                      #### slot is cog.NULL
+                      admix <- analyzeCog(cog = gear@AdmixtureStats, arg = gear@Args, pops = pops,
+                                          locus, outgroup = gear@Outgroup, AF)
                       
                   }
                   

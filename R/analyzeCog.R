@@ -111,7 +111,7 @@ setMethod("analyzeCog", signature(c(cog = "cog.admixture")),
 
             calcFourPop <- NULL
             if(length(AF)){
-
+                
               calcFourPop <- map(cog@fourPop, function(x){
                 f4 <- .fourPop(AF, locus = locus, pops = pops, x = x)
               })
@@ -194,11 +194,10 @@ setMethod("analyzeCog", signature(c(cog = "cog.outputLoci")),
               }
 
               else{
-
+                 filename <- paste0(as.character(locus@seqnames[1]), ":", min(locus@ranges@start), "-", max(end(locus)))
                 if("lociType" %in% colnames(locus@elementMetadata)){
-                  filename <- paste0(as.character(locus@seqnames[1]), paste0(":", locus@elementMetadata$lociType[1]), round(mean(locus@ranges@start)))
+                  filename <- paste0(locus@elementMetadata$lociType[1], "_", filename)
                 }
-
 
                 filename <- paste0(filename, ".fasta")
 
