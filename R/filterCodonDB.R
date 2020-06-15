@@ -38,6 +38,9 @@ setMethod("filterCodonDB", signature(DB = "GRangesList"),
                   DB@unlistData <- DB@unlistData[DB@unlistData$codonPosition %in% position |
                                                      DB@unlistData$residue %in% filt]
                   
+                  DB@unlistData <- DB@unlistData[!(DB@unlistData$residue %in% c("Leu2", "Leu4", "Arg2", "Arg4") & DB@unlistData$codonPosition == "first")]
+                  
+                  
                   DB@unlistData <- DB@unlistData[DB@unlistData$residue != "Stp"]
                   return(DB)
               } 
@@ -45,7 +48,7 @@ setMethod("filterCodonDB", signature(DB = "GRangesList"),
               if(degeneracy == 2){
                   
                   position <- "third"
-                  filt <- c("Phe", "Leu2", "Tyr", "His", "Glu", "Asn", "Lys", "Asp", "Glu", "Cys", 
+                  filt <- c("Phe", "Leu2", "Tyr", "His", "Gln", "Asn", "Lys", "Asp", "Glu", "Cys", 
                             "Ser", "Arg2")
                   
                   DB@unlistData <- DB@unlistData[DB@unlistData$residue %in% filt]
@@ -89,6 +92,7 @@ setMethod("filterCodonDB", signature(DB = "character"),
                   
                   DB <- DB[DB$codonPosition %in% position |
                                DB$residue %in% filt,]
+                  DB@unlistData <- DB@unlistData[!(DB@unlistData$residue %in% c("Leu2", "Leu4", "Arg2", "Arg4") & DB@unlistData$codonPosition == "first")]
                   
                   DB <- DB[DB$residue != "Stp",]
                   

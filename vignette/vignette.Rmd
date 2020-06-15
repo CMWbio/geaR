@@ -170,7 +170,7 @@ Output Trees will write distance trees to newick files in a supplied directory
 ```{r}
 
 # Change this to your desired output directory
-outDir <- "~/out_directory/"
+outDir <- "~/Desktop/setupGear/"
 
 # general arguments for the analysis
 argCog <- makeCog(analysisType = "args", 
@@ -220,8 +220,10 @@ gear10kb <- analyzeGear(GDS, gear = gear10kb)
 - Full diversity stats
 
 ```{r}
-
-gear10kb@DiversityStatsFULL
+library(kableExtra)
+kable(gear10kb@DiversityStatsFULL) %>%
+  kable_styling() %>%
+  scroll_box(width = "800px", height = "200px")
 
 ```
 
@@ -229,7 +231,9 @@ gear10kb@DiversityStatsFULL
 
 ```{r}
 
-gear10kb@AdmixtureStats
+kable(gear10kb@AdmixtureStats) %>%
+  kable_styling() %>%
+  scroll_box(width = "800px", height = "200px")
 
 ```
 
@@ -257,7 +261,10 @@ cds <- makeFeatures(gffName = paste0(fileDir, "/sampleGFF.gff3"),
                     longestIsoform = TRUE, 
                     geneIDField = "Name")
 
-cds
+kable(head(as.data.frame(cds))) %>%
+  kable_styling() %>%
+  scroll_box(width = "800px", height = "200px")
+
 ```
 
 
@@ -280,7 +287,10 @@ codons <- buildCodonDB(genome, exons = cds)
 # Calidate codons
 fourFold <- validate4FoldCodons(GDS, input = codons, pops = pops, nCores = 1)
 
-codons
+
+kable(head(as.data.frame(codons))) %>%
+  kable_styling() %>%
+  scroll_box(width = "800px", height = "200px")
 ```
 
 These ranges can then be incorperated into out 10kb tiled windows. 
