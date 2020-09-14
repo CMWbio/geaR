@@ -32,7 +32,7 @@ neisDa <- function(dxy, pi){
     #carry out da calculation from Nei 1987
     da <- dxy[[dxyName]] - ((xPi + yPi)/2)
     #make tibble
-    da <- data_frame(da)
+    da <- tibble(da)
     #colnames
     colnames(da) <- paste0(compName, "_da")
     da

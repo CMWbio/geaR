@@ -222,7 +222,7 @@ setMethod("makeFeatures", signature = "GRanges",
             if(feature == "intergenic"){
 
               #get contig range from the contigMD object
-              contigRange <- makeGRangesFromDataFrame(data_frame(chr = contigMD[["ID"]], start = 1, strand = ".", end = contigMD[["length"]]))
+              contigRange <- makeGRangesFromDataFrame(tibble(chr = contigMD[["ID"]], start = 1, strand = ".", end = contigMD[["length"]]))
               # remove any chromosome annotations
               noChr <- gffName[gffName$type != "chromosome"]
               # join all annotations that overlap

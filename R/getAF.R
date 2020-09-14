@@ -18,7 +18,7 @@
 #' @rdname getAF
 #' @export
 
-getAF <- function(GDS, locus, minSites, pops, refAllele){
+getAF <- function(GDS, locus, minSites, pops, refAllele, counts = FALSE){
   stopifnot(minSites < 1 & minSites > 0)
   minSites <- sum(minSites * width(locus))
   popL <- split(pops, pops$Population)
@@ -48,7 +48,9 @@ getAF <- function(GDS, locus, minSites, pops, refAllele){
       ref <- seqGetData(GDS, var.name = "$ref")
       alt <- seqGetData(GDS, var.name = "$alt")
 
-      AF <- seqAlleleFreq(GDS, ref.allele =  refAllele)
+      if(counts) AF <- seqAlleleCount(GDS, ref.allele =  refAllele)
+      else AF <- seqAlleleFreq(GDS, ref.allele =  refAllele)
+      
 
       df <- tibble(seqname,pos,ref,alt,AF)
       df$alt[df$alt == ""] <- "N"

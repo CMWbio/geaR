@@ -269,11 +269,11 @@ setMethod("analyzeCog", signature(c(cog = "cog.outputTrees")),
                 end <- max(locus@ranges@start + width(locus))
                 mid <- start+end / 2
 
-                df <- data_frame(CHR = chr, Start = start, End = end, snpMid, nSites)
+                df <- tibble(CHR = chr, Start = start, End = end, snpMid, nSites)
 
                 if("Name" %in% colnames(locus@elementMetadata)){
                   gNames <- paste(unique(locus$Name), collapse = ",")
-                  df <- bind_cols(df[1:3], data_frame(genes = gName), df[4:5])
+                  df <- bind_cols(df[1:3], tibble(genes = gName), df[4:5])
                 }
 
 

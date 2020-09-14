@@ -57,7 +57,7 @@ Nei82Fst <- function(distMat, popList, pairs, ploidy, weighted = TRUE) {
 
 
       ## as pi
-      fst <- data_frame(1 - piB / piT)
+      fst <- tibble(1 - piB / piT)
 
       #name col
       colnames(fst) <-  paste0(f[1], "_vs_" , f[2], c("_Fst"))

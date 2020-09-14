@@ -104,7 +104,7 @@ ct <- c()
     else NULL
   }) %>% unlist()
 
-  df <- data_frame(codon = names(RSCU), RSCU = RSCU) %>% separate(codon, c("AA", "codon"))
+  df <- tibble(codon = names(RSCU), RSCU = RSCU) %>% separate(codon, c("AA", "codon"))
 
   }
 

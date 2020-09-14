@@ -11,7 +11,7 @@
 #' @param minSites \code{numeric} minimum number of sites as a proportion of loci length
 #' @param nucleotide \code{logical} Import RAW genotypes or nucleotides
 #' @param ploidy \code{numeric} ploidy of sample
-#' @param pops \code{data_frame} populaiton dataFrame
+#' @param pops \code{tibble} populaiton dataFrame
 #' @param removeIndels removes indels
 #'
 #'

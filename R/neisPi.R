@@ -29,7 +29,7 @@ neisPi <- function(distMat, popList, ploidy = 2){
     # else
     pi <- mean(popD, na.rm = TRUE)
     #determine pi for pop
-    piDF <- data_frame(pi)
+    piDF <- tibble(pi)
     # set colnames
     colnames(piDF) <- paste(x$Population[1],"pi", sep = "_")
     piDF

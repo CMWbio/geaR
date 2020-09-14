@@ -34,7 +34,7 @@ Gmin <- function(distMat, popList, pairs, ploidy) {
 
         dmin <- min(d)
 
-        Gmin <- data_frame(dmin / dxy)
+        Gmin <- tibble(dmin / dxy)
 
         ## in formula RND(I1,I2;O)
         colnames(Gmin) <-  paste0(p1, "v", p2, "_Gmin")

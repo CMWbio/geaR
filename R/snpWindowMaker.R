@@ -27,7 +27,7 @@
 
 setGeneric("snpWindowMaker", function(x, windowSize, stepSize, nCores = 1, GDS = NULL, snpWindow = FALSE, loci = NULL, ...){standardGeneric("snpWindowMaker")})
 
-#' @aliases snpWindowMaker,data_frame
+#' @aliases snpWindowMaker,tibble
 #' @rdname snpWindowMaker-methods
 #' @export
 setMethod("snpWindowMaker", signature = "data.frame",
@@ -47,7 +47,7 @@ setMethod("snpWindowMaker", signature = "data.frame",
             x <- x[x[["length"]] >= windowSize,]
 
             # make contig range for scaffolds in x and convert to GRanges object
-            contigRange <- makeGRangesFromDataFrame(data_frame(chr = x[["ID"]], start = 1, strand = ".", end = x[["length"]]))
+            contigRange <- makeGRangesFromDataFrame(tibble(chr = x[["ID"]], start = 1, strand = ".", end = x[["length"]]))
 
 
 

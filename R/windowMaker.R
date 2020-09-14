@@ -41,7 +41,7 @@
 #'
 #' # get contig metadata from fasta index
 #' df <- readr::read_tsv("referene.fna.fai", col_names = FALSE)
-#' x <- tibble::data_frame(ID = df[[1]], length = df[[2]])
+#' x <- tibble::tibble(ID = df[[1]], length = df[[2]])
 #'
 #' # subset by desired contigs
 #'
@@ -72,7 +72,7 @@
 
 setGeneric("windowMaker",function(x, windowSize, stepSize, nCores = 1, ...){standardGeneric("windowMaker")})
 
-#' @aliases windowMaker,data_frame
+#' @aliases windowMaker,tibble
 #' @rdname windowMaker-methods
 #' @export
 setMethod("windowMaker", signature = "data.frame",
@@ -92,7 +92,7 @@ setMethod("windowMaker", signature = "data.frame",
             x <- x[x[["length"]] >= windowSize,]
 
             # make contig range for scaffolds in x and convert to GRanges object
-            contigRange <- makeGRangesFromDataFrame(data_frame(chr = x[["ID"]], start = 1, strand = ".", end = x[["length"]]))
+            contigRange <- makeGRangesFromDataFrame(tibble(chr = x[["ID"]], start = 1, strand = ".", end = x[["length"]]))
 
 
             ## List of windows
