@@ -3,7 +3,8 @@
 The package geaR is designed to aid with evolutionary and population genetic analysis across whole genome genotype data in the GDS format.
 Analysis can be carried out using classical approaches such as sliding windows, however the main strength of geaR is the ability to include only ceratin types of features in the analysis.
 
-This package is currently under development, use at own risk. 
+# Citation
+If you find this package useful please cite out [preprint](https://www.biorxiv.org/content/10.1101/2020.08.06.240754v1)
 
 # Installation
 
