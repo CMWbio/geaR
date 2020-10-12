@@ -23,7 +23,7 @@ getGenotypes(
 
 \item{ploidy}{\code{numeric} ploidy of sample}
 
-\item{pops}{\code{data_frame} populaiton dataFrame}
+\item{pops}{\code{tibble} populaiton dataFrame}
 
 \item{removeIndels}{removes indels}
 

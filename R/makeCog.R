@@ -99,7 +99,7 @@ makeCog <- function(analysisType = "args", ...){
 
   if(analysisType == "outputLoci"){
 
-    cog <- new("cog.outputLoci", outputDirectory = l$outputDirectory, alleles = l$alleles)
+    cog <- new("cog.outputLoci", outputDirectory = l$outputDirectory, alleles = l$alleles, hapSamples = l$hapSamples)
 
     return(cog)
   }

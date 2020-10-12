@@ -3,7 +3,7 @@
 \name{windowMaker}
 \alias{windowMaker}
 \alias{windowMaker,data.frame-method}
-\alias{windowMaker,data_frame}
+\alias{windowMaker,tibble}
 \alias{windowMaker,GRanges-method}
 \alias{windowMaker,GRanges}
 \alias{windowMaker,GRangesList-method}
@@ -55,7 +55,7 @@ nCores <- 4
 
 # get contig metadata from fasta index
 df <- readr::read_tsv("referene.fna.fai", col_names = FALSE)
-x <- tibble::data_frame(ID = df[[1]], length = df[[2]])
+x <- tibble::tibble(ID = df[[1]], length = df[[2]])
 
 # subset by desired contigs
 

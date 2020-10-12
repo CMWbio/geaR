@@ -148,7 +148,7 @@ setMethod("analyzeGear", signature = c(GDS = "SeqVarGDSClass"),
                                   #### output loci, will return NULL if gear@OutputTrees
                                   #### slot is cog.NULL
                                   analyzeCog(cog = gear@OutputLoci, genoMat, arg = gear@Args, locus,
-                                             pops = gear@Populations)
+                                             pops = gear@Populations, pos = position)
                               }
                           }
                           

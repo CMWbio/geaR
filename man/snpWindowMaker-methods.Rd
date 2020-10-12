@@ -3,7 +3,7 @@
 \name{snpWindowMaker}
 \alias{snpWindowMaker}
 \alias{snpWindowMaker,data.frame-method}
-\alias{snpWindowMaker,data_frame}
+\alias{snpWindowMaker,tibble}
 \title{Sliding or Tiled snpwindow maker.}
 \usage{
 snpWindowMaker(

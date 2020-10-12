@@ -60,7 +60,8 @@ setClass(
   slots = c(
     outputDirectory = "character",
     alleles = "character",
-    removeIndels = "logical"
+    removeIndels = "logical",
+    hapSamples = "character"
   )
 )
 
@@ -119,7 +120,7 @@ setClassUnion("nullORoutT", c("cog.outputTrees", "cog.NULL", "character"))
 .cogAd <- function() makeCog(analysisType = "admixture", fourPop = list(), threePop = list())
 
 .cogOutLoc <- function() makeCog(analysisType = "outputLoci", outputDirectory = character(), alleles = character(),
-                                 removeIndels = logical())
+                                 removeIndels = logical(), hapSamples = character())
 
 .cogOutTre <- function() makeCog(analysisType = "outputTrees", outputDirectory = character(), alleles = character())
 
