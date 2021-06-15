@@ -112,18 +112,18 @@ setMethod("analyzeCog", signature(c(cog = "cog.admixture")),
               calcFourPop <- NULL
               if(length(AF)){
                   
-                  calcFourPop <- map(cog@fourPop, function(x){
-                      f4 <- .fourPop(AF, locus = locus, pops = pops, x = x)
+                  calcFourPop <- purrr::map(cog@fourPop, function(x){
+                      f4 <- geaR:::.fourPop(AF, locus = locus, pops = pops, x = x)
                   })
                   scaf <- locus@seqnames[1]
                   st <- locus@ranges@start[1]
                   end <- st + sum(locus@ranges@width)
                   calcFourPop <- bind_cols(calcFourPop)
-                  sM <- calcFourPop$snpMid
-                  nS <- calcFourPop$nSites
+                  sM <- calcFourPop[[1]]
+                  nS <- calcFourPop[[2]]
                   
                   calcFourPop <- calcFourPop[!grepl("nSites", colnames(calcFourPop)) & !grepl("snpMid", colnames(calcFourPop))]
-                  calcFourPop <- bind_cols(tibble(SeqName = as.character(scaf), Start = st, End = end, windowMid = (st + end)/2, snpMid = sM, nSites = nS), calcFourPop)
+                  calcFourPop <- dplyr::bind_cols(tibble(SeqName = as.character(scaf), Start = st, End = end, windowMid = (st + end)/2, snpMid = sM, nSites = nS), calcFourPop)
               }
               
               return(calcFourPop)

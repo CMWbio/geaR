@@ -169,7 +169,7 @@ setMethod("analyzeGear", signature = c(GDS = "SeqVarGDSClass"),
                       
                       #### calculate admixture statistics, will return NULL if gear@AdmixtureStats
                       #### slot is cog.NULL
-                      admix <- analyzeCog(cog = gear@AdmixtureStats, arg = gear@Args, pops = pops,
+                      admix <- geaR:::analyzeCog(cog = gear@AdmixtureStats, arg = gear@Args, pops = pops,
                                           locus, outgroup = gear@Outgroup, AF)
                       
                   }
@@ -186,7 +186,7 @@ setMethod("analyzeGear", signature = c(GDS = "SeqVarGDSClass"),
               })
               ## generate output
               if(class(gear@DiversityStatsFULL) == "cog.diversityFULL") gear@DiversityStatsFULL <- dplyr::bind_rows(lapply(data, extract2, 1))
-              if(class(gear@AdmixtureStats) == "cog.admixture") gear@AdmixtureStats <- lapply(data, extract2, 2)
+              if(class(gear@AdmixtureStats) == "cog.admixture") gear@AdmixtureStats <- bind_rows(lapply(data, extract2, 2))
               if(class(gear@OutputLoci) == "cog.outLoci") gear@OutputLoci <- paste0("Loci output to \"", gear@OutputLoci@outputDirectory)
               if(class(gear@OutputTrees) == "cog.outTrees") gear@OutputTrees <- paste0("Trees output to \"", gear@OutputTrees@outputDirectory)
               
