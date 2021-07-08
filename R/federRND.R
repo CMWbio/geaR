@@ -42,7 +42,7 @@ RND <- function(distMat, popList, pairs, ploidy, outgroup, type = "feder") {
                               as.vector(outer(popList[[p2]]$Sample, 1:ploidy, paste, sep = "/"))])
 
 
-          RND <- tibble(dxy / dout)
+          RND <- tibble::tibble(dxy / dout)
 
           ## in formula RND(I1,I2;O)
           colnames(RND) <-  paste0("RND(",  p1, ",", p2, ";", outgroup, ")")
@@ -53,16 +53,15 @@ RND <- function(distMat, popList, pairs, ploidy, outgroup, type = "feder") {
         if(type == "min"){
 
           #calculate dxy
-          dmin <- min(distMat[as.vector(outer(popList[[p1]]$Sample, 1:ploidy, paste, sep = "/")),
-                              as.vector(outer(popList[[p2]]$Sample, 1:ploidy, paste, sep = "/"))])
+          dmin <- min(c(min(dyo), min(dyo)))
 
-          RND <- tibble(dmin / dout)
+          RND <- tibble::tibble(dmin / dout)
 
           ## in formula RND(I1,I2;O)
           colnames(RND) <-  paste0("RNDmin(",  p1, ",", p2, ";", outgroup, ")")
           RND
 
-        }
+         }
 
       }
     })
