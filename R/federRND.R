@@ -63,6 +63,7 @@ RND <- function(distMat, popList, pairs, ploidy, outgroup, type = "feder") {
 
          }
 
+        RND
       }
     })
 

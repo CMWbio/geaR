@@ -133,7 +133,7 @@ setMethod("analyzeGear", signature = c(GDS = "SeqVarGDSClass"),
                                   
                                   #### calculate diversity statistics, will return NULL if gear@DiversityStatsFULL
                                   #### slot is cog.NULL
-                                  divFULL <- analyzeCog(cog = gear@DiversityStatsFULL, pairs = pairs, distMat = distMat,
+                                  divFULL <- geaR:::analyzeCog(cog = gear@DiversityStatsFULL, pairs = pairs, distMat = distMat,
                                                         arg = gear@Args, popList, seqname, start, end, windowMid, snpMid, nSites, locus, outgroup = gear@Outgroup)
                                   #### output trees, will return NULL if gear@OutputTrees
                                   #### slot is cog.NULL

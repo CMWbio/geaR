@@ -63,9 +63,9 @@ setMethod("analyzeCog", signature(c(cog = "cog.diversityFULL")),
               if("Fst" %in% cog@stats) fst <- Nei82Fst(distMat, popList, pairs, ploidy = arg@ploidy, weighted = TRUE)
               
               if(!is.null(outgroup)){
-                  if("RNDmin" %in% cog@stats) rndMin <- RND(distMat, popList, pairs, ploidy = arg@ploidy, outgroup = outgroup, type = "min")
+                  if("RNDmin" %in% cog@stats) rndMin <- geaR:::RND(distMat, popList, pairs, ploidy = arg@ploidy, outgroup = outgroup, type = "min")
                   
-                  if("RNDfeder" %in% cog@stats) rndFeder <- RND(distMat, popList, pairs, ploidy = arg@ploidy, outgroup = outgroup, type = "feder")
+                  if("RNDfeder" %in% cog@stats) rndFeder <- geaR:::RND(distMat, popList, pairs, ploidy = arg@ploidy, outgroup = outgroup, type = "feder")
                   
                   if("FTD" %in% cog@stats) rD <- relDxy(distMat, popList, ploidy = arg@ploidy, outgroup = outgroup)
                   
