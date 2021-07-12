@@ -112,7 +112,7 @@ setMethod("analyzeCog", signature(c(cog = "cog.admixture")),
                   scaf <- locus@seqnames[1]
                   st <- locus@ranges@start[1]
                   end <- st + sum(locus@ranges@width)
-                  calcFourPop <- bind_cols(calcFourPop)
+                  calcThreePop <- bind_cols(calcThreePop)
                   sM <- calcThreePop[[1]]
                   nS <- calcThreePop[[2]]
                   calcThreePop <- calcThreePop[!grepl("nSites", colnames(calcThreePop)) & !grepl("snpMid", colnames(calcThreePop))]
