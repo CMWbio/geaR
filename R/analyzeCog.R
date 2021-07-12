@@ -106,9 +106,16 @@ setMethod("analyzeCog", signature(c(cog = "cog.admixture")),
                   
                   p <- pops[pops$Population %in% unique(unlist(cog@threePop)),]
                   
-                  calcFourPop <- purrr::map(cog@fourPop, function(x){
+                  calcThreePop <- purrr::map(cog@fourPop, function(x){
                       f3 <- .threePop(AF, locus = locus, pops = p, x = x)
                   })
+                  scaf <- locus@seqnames[1]
+                  st <- locus@ranges@start[1]
+                  end <- st + sum(locus@ranges@width)
+                  calcFourPop <- bind_cols(calcFourPop)
+                  sM <- calcThreePop[[1]]
+                  nS <- calcThreePop[[2]]
+                  calcThreePop <- calcThreePop[!grepl("nSites", colnames(calcThreePop)) & !grepl("snpMid", colnames(calcThreePop))]
                   
               }
               
@@ -136,12 +143,12 @@ setMethod("analyzeCog", signature(c(cog = "cog.admixture")),
                       nS <- calcFourPop[[2]]
                       
                       calcFourPop <- calcFourPop[!grepl("nSites", colnames(calcFourPop)) & !grepl("snpMid", colnames(calcFourPop))]
-                      calcFourPop <- dplyr::bind_cols(tibble(SeqName = as.character(scaf), Start = st, End = end, windowMid = (st + end)/2, snpMid = sM, nSites = nS), calcFourPop)
                   
                   
               }
               
               }
+              calcFourPop <- dplyr::bind_cols(tibble(SeqName = as.character(scaf), Start = st, End = end, windowMid = (st + end)/2, snpMid = sM, nSites = nS), calcThreePop, calcFourPop)
               
               return(calcFourPop)
               

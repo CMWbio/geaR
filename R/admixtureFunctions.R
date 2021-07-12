@@ -29,7 +29,12 @@
   })
   
   f3Stats <- dplyr::bind_rows(f3Stats)
-  mean(f3Stats$f3)
+  f3 <- mean(f3Stats$f3)
+  df <- tibble(f3)
+  
+  df <- tibble(snpMid, nSites, f3)
+  
+  colnames(df) <- c("snpMid", "nSites", paste0("f3(", paste(x[1:2], collapse = ","), ";", x[3], ")"))
   
 }
 
