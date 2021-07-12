@@ -14,7 +14,7 @@
   AF <- abs(as.matrix(AF) - AF[[paste0(x[[3]], "_AF")]])
   nSites <- length(pos)
   snpMid <- median(pos)
-  AF <- AF[apply(AF[,-1], 1, function(x) !all(x==0)),]
+  AF <- AF[apply(AF[,-1], 1, function(x) length(unique(x[!is.na(x)])) != 1),]
   
   f3Stats <- apply(AF, 1, function(z){
     
@@ -61,7 +61,7 @@
   AF <- abs(as.matrix(AF) - AF[[paste0(x[[4]], "_AF")]])
   nSites <- length(pos)
   snpMid <- median(pos)
-  AF <- AF[apply(AF[,-1], 1, function(x) !all(x==0)),]
+  AF <- AF[apply(AF[,-1], 1, function(x) length(unique(x[!is.na(x)])) != 1),]
   
   ### should I use data.table?
   # DT <- data.table(AF2)
