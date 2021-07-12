@@ -1,6 +1,53 @@
 ### three and four pop admixture helper functions
 
 
+## calculate f3 
+.threePop <- function(AF, locus, pops, x){
+  
+  AF <- AF[complete.cases(AF),]
+  AF <- AF[AF[[paste0(x[[3]], "_AF")]] %in% c(1,0),]
+  AF <- AF[AF$alt != "N",]
+  pos <- AF$pos
+  
+  AF <- AF[,paste0(x, "_AF")]
+  
+  AF <- abs(as.matrix(AF) - AF[[paste0(x[[3]], "_AF")]])
+  nSites <- length(pos)
+  snpMid <- median(pos)
+  AF <- AF[apply(AF[,-1], 1, function(x) !all(x==0)),]
+  
+  f3Stats <- apply(AF, 1, function(z){
+    
+    #### get base AF
+    p1 <- as.numeric(z[paste0(x[[1]], "_AF")])
+    p2 <- as.numeric(z[paste0(x[[2]], "_AF")])
+    p3 <- as.numeric(z[paste0(x[[3]], "_AF")])
+    
+    f3 <- .f3fun(p1, p2, p3)
+    
+    tibble::tibble(f3)
+  })
+  
+  f3Stats <- dplyr::bind_rows(f3Stats)
+  mean(f3Stats$f3)
+  
+}
+
+
+
+.f3fun <- function(p1,p2,p3){
+  q1 <- 1 - p1
+  q2 <- 1 - p2
+  q3 <- 1 - p3
+  
+  
+  f3p <- (p3 - p1) * (p3 - p2)
+  f3q <- (q3 - q1) * (q3 - q2)
+  f3Corr <- ((f3p + f3q)/2)
+  f3Corr
+}
+
+
 ## calculate fd and f4 stat at a locus
 .fourPop <- function(AF, locus, pops, x){
 
@@ -14,7 +61,8 @@
   AF <- abs(as.matrix(AF) - AF[[paste0(x[[4]], "_AF")]])
   nSites <- length(pos)
   snpMid <- median(pos)
-
+  AF <- AF[apply(AF[,-1], 1, function(x) !all(x==0)),]
+  
   ### should I use data.table?
   # DT <- data.table(AF2)
   # DT[, ..I := .I]
@@ -74,3 +122,6 @@
   f4Corr <- -1*((f4p + f4q)/2)
 
 }
+
+
+

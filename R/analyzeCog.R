@@ -99,34 +99,51 @@ setMethod("analyzeCog", signature(c(cog = "cog.admixture")),
               ### specified tests do not contain all populations in gear@Populaitons
               uTest <- unique(pops$Population)
               noOut <- uTest[uTest != outgroup]
-              if(any(unlist(cog@fourPop) == "all")) {
-                  combs <- combn(noOut, m = 3)
-                  cog@fourPop <- lapply(seq(dim(combs)[[2]]), function(x){
-                      x <- combs[,x]
-                      c(x, outgroup)
-                  })
-              }
-              
-              p <- pops[pops$Population %in% unique(unlist(cog@fourPop)),]
-              
               calcFourPop <- NULL
-              if(length(AF)){
+              calcThreePop <- NULL
+              
+              if(length(cog@threePop)) {
+                  
+                  p <- pops[pops$Population %in% unique(unlist(cog@threePop)),]
                   
                   calcFourPop <- purrr::map(cog@fourPop, function(x){
-                      f4 <- geaR:::.fourPop(AF, locus = locus, pops = pops, x = x)
+                      f3 <- .threePop(AF, locus = locus, pops = p, x = x)
                   })
-                  scaf <- locus@seqnames[1]
-                  st <- locus@ranges@start[1]
-                  end <- st + sum(locus@ranges@width)
-                  calcFourPop <- bind_cols(calcFourPop)
-                  sM <- calcFourPop[[1]]
-                  nS <- calcFourPop[[2]]
                   
-                  calcFourPop <- calcFourPop[!grepl("nSites", colnames(calcFourPop)) & !grepl("snpMid", colnames(calcFourPop))]
-                  calcFourPop <- dplyr::bind_cols(tibble(SeqName = as.character(scaf), Start = st, End = end, windowMid = (st + end)/2, snpMid = sM, nSites = nS), calcFourPop)
               }
               
-              return(calcFourPop)
+              if(length(cog@fourPop)) {
+                  if(any(unlist(cog@fourPop) == "all")) {
+                      combs <- combn(noOut, m = 3)
+                      cog@fourPop <- lapply(seq(dim(combs)[[2]]), function(x){
+                          x <- combs[,x]
+                          c(x, outgroup)
+                      })
+                  }
+                  
+                  p <- pops[pops$Population %in% unique(unlist(cog@fourPop)),]
+                  
+                  if(length(AF)){
+                      
+                      calcFourPop <- purrr::map(cog@fourPop, function(x){
+                          f4 <- .fourPop(AF, locus = locus, pops = p, x = x)
+                      })
+                      scaf <- locus@seqnames[1]
+                      st <- locus@ranges@start[1]
+                      end <- st + sum(locus@ranges@width)
+                      calcFourPop <- bind_cols(calcFourPop)
+                      sM <- calcFourPop[[1]]
+                      nS <- calcFourPop[[2]]
+                      
+                      calcFourPop <- calcFourPop[!grepl("nSites", colnames(calcFourPop)) & !grepl("snpMid", colnames(calcFourPop))]
+                      calcFourPop <- dplyr::bind_cols(tibble(SeqName = as.character(scaf), Start = st, End = end, windowMid = (st + end)/2, snpMid = sM, nSites = nS), calcFourPop)
+                  
+                  
+              }
+              
+              }
+              
+              return()
               
           })
 
