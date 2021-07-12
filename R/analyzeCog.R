@@ -143,7 +143,7 @@ setMethod("analyzeCog", signature(c(cog = "cog.admixture")),
               
               }
               
-              return()
+              return(calcFourPop)
               
           })
 
