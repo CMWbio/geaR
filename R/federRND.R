@@ -53,7 +53,7 @@ RND <- function(distMat, popList, pairs, ploidy, outgroup, type = "feder") {
         if(type == "min"){
 
           #calculate dxy
-          dmin <- mean(distMat[as.vector(outer(popList[[p1]]$Sample, 1:ploidy, paste, sep = "/")),
+          dmin <- min(distMat[as.vector(outer(popList[[p1]]$Sample, 1:ploidy, paste, sep = "/")),
                                 as.vector(outer(popList[[p2]]$Sample, 1:ploidy, paste, sep = "/"))])
 
           RND <- tibble::tibble(dmin / dout)
