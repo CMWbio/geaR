@@ -145,7 +145,13 @@ setMethod("analyzeCog", signature(c(cog = "cog.admixture")),
                       calcFourPop <- calcFourPop[!grepl("nSites", colnames(calcFourPop)) & !grepl("snpMid", colnames(calcFourPop))]
                   
                   
-              }
+              } else {
+                      scaf <- locus@seqnames[1]
+                      st <- locus@ranges@start[1]
+                      end <- st + sum(locus@ranges@width)
+                      sM <- calcFourPop[[1]]
+                      nS <- calcFourPop[[2]]
+                  }
               
               }
               calcFourPop <- dplyr::bind_cols(tibble(SeqName = as.character(scaf), Start = st, End = end, windowMid = (st + end)/2, snpMid = sM, nSites = nS), calcThreePop, calcFourPop)
