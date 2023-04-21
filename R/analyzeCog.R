@@ -130,7 +130,7 @@ setMethod("analyzeCog", signature(c(cog = "cog.admixture")),
                   
                   p <- pops[pops$Population %in% unique(unlist(cog@fourPop)),]
                   
-                  if(length(AF){
+                  if(length(AF)){
                       print(dim(AF))
                       calcFourPop <- purrr::map(cog@fourPop, function(x){
                           f4 <- .fourPop(AF, locus = locus, pops = p, x = x)
