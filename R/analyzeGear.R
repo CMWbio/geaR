@@ -19,7 +19,7 @@
 #'
 #' @import furrr
 #' @importFrom future plan
-#' @importFrom future multiprocess
+#' @importFrom future multisession
 #' @importFrom dplyr bind_cols
 #' @importFrom dplyr bind_rows
 #' @importFrom magrittr extract2
@@ -45,7 +45,7 @@ setMethod("analyzeGear", signature = c(GDS = "SeqVarGDSClass"),
           function(GDS, gear){
               
               ### plan the future
-              # plan(multiprocess, workers = gear@Args@nCores)
+              # plan(multisession, workers = gear@Args@nCores)
               
               ##### set up variables
               ploidy <- gear@Args@ploidy
