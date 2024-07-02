@@ -143,7 +143,7 @@ setMethod("makeFeatures", signature = "GRanges",
 
                 ExonName <- names(all)
 
-                plan(multiprocess, workers = nCores)
+                plan(multisession, workers = nCores)
                 all <- future_map(seq_along(all), .f = .mapFun, all, longestIsoform)
                 plan(sequential)
                 all <- dplyr::bind_rows(all)
@@ -185,7 +185,7 @@ setMethod("makeFeatures", signature = "GRanges",
 
                 all <- split(all, all$gene)
 
-                plan(multiprocess, workers = nCores)
+                plan(multisession, workers = nCores)
 
                 all <- future_map(seq_along(all), .f = .mapFun, all, longestIsoform)
                 plan(sequential)
